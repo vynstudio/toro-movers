@@ -104,14 +104,11 @@ p { color: var(--charcoal-soft); }
   font-size: 1.1rem;
   margin-bottom: 4px;
 }
-.gallery-item .caption .price-tag {
-  display: inline-block;
-  background: var(--red);
-  color: var(--white);
-  font-size: 12px; font-weight: 700;
-  padding: 4px 10px;
-  border-radius: var(--radius-pill);
-  margin-top: 6px;
+.gallery-item .caption .desc {
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.5;
+  margin-top: 4px;
 }
 @media (max-width: 880px) { .gallery-grid { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; } }
 
@@ -1087,15 +1084,15 @@ section.section { padding: 100px 24px; }
         <div class="caption">
           <div class="meta">In-Town Move · Orlando</div>
           <h4>2-Bedroom Apartment</h4>
-          <span class="price-tag">$875 flat</span>
+          <p class="desc">Loading + drive + unloading. Boxes labeled by room, furniture wrapped, done in an afternoon.</p>
         </div>
       </div>
       <div class="gallery-item">
         <img class="photo" src="assets/img/photos/move-wardrobe-wrap-outdoor.jpg" alt="Toro mover wrapping a tall wardrobe with shrink wrap on a Central Florida driveway">
         <div class="caption">
           <div class="meta">Furniture Wrap · Lake Mary</div>
-          <h4>Wardrobe Move</h4>
-          <span class="price-tag">$300 flat</span>
+          <h4>Tall Wardrobe Move</h4>
+          <p class="desc">Shrink-wrapped, strapped, dollied — heavy furniture handled without scuffs.</p>
         </div>
       </div>
       <div class="gallery-item">
@@ -1103,7 +1100,7 @@ section.section { padding: 100px 24px; }
         <div class="caption">
           <div class="meta">Single Item · Kissimmee</div>
           <h4>Massage Chair</h4>
-          <span class="price-tag">$300 flat</span>
+          <p class="desc">Awkward, heavy, expensive — exactly the kind of single item we move every week.</p>
         </div>
       </div>
       <div class="gallery-item">
@@ -1111,7 +1108,7 @@ section.section { padding: 100px 24px; }
         <div class="caption">
           <div class="meta">Assembly · Apopka</div>
           <h4>Bedroom Set Build</h4>
-          <span class="price-tag">$450 flat</span>
+          <p class="desc">Disassembled at the old place, reassembled at the new one. We bring the tools.</p>
         </div>
       </div>
       <div class="gallery-item">
@@ -1119,7 +1116,7 @@ section.section { padding: 100px 24px; }
         <div class="caption">
           <div class="meta">Loading Help · Sanford</div>
           <h4>Studio Move-Out</h4>
-          <span class="price-tag">$300 flat</span>
+          <p class="desc">Customer rented a U-Haul, we showed up with two strong movers and loaded it.</p>
         </div>
       </div>
       <div class="gallery-item">
@@ -1127,7 +1124,7 @@ section.section { padding: 100px 24px; }
         <div class="caption">
           <div class="meta">Big Move · Winter Park</div>
           <h4>3-Bedroom House</h4>
-          <span class="price-tag">$1,175 flat</span>
+          <p class="desc">Larger crew, full house, stairs included — packed tight so nothing shifts.</p>
         </div>
       </div>
     </div>
