@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Toro Movers — Proposal 2: Glass</title>
+<meta name="description" content="Loading & moving help in Central Florida. $75/mover/hr.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --red: #C8102E;
+  --red-light: #E63946;
+  --red-dark: #8B0A1F;
+  --charcoal: #1C1C1E;
+  --sand: #F4EAD5;
+  --white: #FFFFFF;
+  --glass-bg: rgba(255, 255, 255, 0.08);
+  --glass-border: rgba(255, 255, 255, 0.18);
+  --glass-strong: rgba(255, 255, 255, 0.14);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--charcoal);
+  color: var(--white);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  position: relative;
+  min-height: 100vh;
+}
+img { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
+button, input, select, textarea { font-family: inherit; font-size: inherit; }
+h1, h2, h3, h4 {
+  font-family: 'Bebas Neue', 'Impact', sans-serif;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0.01em;
+}
+
+/* ── Animated background ───────────────────────────────────── */
+.bg-canvas {
+  position: fixed; inset: 0; z-index: -1;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 20%, var(--red), transparent 60%),
+    radial-gradient(ellipse 60% 80% at 80% 30%, var(--red-dark), transparent 50%),
+    radial-gradient(ellipse 100% 80% at 50% 100%, #2a0008, transparent 70%),
+    var(--charcoal);
+}
+.bg-canvas::before, .bg-canvas::after {
+  content: ''; position: absolute;
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.4;
+  animation: float 20s ease-in-out infinite;
+}
+.bg-canvas::before { background: var(--red); top: -200px; left: -100px; }
+.bg-canvas::after { background: var(--red-light); bottom: -200px; right: -100px; animation-delay: -10s; }
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(80px, -60px) scale(1.15); }
+}
+
+.container { max-width: 1240px; margin: 0 auto; padding: 0 32px; }
+
+/* ── Header ────────────────────────────────────────────────── */
+.site-header {
+  position: sticky; top: 16px; z-index: 100;
+  margin: 16px 24px 0;
+  padding: 16px 32px;
+  display: flex; justify-content: space-between; align-items: center;
+  background: var(--glass-strong);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid var(--glass-border);
+  border-radius: 999px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+.logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  letter-spacing: 0.06em;
+  display: flex; align-items: baseline; gap: 8px;
+}
+.logo .red { color: var(--white); }
+.logo .ms { color: rgba(255, 255, 255, 0.6); font-size: 11px; font-weight: 700; letter-spacing: 0.3em; }
+.nav { display: flex; gap: 28px; }
+.nav a {
+  font-size: 13px; font-weight: 600;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+.nav a:hover { opacity: 1; }
+.cta-btn {
+  background: var(--white); color: var(--red);
+  padding: 12px 24px;
+  font-weight: 700; font-size: 13px;
+  border-radius: 999px;
+  border: none; cursor: pointer;
+  transition: all 0.2s;
+}
+.cta-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(255, 255, 255, 0.2); }
+@media (max-width: 880px) { .nav { display: none; } }
+
+/* ── Hero ──────────────────────────────────────────────────── */
+.hero {
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  padding: 100px 32px 60px;
+  text-align: center;
+  position: relative;
+  perspective: 1500px;
+}
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 12px; font-weight: 700; letter-spacing: 0.15em;
+  text-transform: uppercase;
+  background: var(--glass-strong);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  padding: 10px 20px;
+  border-radius: 999px;
+  margin-bottom: 32px;
+}
+.hero h1 {
+  font-size: clamp(3.5rem, 9vw, 8rem);
+  margin-bottom: 24px;
+  text-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+  transform-style: preserve-3d;
+}
+.hero h1 .gradient {
+  background: linear-gradient(135deg, var(--white) 0%, rgba(255, 255, 255, 0.6) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.hero p {
+  font-size: 1.25rem;
+  max-width: 640px; margin: 0 auto 40px;
+  opacity: 0.92;
+}
+.hero-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+.btn-primary {
+  background: var(--white); color: var(--red);
+  padding: 18px 36px;
+  font-weight: 700; font-size: 14px;
+  border-radius: 999px;
+  border: none; cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 10px 40px rgba(255, 255, 255, 0.2);
+}
+.btn-primary:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 20px 50px rgba(255, 255, 255, 0.3); }
+.btn-glass {
+  background: var(--glass-strong);
+  backdrop-filter: blur(20px);
+  color: var(--white);
+  padding: 18px 36px;
+  font-weight: 700; font-size: 14px;
+  border-radius: 999px;
+  border: 1px solid var(--glass-border);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.btn-glass:hover { background: var(--glass-border); }
+
+/* ── Floating glass cards (stats) ──────────────────────────── */
+.floating-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-top: 80px;
+  padding: 0 32px;
+  max-width: 1100px;
+  margin-left: auto; margin-right: auto;
+}
+.stat-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  padding: 32px 20px;
+  text-align: center;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-style: preserve-3d;
+}
+.stat-card:hover { transform: translateY(-8px) rotateX(5deg); }
+.stat-card .num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 3.5rem;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.stat-card .lbl {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.15em;
+  text-transform: uppercase; opacity: 0.8;
+}
+@media (max-width: 720px) { .floating-stats { grid-template-columns: repeat(2, 1fr); } }
+
+/* ── Sections ──────────────────────────────────────────────── */
+section { padding: 120px 32px; position: relative; }
+.section-head { text-align: center; max-width: 720px; margin: 0 auto 64px; }
+.section-eyebrow {
+  display: inline-block;
+  font-size: 12px; font-weight: 700; letter-spacing: 0.15em;
+  text-transform: uppercase;
+  background: var(--glass-strong);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  padding: 8px 18px;
+  border-radius: 999px;
+  margin-bottom: 18px;
+}
+.section-title {
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  margin-bottom: 16px;
+}
+.section-sub { opacity: 0.8; font-size: 1.15rem; }
+
+/* ── Packages (3D tilt) ────────────────────────────────────── */
+.packages-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+  perspective: 1500px;
+}
+.package {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 28px;
+  padding: 40px 32px;
+  display: flex; flex-direction: column;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-style: preserve-3d;
+  position: relative;
+  overflow: hidden;
+}
+.package::before {
+  content: ''; position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at top, var(--white), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s;
+  pointer-events: none;
+}
+.package:hover {
+  transform: translateY(-12px) rotateX(4deg);
+  background: var(--glass-strong);
+  border-color: var(--white);
+}
+.package:hover::before { opacity: 0.06; }
+.package.featured {
+  background: var(--white);
+  color: var(--red);
+  border: 2px solid var(--white);
+  transform: translateY(-12px) scale(1.02);
+}
+.package.featured h3, .package.featured .price { color: var(--red); }
+.package.featured .icon-wrap { background: var(--red); }
+.package.featured .pkg-btn { background: var(--red); color: var(--white); }
+.package.featured .pkg-btn:hover { background: var(--red-dark); }
+.icon-wrap {
+  width: 64px; height: 64px;
+  border-radius: 18px;
+  background: var(--white);
+  color: var(--red);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px;
+  margin-bottom: 24px;
+}
+.package h3 { font-size: 2rem; margin-bottom: 8px; color: var(--white); }
+.package .tagline { font-size: 13px; opacity: 0.7; margin-bottom: 28px; }
+.package .price {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 5rem; line-height: 0.9;
+  color: var(--white);
+  margin-bottom: 6px;
+}
+.package .price-suffix { font-size: 13px; opacity: 0.7; margin-bottom: 28px; }
+.package ul { list-style: none; flex-grow: 1; margin-bottom: 28px; }
+.package li {
+  font-size: 14px; padding: 8px 0;
+  display: flex; align-items: center; gap: 10px;
+}
+.package li::before { content: '→'; opacity: 0.7; }
+.pkg-btn {
+  background: var(--white); color: var(--red);
+  padding: 16px;
+  font-weight: 700; text-align: center; font-size: 13px;
+  letter-spacing: 0.05em; text-transform: uppercase;
+  cursor: pointer; border: none;
+  border-radius: 999px;
+  transition: all 0.2s;
+  width: 100%;
+}
+.pkg-btn:hover { transform: translateY(-2px); }
+@media (max-width: 880px) { .packages-grid { grid-template-columns: 1fr; } }
+
+/* ── Calculator ────────────────────────────────────────────── */
+.calc {
+  max-width: 760px; margin: 0 auto;
+  background: var(--glass-strong);
+  backdrop-filter: blur(24px);
+  border: 1px solid var(--glass-border);
+  border-radius: 32px;
+  padding: 56px 48px;
+}
+.calc-row { margin-bottom: 28px; }
+.calc-label {
+  font-size: 12px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; opacity: 0.8;
+  margin-bottom: 12px; display: block;
+}
+.calc-pills { display: flex; gap: 10px; flex-wrap: wrap; }
+.calc-pill {
+  flex: 1; min-width: 70px;
+  padding: 16px 8px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem;
+  color: var(--white);
+  border-radius: 14px;
+  cursor: pointer; transition: all 0.2s;
+}
+.calc-pill:hover { background: var(--glass-strong); border-color: var(--white); }
+.calc-pill.active {
+  background: var(--white);
+  color: var(--red);
+  border-color: var(--white);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(255, 255, 255, 0.2);
+}
+.calc-total {
+  background: var(--white);
+  color: var(--red);
+  border-radius: 20px;
+  padding: 32px;
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-top: 32px;
+}
+.calc-total .label { font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
+.calc-total .total {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 5rem; line-height: 1;
+}
+.calc-disclaimer { text-align: center; font-size: 12px; opacity: 0.7; margin-top: 16px; }
+
+/* ── Lead Form ─────────────────────────────────────────────── */
+.lead-form {
+  max-width: 720px; margin: 0 auto;
+  background: var(--glass-strong);
+  backdrop-filter: blur(24px);
+  border: 1px solid var(--glass-border);
+  border-radius: 32px;
+  padding: 56px 48px;
+}
+.field { margin-bottom: 18px; }
+.field label {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; opacity: 0.8;
+  margin-bottom: 8px; display: block;
+}
+.field input, .field select, .field textarea {
+  width: 100%;
+  padding: 16px;
+  background: var(--glass-bg);
+  color: var(--white);
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+  font-size: 15px;
+  transition: all 0.2s;
+}
+.field input::placeholder, .field textarea::placeholder { color: rgba(255, 255, 255, 0.4); }
+.field input:focus, .field select:focus, .field textarea:focus {
+  outline: none; background: var(--glass-strong); border-color: var(--white);
+}
+.field textarea { resize: vertical; min-height: 100px; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.lead-form .submit-btn {
+  width: 100%;
+  background: var(--white);
+  color: var(--red);
+  padding: 20px;
+  font-weight: 800; font-size: 14px; letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: none; border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 8px;
+}
+.lead-form .submit-btn:hover { transform: translateY(-3px); box-shadow: 0 20px 50px rgba(255, 255, 255, 0.3); }
+
+/* ── Reviews ───────────────────────────────────────────────── */
+.reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+.review {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  padding: 32px 28px;
+  transition: all 0.3s;
+}
+.review:hover { transform: translateY(-6px); background: var(--glass-strong); }
+.review .stars { color: #FFD700; margin-bottom: 12px; letter-spacing: 2px; }
+.review p { font-size: 14px; line-height: 1.65; margin-bottom: 20px; opacity: 0.92; }
+.review .author { font-weight: 700; font-size: 14px; }
+.review .city { font-size: 12px; opacity: 0.6; }
+@media (max-width: 880px) { .reviews-grid { grid-template-columns: 1fr; } }
+
+/* ── Footer ────────────────────────────────────────────────── */
+.footer {
+  text-align: center;
+  padding: 60px 32px;
+  border-top: 1px solid var(--glass-border);
+  margin-top: 40px;
+}
+.footer .logo { justify-content: center; margin-bottom: 24px; }
+.footer p { opacity: 0.75; font-size: 13px; margin: 6px 0; }
+.footer a:hover { color: var(--white); text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<div class="bg-canvas"></div>
+
+<!-- HEADER -->
+<header class="site-header">
+  <a href="#" class="logo"><span class="red">TORO</span><span class="ms">MOVERS</span></a>
+  <nav class="nav">
+    <a href="#packages">Packages</a>
+    <a href="#calculator">Calculator</a>
+    <a href="#reviews">Reviews</a>
+    <a href="#book">Book</a>
+  </nav>
+  <a href="#book" class="cta-btn">Reserve Move</a>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div>
+    <span class="hero-eyebrow">★ 5.0 — 30+ Google Reviews · Family-Owned Central FL</span>
+    <h1><span class="gradient">You bring the truck.</span><br>We bring the muscle.</h1>
+    <p>Strong, insured loading & moving help across Central Florida. $75 per mover, per hour. 2-hour minimum. No fuel fees, no stair fees, no surprises.</p>
+    <div class="hero-buttons">
+      <a href="#book" class="btn-primary">Reserve My Move →</a>
+      <a href="tel:3217580094" class="btn-glass">📞 (321) 758-0094</a>
+    </div>
+
+    <div class="floating-stats">
+      <div class="stat-card"><div class="num">5.0★</div><div class="lbl">Google Rating</div></div>
+      <div class="stat-card"><div class="num">30+</div><div class="lbl">Reviews</div></div>
+      <div class="stat-card"><div class="num">$75</div><div class="lbl">Per Mover/Hr</div></div>
+      <div class="stat-card"><div class="num">0</div><div class="lbl">Surprise Fees</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PACKAGES -->
+<section id="packages">
+  <div class="container">
+    <div class="section-head">
+      <span class="section-eyebrow">Pick Your Move</span>
+      <h2 class="section-title">Three packages.<br>Real prices.</h2>
+      <p class="section-sub">No hidden fees. The number you see is the number you pay.</p>
+    </div>
+    <div class="packages-grid">
+      <div class="package">
+        <div class="icon-wrap">📦</div>
+        <h3>Loading Help</h3>
+        <p class="tagline">Studio or 1-bedroom · You have a truck</p>
+        <div class="price">$300</div>
+        <p class="price-suffix">2 movers · 2 hours · no truck</p>
+        <ul>
+          <li>Loading or unloading only</li>
+          <li>Dollies, blankets, straps</li>
+          <li>Furniture wrapping</li>
+          <li>Same-week scheduling</li>
+        </ul>
+        <button class="pkg-btn" onclick="selectPackage('loading')">Reserve This Move</button>
+      </div>
+      <div class="package featured">
+        <div class="icon-wrap">🏠</div>
+        <h3>In-Town Move</h3>
+        <p class="tagline">1-2 bedroom · We bring the truck</p>
+        <div class="price">$875</div>
+        <p class="price-suffix">2 movers · 4 hours · truck included</p>
+        <ul>
+          <li>Loading + drive + unloading</li>
+          <li>Truck included (+$275)</li>
+          <li>Wrapping & assembly</li>
+          <li>Most popular</li>
+        </ul>
+        <button class="pkg-btn" onclick="selectPackage('intown')">Reserve This Move</button>
+      </div>
+      <div class="package">
+        <div class="icon-wrap">💪</div>
+        <h3>Big Move</h3>
+        <p class="tagline">3-bedroom or stairs · Faster crew</p>
+        <div class="price">$1,175</div>
+        <p class="price-suffix">3 movers · 4 hours · truck included</p>
+        <ul>
+          <li>3-mover crew = faster move</li>
+          <li>Stairs & elevators</li>
+          <li>Truck included</li>
+          <li>Heavy items welcome</li>
+        </ul>
+        <button class="pkg-btn" onclick="selectPackage('big')">Reserve This Move</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CALCULATOR -->
+<section id="calculator">
+  <div class="container">
+    <div class="section-head">
+      <span class="section-eyebrow">Build Your Own</span>
+      <h2 class="section-title">Custom move calculator</h2>
+      <p class="section-sub">Pick crew, hours, and truck. Price updates live.</p>
+    </div>
+    <div class="calc">
+      <div class="calc-row">
+        <label class="calc-label">Movers</label>
+        <div class="calc-pills" data-group="movers">
+          <button class="calc-pill" data-value="2">2</button>
+          <button class="calc-pill active" data-value="3">3</button>
+          <button class="calc-pill" data-value="4">4</button>
+        </div>
+      </div>
+      <div class="calc-row">
+        <label class="calc-label">Hours</label>
+        <div class="calc-pills" data-group="hours">
+          <button class="calc-pill" data-value="2">2</button>
+          <button class="calc-pill" data-value="3">3</button>
+          <button class="calc-pill active" data-value="4">4</button>
+          <button class="calc-pill" data-value="5">5</button>
+          <button class="calc-pill" data-value="6">6</button>
+          <button class="calc-pill" data-value="8">8</button>
+        </div>
+      </div>
+      <div class="calc-row">
+        <label class="calc-label">Truck</label>
+        <div class="calc-pills" data-group="truck">
+          <button class="calc-pill active" data-value="0">No</button>
+          <button class="calc-pill" data-value="275">Yes (+$275)</button>
+        </div>
+      </div>
+      <div class="calc-total">
+        <span class="label">Your total</span>
+        <span class="total">$<span id="calc-amount">900</span></span>
+      </div>
+      <p class="calc-disclaimer">$75 per mover per hour · 2-hour minimum · no surprise fees</p>
+    </div>
+  </div>
+</section>
+
+<!-- BOOK -->
+<section id="book">
+  <div class="container">
+    <div class="section-head">
+      <span class="section-eyebrow">Reserve My Move</span>
+      <h2 class="section-title">Lock in your date</h2>
+      <p class="section-sub">Email reply within 1 hour during business hours. Most moves scheduled same-week.</p>
+    </div>
+    <form class="lead-form" id="booking-form" action="mailto:hello@toromovers.net" method="POST" enctype="text/plain">
+      <div class="field">
+        <label>Full Name</label>
+        <input type="text" name="name" placeholder="Maria Sanchez" required>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Phone</label>
+          <input type="tel" name="phone" placeholder="(321) 555-1234" required>
+        </div>
+        <div class="field">
+          <label>Email</label>
+          <input type="email" name="email" placeholder="maria@email.com" required>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Move Date</label>
+          <input type="date" name="date" required>
+        </div>
+        <div class="field">
+          <label>Package</label>
+          <select name="package" id="pkg-select">
+            <option value="loading">Loading Help — $300</option>
+            <option value="intown" selected>In-Town Move — $875</option>
+            <option value="big">Big Move — $1,175</option>
+            <option value="custom">Custom (use calculator)</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Pickup ZIP</label>
+        <input type="text" name="zip" placeholder="32801" pattern="[0-9]{5}" required>
+      </div>
+      <div class="field">
+        <label>Notes (stairs, heavy items, anything we should know)</label>
+        <textarea name="notes" placeholder="2nd floor walk-up, one piano, please bring an extra dolly"></textarea>
+      </div>
+      <button type="submit" class="submit-btn">Send Booking Request →</button>
+    </form>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section id="reviews">
+  <div class="container">
+    <div class="section-head">
+      <span class="section-eyebrow">★★★★★ 5.0 from 30+</span>
+      <h2 class="section-title">Central Florida<br>trusts Toro.</h2>
+    </div>
+    <div class="reviews-grid">
+      <div class="review">
+        <div class="stars">★★★★★</div>
+        <p>"Two guys, two hours, $300 — exactly what they quoted. Zero surprises. Will absolutely call again."</p>
+        <div class="author">Maria S.</div>
+        <div class="city">Orlando, FL</div>
+      </div>
+      <div class="review">
+        <div class="stars">★★★★★</div>
+        <p>"Booked them last-minute for a Sunday move. Showed up on time, knocked out a 3-bedroom in 4 hours."</p>
+        <div class="author">James T.</div>
+        <div class="city">Lake Mary, FL</div>
+      </div>
+      <div class="review">
+        <div class="stars">★★★★★</div>
+        <p>"Most movers won't even quote you without an in-home visit. Toro put the price right on the website."</p>
+        <div class="author">Diana R.</div>
+        <div class="city">Kissimmee, FL</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <a href="#" class="logo"><span class="red">TORO</span><span class="ms">MOVERS</span></a>
+  <p>You bring the truck. We bring the muscle.</p>
+  <p>Family-owned in Central Florida · Mudanzas honestas. Manos fuertes.</p>
+  <p><a href="tel:3217580094">(321) 758-0094</a> · <a href="mailto:hello@toromovers.net">hello@toromovers.net</a></p>
+  <p style="margin-top: 24px;">© 2026 Toro Movers · Licensed & insured</p>
+</footer>
+
+<script>
+// Mouse parallax for hero h1
+const heroH1 = document.querySelector('.hero h1');
+document.addEventListener('mousemove', (e) => {
+  const x = (e.clientX / window.innerWidth - 0.5) * 16;
+  const y = (e.clientY / window.innerHeight - 0.5) * 10;
+  if (heroH1) heroH1.style.transform = `translate3d(${x}px, ${y}px, 0) rotateY(${x * 0.3}deg) rotateX(${-y * 0.3}deg)`;
+});
+
+// Mouse-tilt on package cards
+document.querySelectorAll('.package').forEach(card => {
+  card.addEventListener('mousemove', (e) => {
+    const rect = card.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    card.style.transform = `translateY(-12px) rotateY(${x * 8}deg) rotateX(${-y * 8}deg)`;
+  });
+  card.addEventListener('mouseleave', () => {
+    card.style.transform = '';
+  });
+});
+
+// Calculator
+const state = { movers: 3, hours: 4, truck: 0 };
+const RATE = 75;
+function update() {
+  document.getElementById('calc-amount').textContent = ((state.movers * state.hours * RATE) + state.truck).toLocaleString();
+}
+document.querySelectorAll('.calc-pills').forEach(group => {
+  const key = group.dataset.group;
+  group.querySelectorAll('.calc-pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      group.querySelectorAll('.calc-pill').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state[key] = parseInt(btn.dataset.value, 10);
+      update();
+    });
+  });
+});
+update();
+
+function selectPackage(pkg) {
+  document.getElementById('pkg-select').value = pkg;
+  document.getElementById('book').scrollIntoView({ behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
