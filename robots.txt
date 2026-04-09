@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Keep design proposals and the post-submit page out of the index
+Disallow: /proposals/
+Disallow: /thanks
+
+Sitemap: https://toromovers.net/sitemap.xml
