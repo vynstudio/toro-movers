@@ -6,6 +6,9 @@
 <title>Toro Movers — Loading & Moving Help in Central Florida</title>
 <meta name="description" content="Strong, insured loading & moving help across Central Florida. $75/mover/hour. 2-hour minimum. Family-owned. Get a free quote today.">
 <meta name="theme-color" content="#C8102E">
+<!-- Tracking: Meta Pixel + GA4 + CAPI relay -->
+<script src="assets/js/tracking.js" defer></script>
+<noscript><img height="1" width="1" style="display:none" alt="" src="https://www.facebook.com/tr?id=1637703184084307&ev=PageView&noscript=1"/></noscript>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -1158,7 +1161,7 @@ section.section { padding: 100px 24px; }
         </div>
       </div>
       <div class="area-photo">
-        <img class="photo" src="assets/img/photos/area-driveway-palms.jpg" alt="A Toro Movers job in a Central Florida driveway with palm trees">
+        <img class="photo" src="assets/img/photos/orlando-skyline-sunset.jpg" alt="Downtown Orlando skyline at sunset — Toro Movers' home base in Central Florida" loading="lazy">
       </div>
     </div>
   </div>
@@ -1231,7 +1234,9 @@ section.section { padding: 100px 24px; }
           <div><span class="label">Email us</span><strong>hello@toromovers.net</strong></div>
         </a>
       </div>
-      <form class="lead-form" id="booking-form" action="mailto:hello@toromovers.net" method="POST" enctype="text/plain">
+      <form class="lead-form" id="booking-form" name="booking" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/thanks">
+        <input type="hidden" name="form-name" value="booking">
+        <p style="display:none"><label>Don't fill this out: <input name="bot-field"></label></p>
         <div class="field">
           <label>Full Name</label>
           <input type="text" name="name" placeholder="Maria Sanchez" required>
@@ -1388,6 +1393,40 @@ function selectPackage(pkg) {
   document.getElementById('pkg-select').value = pkg;
   document.getElementById('book').scrollIntoView({ behavior: 'smooth' });
 }
+
+// Booking form: submit via AJAX to Netlify, fire Lead (pixel/GA4/CAPI), then redirect to /thanks
+(function () {
+  var form = document.getElementById('booking-form');
+  if (!form) return;
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var fd = new FormData(form);
+    var data = {};
+    fd.forEach(function (v, k) { data[k] = v; });
+
+    // Fire Lead event across pixel + GA4 + CAPI
+    try {
+      if (window.ToroTrack && window.ToroTrack.lead) {
+        window.ToroTrack.lead(data);
+      }
+      sessionStorage.setItem('toro_lead_fired', '1');
+    } catch (err) { /* never block submit on tracking */ }
+
+    // POST to Netlify Forms (static site form handler)
+    var body = new URLSearchParams(fd).toString();
+    fetch('/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: body,
+    })
+      .then(function () { window.location.href = '/thanks'; })
+      .catch(function () {
+        // Fallback: native submit if fetch fails. form.submit() does not
+        // re-fire the submit event, so there's no recursion risk.
+        form.submit();
+      });
+  });
+})();
 </script>
 </body>
 </html>

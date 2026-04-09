@@ -52,6 +52,21 @@
   status = 301
   force = true
 
+# Legacy SEO — old Shopify-style URL buckets from the previous site.
+# Placed BEFORE the generic .html strip so .html and non-.html forms
+# both resolve in a single hop. See GSC export 2026-04-09.
+[[redirects]]
+  from = "/pages/cities/*"
+  to = "/#area"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/pages/services/*"
+  to = "/#packages"
+  status = 301
+  force = true
+
 # Pretty URLs (strip .html)
 [[redirects]]
   from = "/*.html"
