@@ -55,6 +55,21 @@
 # Legacy SEO — old Shopify-style URL buckets from the previous site.
 # Placed BEFORE the generic .html strip so .html and non-.html forms
 # both resolve in a single hop. See GSC export 2026-04-09.
+#
+# Specific city redirects come first so they win over the wildcard.
+# As we build more city landing pages, add more specific entries here.
+[[redirects]]
+  from = "/pages/cities/orlando-movers"
+  to = "/orlando-movers"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/pages/cities/orlando-movers.html"
+  to = "/orlando-movers"
+  status = 301
+  force = true
+
 [[redirects]]
   from = "/pages/cities/*"
   to = "/#area"
