@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Toro Movers — Family-Owned Movers in Orlando & Central Florida | Packing, Loading, Long-Distance</title>
-<meta name="description" content="Family-owned movers in Orlando & Central Florida. Loading, unloading, packing, unpacking — local & long-distance. $75/mover/hour. Licensed & insured.">
+<title>St. Cloud Movers — Family-Owned Moving Company | $75/Mover/Hour | Toro Movers</title>
+<meta name="description" content="Honest, family-owned movers in St. Cloud, FL. Osceola County, family suburbs, lakefront homes, growing neighborhoods. $75/mover/hour. 4.9★ rated.">
 <meta name="theme-color" content="#C8102E">
-<link rel="canonical" href="https://toromovers.net/">
+<link rel="canonical" href="https://toromovers.net/st-cloud-movers">
 
 <!-- LocalBusiness / MovingCompany schema for rich results -->
 <script type="application/ld+json">
@@ -111,6 +111,47 @@
     "bestRating": "5",
     "worstRating": "1"
   }
+}
+</script>
+
+<!-- Service schema scoped to Orlando + breadcrumb for this landing page -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Service",
+      "@id": "https://toromovers.net/st-cloud-movers#service",
+      "serviceType": "Moving Services",
+      "name": "St. Cloud Moving Services",
+      "description": "Family-owned moving services in St. Cloud, FL — Osceola County family suburbs, lakefront homes, growing neighborhoods near Lake Tohopekaliga. Loading, packing, local and long-distance. $75 per mover per hour, 2-hour minimum.",
+      "provider": { "@id": "https://toromovers.net/#business" },
+      "areaServed": {
+        "@type": "City",
+        "name": "St. Cloud",
+        "containedInPlace": { "@type": "State", "name": "Florida" }
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "75",
+        "priceCurrency": "USD",
+        "priceSpecification": {
+          "@type": "UnitPriceSpecification",
+          "price": "75",
+          "priceCurrency": "USD",
+          "unitText": "HUR",
+          "referenceQuantity": { "@type": "QuantitativeValue", "value": "1", "unitText": "mover-hour" }
+        }
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://toromovers.net/" },
+        { "@type": "ListItem", "position": 2, "name": "St. Cloud Movers", "item": "https://toromovers.net/st-cloud-movers" }
+      ]
+    }
+  ]
 }
 </script>
 
@@ -345,55 +386,22 @@ p { color: var(--charcoal-soft); }
 .hero-photo .float-card {
   position: absolute;
   background: var(--white);
-  padding: 9px 12px;
-  border-radius: 10px;
+  padding: 16px 20px;
+  border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg);
-  display: flex; align-items: center; gap: 8px;
+  display: flex; align-items: center; gap: 12px;
 }
 .hero-photo .float-card .num {
-  font-size: 16px; font-weight: 800;
+  font-size: 28px; font-weight: 800;
   color: var(--red);
   line-height: 1;
 }
 .hero-photo .float-card .text {
-  font-size: 9px; color: var(--charcoal-soft);
+  font-size: 12px; color: var(--charcoal-soft);
   font-weight: 500;
-  line-height: 1.25;
 }
-.hero-photo .float-card.bottom-left { bottom: 70px; left: 16px; }
-.hero-photo .float-card.top-right { top: 16px; right: 16px; }
-.hero-photo-trust {
-  position: absolute;
-  bottom: 20px;
-  left: 20px;
-  right: 20px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  justify-content: center;
-}
-.hero-photo-trust .trust-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  background: rgba(255, 255, 255, 0.96);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-radius: var(--radius-pill);
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--charcoal);
-  box-shadow: 0 4px 12px rgba(28, 28, 30, 0.15);
-  white-space: nowrap;
-}
-.hero-photo-trust .trust-pill .dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--red);
-  flex-shrink: 0;
-}
+.hero-photo .float-card.bottom-left { bottom: 24px; left: 24px; }
+.hero-photo .float-card.top-right { top: 24px; right: 24px; }
 
 @media (max-width: 880px) {
   .hero-grid { grid-template-columns: 1fr; gap: 40px; }
@@ -447,6 +455,75 @@ section.section { padding: 100px 24px; }
 .section-title { margin-bottom: 16px; }
 .section-title .accent { color: var(--red); }
 .section-sub { font-size: 1.1rem; color: var(--charcoal-soft); }
+
+/* ── CITY INTRO + NEIGHBORHOODS (city pages only) ──────────── */
+.city-intro { background: var(--sand); }
+.city-intro-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 56px;
+  align-items: center;
+}
+.city-intro-text p { font-size: 1.05rem; color: var(--charcoal-soft); margin-bottom: 18px; line-height: 1.7; }
+.city-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-top: 32px;
+  padding-top: 32px;
+  border-top: 1px solid var(--gray-200);
+}
+.city-stat strong {
+  display: block;
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--red);
+  letter-spacing: -0.02em;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.city-stat span { font-size: 13px; color: var(--gray-500); line-height: 1.4; }
+.city-intro-photo .photo {
+  width: 100%;
+  height: 480px;
+  object-fit: cover;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+}
+.neighborhoods-section { background: var(--white); }
+.neighborhoods-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 8px;
+}
+.neighborhood-card {
+  padding: 22px 24px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: all 0.2s var(--ease);
+}
+.neighborhood-card:hover {
+  background: var(--white);
+  border-color: var(--red);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.neighborhood-card strong { font-size: 1.05rem; color: var(--charcoal); font-weight: 700; }
+.neighborhood-card span { font-size: 13px; color: var(--gray-500); line-height: 1.5; }
+@media (max-width: 980px) {
+  .city-intro-grid { grid-template-columns: 1fr; gap: 40px; }
+  .city-intro-photo .photo { height: 360px; }
+  .neighborhoods-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 560px) {
+  .city-stats { grid-template-columns: 1fr; gap: 16px; }
+  .neighborhoods-grid { grid-template-columns: 1fr; }
+}
 
 /* ── SERVICES GRID (6 cards) ───────────────────────────────── */
 .services-grid {
@@ -736,14 +813,6 @@ section.section { padding: 100px 24px; }
   transition: all 0.2s var(--ease);
 }
 .city-pill:hover { background: var(--red-soft); border-color: var(--red); color: var(--red); }
-.city-pill-link {
-  background: var(--charcoal);
-  color: var(--white);
-  border-color: var(--charcoal);
-  cursor: pointer;
-  font-weight: 700;
-}
-.city-pill-link:hover { background: var(--red); border-color: var(--red); color: var(--white); }
 .area-photo {
   aspect-ratio: 4/3;
   border-radius: var(--radius-xl);
@@ -1012,20 +1081,29 @@ section.section { padding: 100px 24px; }
   <div class="hero-grid">
     <div class="hero-content">
       <span class="hero-eyebrow"><span class="stars">★★★★★</span> 4.9 from 29 Google Reviews</span>
-      <h1>Honest movers, <span class="accent">hourly pricing.</span></h1>
-      <p class="lead">Family-owned movers across Orlando & Central Florida. Loading, unloading, packing, unpacking — local & long-distance.</p>
+      <h1>St. Cloud movers, <span class="accent">priced honestly.</span></h1>
+      <p class="lead">Family-owned movers serving every St. Cloud neighborhood — Narcoossee, Stevens Plantation, Anthem Park, Bay Lake Ranch. Loading, packing, long-distance, storage.</p>
       <div class="hero-buttons">
         <a href="#book" class="btn btn-primary btn-large">Get a Free Quote</a>
         <a href="#calculator" class="btn btn-outline btn-large">See Pricing</a>
       </div>
+      <div class="hero-trust">
+        <div class="hero-trust-item">
+          <span class="check"><svg fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+          Licensed & Insured
+        </div>
+        <div class="hero-trust-item">
+          <span class="check"><svg fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+          Family-Owned
+        </div>
+        <div class="hero-trust-item">
+          <span class="check"><svg fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+          Same-Week Scheduling
+        </div>
+      </div>
     </div>
     <div class="hero-photo">
       <img class="photo" src="assets/img/photos/team-family-portrait.jpg" alt="The Toro Movers family — owner in branded shirt with his mother on a Central Florida dock">
-      <div class="hero-photo-trust">
-        <span class="trust-pill"><span class="dot"></span>Licensed & Insured</span>
-        <span class="trust-pill"><span class="dot"></span>Family-Owned</span>
-        <span class="trust-pill"><span class="dot"></span>Same-Week</span>
-      </div>
     </div>
   </div>
 </section>
@@ -1051,6 +1129,53 @@ section.section { padding: 100px 24px; }
     </div>
   </div>
 </div>
+
+<!-- ST. CLOUD-SPECIFIC INTRO -->
+<section class="section city-intro">
+  <div class="container">
+    <div class="city-intro-grid">
+      <div class="city-intro-text">
+        <span class="section-eyebrow">St. Cloud, FL</span>
+        <h2 class="section-title">Moving in St. Cloud? <span class="accent">Lakefront town, fast-growing suburbs.</span></h2>
+        <p>St. Cloud is the family-first neighbor to Kissimmee and one of Osceola County's fastest-growing cities. The lakefront downtown sits on Lake Tohopekaliga, and the residential side spreads out into newer master-planned communities like Stevens Plantation, Anthem Park, and the developments around Narcoossee Road. The mix is wide: long-time owners in older neighborhoods, first-time buyers in new construction, and families relocating in from out of state.</p>
+        <p>We're a family-owned moving company that drives down to St. Cloud every week. Same hourly rate as anywhere else: $75 per mover, per hour, no fuel fees, no zone surcharges. Whether you're moving into a new Bay Lake Ranch home or out of an established lakefront cottage, the price you book is the price you pay.</p>
+        <div class="city-stats">
+          <div class="city-stat"><strong>10+</strong><span>St. Cloud moves<br>this month</span></div>
+          <div class="city-stat"><strong>4.9★</strong><span>Average<br>Google rating</span></div>
+          <div class="city-stat"><strong>$75</strong><span>Per mover,<br>per hour</span></div>
+        </div>
+      </div>
+      <div class="city-intro-photo">
+        <img class="photo" src="assets/img/photos/move-loading-boxes.jpg" alt="Toro Movers crew loading labeled boxes for a St. Cloud family move" loading="lazy">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ST. CLOUD NEIGHBORHOODS WE SERVE -->
+<section class="section neighborhoods-section">
+  <div class="container">
+    <div class="section-head">
+      <span class="section-eyebrow">Neighborhoods</span>
+      <h2 class="section-title">Every St. Cloud neighborhood, <span class="accent">same fair rate.</span></h2>
+      <p class="section-sub">A few of the St. Cloud areas where we move families every week. Don't see yours? We're probably already going there — just ask.</p>
+    </div>
+    <div class="neighborhoods-grid">
+      <div class="neighborhood-card"><strong>Narcoossee</strong><span>Newer family homes along Narcoossee Rd, easy load-outs</span></div>
+      <div class="neighborhood-card"><strong>Stevens Plantation</strong><span>Master-planned community, family relocations</span></div>
+      <div class="neighborhood-card"><strong>Anthem Park</strong><span>Family subdivision, suburban moves</span></div>
+      <div class="neighborhood-card"><strong>Bay Lake Ranch</strong><span>Newer single-family, first-time buyers</span></div>
+      <div class="neighborhood-card"><strong>Downtown St. Cloud</strong><span>Older homes near the lakefront, careful crews</span></div>
+      <div class="neighborhood-card"><strong>Lakeshore</strong><span>Lakefront living, larger furniture</span></div>
+      <div class="neighborhood-card"><strong>Bay Lake</strong><span>Lakefront residential, careful handling</span></div>
+      <div class="neighborhood-card"><strong>Indian Lakes</strong><span>Established subdivision, family moves</span></div>
+      <div class="neighborhood-card"><strong>Pine Lake</strong><span>Quiet residential, mature neighborhoods</span></div>
+      <div class="neighborhood-card"><strong>Mallard Pond</strong><span>Newer family subdivisions, easy load-outs</span></div>
+      <div class="neighborhood-card"><strong>Lake Tohopekaliga Border</strong><span>Lakefront and lakeview, larger furniture</span></div>
+      <div class="neighborhood-card"><strong>Kissimmee Border</strong><span>Established homes along the Kissimmee line</span></div>
+    </div>
+  </div>
+</section>
 
 <!-- SERVICES GRID -->
 <section id="services" class="section">
@@ -1325,25 +1450,25 @@ section.section { padding: 100px 24px; }
         <h2>We cover <span class="accent">Central Florida.</span></h2>
         <p>Orlando is home base. We move families across all of Central Florida — and across the state for long-distance jobs. Same hourly rate, no surprise fees.</p>
         <div class="cities-grid">
-          <a href="/orlando-movers" class="city-pill city-pill-link">Orlando</a>
-          <a href="/kissimmee-movers" class="city-pill city-pill-link">Kissimmee</a>
-          <a href="/sanford-movers" class="city-pill city-pill-link">Sanford</a>
-          <a href="/lake-mary-movers" class="city-pill city-pill-link">Lake Mary</a>
-          <a href="/apopka-movers" class="city-pill city-pill-link">Apopka</a>
-          <a href="/winter-park-movers" class="city-pill city-pill-link">Winter Park</a>
-          <a href="/winter-springs-movers" class="city-pill city-pill-link">Winter Springs</a>
-          <a href="/oviedo-movers" class="city-pill city-pill-link">Oviedo</a>
-          <a href="/clermont-movers" class="city-pill city-pill-link">Clermont</a>
-          <a href="/winter-garden-movers" class="city-pill city-pill-link">Winter Garden</a>
-          <a href="/davenport-movers" class="city-pill city-pill-link">Davenport</a>
-          <a href="/haines-city-movers" class="city-pill city-pill-link">Haines City</a>
-          <a href="/st-cloud-movers" class="city-pill city-pill-link">St. Cloud</a>
-          <a href="/altamonte-springs-movers" class="city-pill city-pill-link">Altamonte Springs</a>
-          <a href="/casselberry-movers" class="city-pill city-pill-link">Casselberry</a>
-          <a href="/maitland-movers" class="city-pill city-pill-link">Maitland</a>
-          <a href="/ocoee-movers" class="city-pill city-pill-link">Ocoee</a>
-          <a href="/windermere-movers" class="city-pill city-pill-link">Windermere</a>
-          <a href="/the-villages-movers" class="city-pill city-pill-link">The Villages</a>
+          <span class="city-pill">Orlando</span>
+          <span class="city-pill">Kissimmee</span>
+          <span class="city-pill">Sanford</span>
+          <span class="city-pill">Lake Mary</span>
+          <span class="city-pill">Apopka</span>
+          <span class="city-pill">Winter Park</span>
+          <span class="city-pill">Winter Springs</span>
+          <span class="city-pill">Oviedo</span>
+          <span class="city-pill">Clermont</span>
+          <span class="city-pill">Winter Garden</span>
+          <span class="city-pill">Davenport</span>
+          <span class="city-pill">Haines City</span>
+          <span class="city-pill">St. Cloud</span>
+          <span class="city-pill">Altamonte Springs</span>
+          <span class="city-pill">Casselberry</span>
+          <span class="city-pill">Maitland</span>
+          <span class="city-pill">Ocoee</span>
+          <span class="city-pill">Windermere</span>
+          <span class="city-pill">The Villages</span>
         </div>
       </div>
       <div class="area-photo">
@@ -1359,7 +1484,7 @@ section.section { padding: 100px 24px; }
     <div class="section-head">
       <span class="section-eyebrow">★★★★★ 4.9 from 29</span>
       <h2 class="section-title">What Central Florida <span class="accent">says about us.</span></h2>
-      <p class="section-sub">Real reviews from real customers across Orlando, Lake Mary, Apopka, Sanford, Oviedo, Kissimmee.</p>
+      <p class="section-sub">Real reviews from real St. Cloud customers — across Narcoossee, Stevens Plantation, Anthem Park, Bay Lake Ranch, and beyond.</p>
     </div>
     <div class="testimonials-grid">
       <div class="testimonial">
@@ -1422,6 +1547,7 @@ section.section { padding: 100px 24px; }
       </div>
       <form class="lead-form" id="booking-form" name="booking" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/thanks">
         <input type="hidden" name="form-name" value="booking">
+        <input type="hidden" name="source-page" value="st-cloud-movers">
         <p style="display:none"><label>Don't fill this out: <input name="bot-field"></label></p>
         <div class="field">
           <label>Full Name</label>
@@ -1456,7 +1582,7 @@ section.section { padding: 100px 24px; }
         </div>
         <div class="field">
           <label>Pickup ZIP</label>
-          <input type="text" name="zip" placeholder="32801" pattern="[0-9]{5}" required>
+          <input type="text" name="zip" placeholder="34769" pattern="[0-9]{5}" value="34769" required>
         </div>
         <div class="field">
           <label>Notes (stairs, heavy items, anything we should know)</label>
@@ -1476,6 +1602,22 @@ section.section { padding: 100px 24px; }
       <h2 class="section-title">Common questions, <span class="accent">honest answers.</span></h2>
     </div>
     <div class="faq-list">
+      <details class="faq-item">
+        <summary>Do you serve all of St. Cloud?</summary>
+        <p class="answer">Yes — every neighborhood. We move families in Narcoossee, Stevens Plantation, Anthem Park, Bay Lake Ranch, downtown St. Cloud, Lakeshore, Bay Lake, Indian Lakes, Pine Lake, Mallard Pond, the Lake Tohopekaliga border, the Kissimmee border, and everywhere in between. Same hourly rate, no zone fees, no fuel surcharges.</p>
+      </details>
+      <details class="faq-item">
+        <summary>How much does a St. Cloud move cost?</summary>
+        <p class="answer">$75 per mover, per hour, with a 2-hour minimum. A typical 1-bedroom St. Cloud move runs about $300-$500 (2 movers, 2-3 hours). A 2-bedroom move with our truck runs about $700-$900. A 3-bedroom Stevens Plantation or Bay Lake Ranch home runs about $1,000-$1,300. Use the calculator above or call us for a custom quote.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Do you handle lakefront moves around Lake Tohopekaliga?</summary>
+        <p class="answer">Yes — Lake Toho is St. Cloud's signature lake, and lakefront moves are common jobs for us. Lakefront homes often have larger furniture, narrower turn-ins, and dock-side considerations. We handle each one with care. Same $75 per mover, per hour.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Do you do moves between St. Cloud and Kissimmee or Orlando?</summary>
+        <p class="answer">Yes — St. Cloud-to-Kissimmee moves (and St. Cloud-to-Orlando moves) are some of our most common jobs. Many St. Cloud families upsize into Kissimmee or commute up to Orlando for work. Same $75 per mover, per hour, no extra fees for the drive.</p>
+      </details>
       <details class="faq-item">
         <summary>What if the move takes longer than I booked?</summary>
         <p class="answer">Easy — we just keep going at $75 per mover per hour. No re-booking, no surprise fees. You only pay for the time we actually work.</p>

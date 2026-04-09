@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Toro Movers — Family-Owned Movers in Orlando & Central Florida | Packing, Loading, Long-Distance</title>
-<meta name="description" content="Family-owned movers in Orlando & Central Florida. Loading, unloading, packing, unpacking — local & long-distance. $75/mover/hour. Licensed & insured.">
+<title>The Villages Movers — Family-Owned Moving Company | $75/Mover/Hour | Toro Movers</title>
+<meta name="description" content="Honest, family-owned movers in The Villages, FL. 55+ active adult community moves, downsizers, snowbirds. Loading, packing, long-distance. $75/mover/hour. 4.9★ rated.">
 <meta name="theme-color" content="#C8102E">
-<link rel="canonical" href="https://toromovers.net/">
+<link rel="canonical" href="https://toromovers.net/the-villages-movers">
 
 <!-- LocalBusiness / MovingCompany schema for rich results -->
 <script type="application/ld+json">
@@ -111,6 +111,47 @@
     "bestRating": "5",
     "worstRating": "1"
   }
+}
+</script>
+
+<!-- Service schema scoped to Orlando + breadcrumb for this landing page -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Service",
+      "@id": "https://toromovers.net/the-villages-movers#service",
+      "serviceType": "Moving Services",
+      "name": "The Villages Moving Services",
+      "description": "Family-owned moving services in The Villages, FL — 55+ active adult community moves, downsizing, snowbird relocations, household goods moves. $75 per mover per hour, 2-hour minimum.",
+      "provider": { "@id": "https://toromovers.net/#business" },
+      "areaServed": {
+        "@type": "City",
+        "name": "The Villages",
+        "containedInPlace": { "@type": "State", "name": "Florida" }
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "75",
+        "priceCurrency": "USD",
+        "priceSpecification": {
+          "@type": "UnitPriceSpecification",
+          "price": "75",
+          "priceCurrency": "USD",
+          "unitText": "HUR",
+          "referenceQuantity": { "@type": "QuantitativeValue", "value": "1", "unitText": "mover-hour" }
+        }
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://toromovers.net/" },
+        { "@type": "ListItem", "position": 2, "name": "The Villages Movers", "item": "https://toromovers.net/the-villages-movers" }
+      ]
+    }
+  ]
 }
 </script>
 
@@ -345,55 +386,22 @@ p { color: var(--charcoal-soft); }
 .hero-photo .float-card {
   position: absolute;
   background: var(--white);
-  padding: 9px 12px;
-  border-radius: 10px;
+  padding: 16px 20px;
+  border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg);
-  display: flex; align-items: center; gap: 8px;
+  display: flex; align-items: center; gap: 12px;
 }
 .hero-photo .float-card .num {
-  font-size: 16px; font-weight: 800;
+  font-size: 28px; font-weight: 800;
   color: var(--red);
   line-height: 1;
 }
 .hero-photo .float-card .text {
-  font-size: 9px; color: var(--charcoal-soft);
+  font-size: 12px; color: var(--charcoal-soft);
   font-weight: 500;
-  line-height: 1.25;
 }
-.hero-photo .float-card.bottom-left { bottom: 70px; left: 16px; }
-.hero-photo .float-card.top-right { top: 16px; right: 16px; }
-.hero-photo-trust {
-  position: absolute;
-  bottom: 20px;
-  left: 20px;
-  right: 20px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  justify-content: center;
-}
-.hero-photo-trust .trust-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  background: rgba(255, 255, 255, 0.96);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-radius: var(--radius-pill);
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--charcoal);
-  box-shadow: 0 4px 12px rgba(28, 28, 30, 0.15);
-  white-space: nowrap;
-}
-.hero-photo-trust .trust-pill .dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--red);
-  flex-shrink: 0;
-}
+.hero-photo .float-card.bottom-left { bottom: 24px; left: 24px; }
+.hero-photo .float-card.top-right { top: 24px; right: 24px; }
 
 @media (max-width: 880px) {
   .hero-grid { grid-template-columns: 1fr; gap: 40px; }
@@ -447,6 +455,75 @@ section.section { padding: 100px 24px; }
 .section-title { margin-bottom: 16px; }
 .section-title .accent { color: var(--red); }
 .section-sub { font-size: 1.1rem; color: var(--charcoal-soft); }
+
+/* ── CITY INTRO + NEIGHBORHOODS (city pages only) ──────────── */
+.city-intro { background: var(--sand); }
+.city-intro-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 56px;
+  align-items: center;
+}
+.city-intro-text p { font-size: 1.05rem; color: var(--charcoal-soft); margin-bottom: 18px; line-height: 1.7; }
+.city-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-top: 32px;
+  padding-top: 32px;
+  border-top: 1px solid var(--gray-200);
+}
+.city-stat strong {
+  display: block;
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--red);
+  letter-spacing: -0.02em;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.city-stat span { font-size: 13px; color: var(--gray-500); line-height: 1.4; }
+.city-intro-photo .photo {
+  width: 100%;
+  height: 480px;
+  object-fit: cover;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+}
+.neighborhoods-section { background: var(--white); }
+.neighborhoods-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 8px;
+}
+.neighborhood-card {
+  padding: 22px 24px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: all 0.2s var(--ease);
+}
+.neighborhood-card:hover {
+  background: var(--white);
+  border-color: var(--red);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.neighborhood-card strong { font-size: 1.05rem; color: var(--charcoal); font-weight: 700; }
+.neighborhood-card span { font-size: 13px; color: var(--gray-500); line-height: 1.5; }
+@media (max-width: 980px) {
+  .city-intro-grid { grid-template-columns: 1fr; gap: 40px; }
+  .city-intro-photo .photo { height: 360px; }
+  .neighborhoods-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 560px) {
+  .city-stats { grid-template-columns: 1fr; gap: 16px; }
+  .neighborhoods-grid { grid-template-columns: 1fr; }
+}
 
 /* ── SERVICES GRID (6 cards) ───────────────────────────────── */
 .services-grid {
@@ -736,14 +813,6 @@ section.section { padding: 100px 24px; }
   transition: all 0.2s var(--ease);
 }
 .city-pill:hover { background: var(--red-soft); border-color: var(--red); color: var(--red); }
-.city-pill-link {
-  background: var(--charcoal);
-  color: var(--white);
-  border-color: var(--charcoal);
-  cursor: pointer;
-  font-weight: 700;
-}
-.city-pill-link:hover { background: var(--red); border-color: var(--red); color: var(--white); }
 .area-photo {
   aspect-ratio: 4/3;
   border-radius: var(--radius-xl);
@@ -1012,20 +1081,29 @@ section.section { padding: 100px 24px; }
   <div class="hero-grid">
     <div class="hero-content">
       <span class="hero-eyebrow"><span class="stars">★★★★★</span> 4.9 from 29 Google Reviews</span>
-      <h1>Honest movers, <span class="accent">hourly pricing.</span></h1>
-      <p class="lead">Family-owned movers across Orlando & Central Florida. Loading, unloading, packing, unpacking — local & long-distance.</p>
+      <h1>The Villages movers, <span class="accent">priced honestly.</span></h1>
+      <p class="lead">Family-owned movers for The Villages — Sumter, Lake, and Marion County villages. Downsizing, snowbird relocations, family help-outs. Loading, packing, long-distance.</p>
       <div class="hero-buttons">
         <a href="#book" class="btn btn-primary btn-large">Get a Free Quote</a>
         <a href="#calculator" class="btn btn-outline btn-large">See Pricing</a>
       </div>
+      <div class="hero-trust">
+        <div class="hero-trust-item">
+          <span class="check"><svg fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+          Licensed & Insured
+        </div>
+        <div class="hero-trust-item">
+          <span class="check"><svg fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+          Family-Owned
+        </div>
+        <div class="hero-trust-item">
+          <span class="check"><svg fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+          Same-Week Scheduling
+        </div>
+      </div>
     </div>
     <div class="hero-photo">
       <img class="photo" src="assets/img/photos/team-family-portrait.jpg" alt="The Toro Movers family — owner in branded shirt with his mother on a Central Florida dock">
-      <div class="hero-photo-trust">
-        <span class="trust-pill"><span class="dot"></span>Licensed & Insured</span>
-        <span class="trust-pill"><span class="dot"></span>Family-Owned</span>
-        <span class="trust-pill"><span class="dot"></span>Same-Week</span>
-      </div>
     </div>
   </div>
 </section>
@@ -1051,6 +1129,53 @@ section.section { padding: 100px 24px; }
     </div>
   </div>
 </div>
+
+<!-- THE VILLAGES-SPECIFIC INTRO -->
+<section class="section city-intro">
+  <div class="container">
+    <div class="city-intro-grid">
+      <div class="city-intro-text">
+        <span class="section-eyebrow">The Villages, FL</span>
+        <h2 class="section-title">Moving to or from The Villages? <span class="accent">Patient crews for life's next chapter.</span></h2>
+        <p>The Villages is Florida's largest 55+ active adult community — over 80,000 homes spread across Sumter, Lake, and Marion counties, organized into dozens of named "villages" each with its own personality. Most of the moves we do here are downsizing moves: families helping a parent move from a long-held home into a Villages patio home, snowbirds setting up a second residence, or Villages residents moving back closer to family up north.</p>
+        <p>We're a family-owned moving company that takes downsizing moves seriously. The furniture has decades of meaning. The pace can't be rushed. We wrap every piece, label every box, and treat every customer with the patience the move deserves. Same hourly rate as everywhere else: $75 per mover, per hour.</p>
+        <div class="city-stats">
+          <div class="city-stat"><strong>8+</strong><span>Villages moves<br>this month</span></div>
+          <div class="city-stat"><strong>4.9★</strong><span>Average<br>Google rating</span></div>
+          <div class="city-stat"><strong>$75</strong><span>Per mover,<br>per hour</span></div>
+        </div>
+      </div>
+      <div class="city-intro-photo">
+        <img class="photo" src="assets/img/photos/move-wardrobe-wrap-indoor.jpg" alt="Toro Movers crew carefully wrapping furniture for a downsizing move in The Villages" loading="lazy">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- THE VILLAGES NEIGHBORHOODS WE SERVE -->
+<section class="section neighborhoods-section">
+  <div class="container">
+    <div class="section-head">
+      <span class="section-eyebrow">Villages</span>
+      <h2 class="section-title">Every Village, <span class="accent">same fair rate.</span></h2>
+      <p class="section-sub">A few of the named villages where we move residents every month. Don't see yours? We're probably already going there — just ask.</p>
+    </div>
+    <div class="neighborhoods-grid">
+      <div class="neighborhood-card"><strong>Lake Sumter Landing</strong><span>Town square area, patio homes, downsizing moves</span></div>
+      <div class="neighborhood-card"><strong>Brownwood</strong><span>Newer town square, family help-out moves</span></div>
+      <div class="neighborhood-card"><strong>Spanish Springs</strong><span>Original town square, older established homes</span></div>
+      <div class="neighborhood-card"><strong>Village of Hadley</strong><span>Established village, careful gate access</span></div>
+      <div class="neighborhood-card"><strong>Village of Liberty Park</strong><span>Patio homes, downsizing moves with care</span></div>
+      <div class="neighborhood-card"><strong>Village of Fenney</strong><span>Newer southern village, family relocations</span></div>
+      <div class="neighborhood-card"><strong>Village of DeLuna</strong><span>Established residential, snowbird turnovers</span></div>
+      <div class="neighborhood-card"><strong>Village of Dunedin</strong><span>Quiet streets, established residents</span></div>
+      <div class="neighborhood-card"><strong>Village of Bonita</strong><span>Patio homes, careful handling</span></div>
+      <div class="neighborhood-card"><strong>Village of Sanibel</strong><span>Established Village, family moves</span></div>
+      <div class="neighborhood-card"><strong>Village of Pinellas</strong><span>Long-established village, downsizing</span></div>
+      <div class="neighborhood-card"><strong>Village of St. Charles</strong><span>Established residential, family help-outs</span></div>
+    </div>
+  </div>
+</section>
 
 <!-- SERVICES GRID -->
 <section id="services" class="section">
@@ -1325,25 +1450,25 @@ section.section { padding: 100px 24px; }
         <h2>We cover <span class="accent">Central Florida.</span></h2>
         <p>Orlando is home base. We move families across all of Central Florida — and across the state for long-distance jobs. Same hourly rate, no surprise fees.</p>
         <div class="cities-grid">
-          <a href="/orlando-movers" class="city-pill city-pill-link">Orlando</a>
-          <a href="/kissimmee-movers" class="city-pill city-pill-link">Kissimmee</a>
-          <a href="/sanford-movers" class="city-pill city-pill-link">Sanford</a>
-          <a href="/lake-mary-movers" class="city-pill city-pill-link">Lake Mary</a>
-          <a href="/apopka-movers" class="city-pill city-pill-link">Apopka</a>
-          <a href="/winter-park-movers" class="city-pill city-pill-link">Winter Park</a>
-          <a href="/winter-springs-movers" class="city-pill city-pill-link">Winter Springs</a>
-          <a href="/oviedo-movers" class="city-pill city-pill-link">Oviedo</a>
-          <a href="/clermont-movers" class="city-pill city-pill-link">Clermont</a>
-          <a href="/winter-garden-movers" class="city-pill city-pill-link">Winter Garden</a>
-          <a href="/davenport-movers" class="city-pill city-pill-link">Davenport</a>
-          <a href="/haines-city-movers" class="city-pill city-pill-link">Haines City</a>
-          <a href="/st-cloud-movers" class="city-pill city-pill-link">St. Cloud</a>
-          <a href="/altamonte-springs-movers" class="city-pill city-pill-link">Altamonte Springs</a>
-          <a href="/casselberry-movers" class="city-pill city-pill-link">Casselberry</a>
-          <a href="/maitland-movers" class="city-pill city-pill-link">Maitland</a>
-          <a href="/ocoee-movers" class="city-pill city-pill-link">Ocoee</a>
-          <a href="/windermere-movers" class="city-pill city-pill-link">Windermere</a>
-          <a href="/the-villages-movers" class="city-pill city-pill-link">The Villages</a>
+          <span class="city-pill">Orlando</span>
+          <span class="city-pill">Kissimmee</span>
+          <span class="city-pill">Sanford</span>
+          <span class="city-pill">Lake Mary</span>
+          <span class="city-pill">Apopka</span>
+          <span class="city-pill">Winter Park</span>
+          <span class="city-pill">Winter Springs</span>
+          <span class="city-pill">Oviedo</span>
+          <span class="city-pill">Clermont</span>
+          <span class="city-pill">Winter Garden</span>
+          <span class="city-pill">Davenport</span>
+          <span class="city-pill">Haines City</span>
+          <span class="city-pill">St. Cloud</span>
+          <span class="city-pill">Altamonte Springs</span>
+          <span class="city-pill">Casselberry</span>
+          <span class="city-pill">Maitland</span>
+          <span class="city-pill">Ocoee</span>
+          <span class="city-pill">Windermere</span>
+          <span class="city-pill">The Villages</span>
         </div>
       </div>
       <div class="area-photo">
@@ -1359,7 +1484,7 @@ section.section { padding: 100px 24px; }
     <div class="section-head">
       <span class="section-eyebrow">★★★★★ 4.9 from 29</span>
       <h2 class="section-title">What Central Florida <span class="accent">says about us.</span></h2>
-      <p class="section-sub">Real reviews from real customers across Orlando, Lake Mary, Apopka, Sanford, Oviedo, Kissimmee.</p>
+      <p class="section-sub">Real reviews from real Villages residents — across Lake Sumter Landing, Brownwood, Spanish Springs, and beyond.</p>
     </div>
     <div class="testimonials-grid">
       <div class="testimonial">
@@ -1422,6 +1547,7 @@ section.section { padding: 100px 24px; }
       </div>
       <form class="lead-form" id="booking-form" name="booking" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/thanks">
         <input type="hidden" name="form-name" value="booking">
+        <input type="hidden" name="source-page" value="the-villages-movers">
         <p style="display:none"><label>Don't fill this out: <input name="bot-field"></label></p>
         <div class="field">
           <label>Full Name</label>
@@ -1456,7 +1582,7 @@ section.section { padding: 100px 24px; }
         </div>
         <div class="field">
           <label>Pickup ZIP</label>
-          <input type="text" name="zip" placeholder="32801" pattern="[0-9]{5}" required>
+          <input type="text" name="zip" placeholder="32162" pattern="[0-9]{5}" value="32162" required>
         </div>
         <div class="field">
           <label>Notes (stairs, heavy items, anything we should know)</label>
@@ -1476,6 +1602,22 @@ section.section { padding: 100px 24px; }
       <h2 class="section-title">Common questions, <span class="accent">honest answers.</span></h2>
     </div>
     <div class="faq-list">
+      <details class="faq-item">
+        <summary>Do you serve all of The Villages?</summary>
+        <p class="answer">Yes — every named village across Sumter, Lake, and Marion counties. From Lake Sumter Landing to Brownwood, Spanish Springs to Fenney, established villages to the newer southern expansion — same hourly rate, no zone fees, no fuel surcharges. Just give us your village name and address when you book.</p>
+      </details>
+      <details class="faq-item">
+        <summary>How much does a Villages move cost?</summary>
+        <p class="answer">$75 per mover, per hour, with a 2-hour minimum. A typical 2-bedroom patio home move within The Villages runs about $600-$900 (2-3 movers, 2-3 hours). A move from The Villages to Orlando or another Florida city runs $1,000-$1,800 depending on size and distance. Use the calculator above or call us for a custom quote.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Do you handle downsizing moves with patience and respect?</summary>
+        <p class="answer">Yes — downsizing moves are some of our most common Villages jobs, and they're the moves we take most seriously. The furniture has decades of meaning. We wrap every piece, label every box, and never rush. We can also help sort what's coming, what's going to family, what's going to charity, and what's headed for storage — all at the same hourly rate.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Do you do moves from The Villages back to family up north?</summary>
+        <p class="answer">Yes — Villages-to-out-of-state moves are everyday jobs for us. Many residents eventually move back closer to family. Same $75 per mover, per hour for the crew, plus a flat truck fee based on the distance. We give you a transparent custom quote up front. We can also do partial moves where some items go to family and some stay in storage.</p>
+      </details>
       <details class="faq-item">
         <summary>What if the move takes longer than I booked?</summary>
         <p class="answer">Easy — we just keep going at $75 per mover per hour. No re-booking, no surprise fees. You only pay for the time we actually work.</p>

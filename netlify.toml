@@ -71,6 +71,48 @@
   force = true
 
 [[redirects]]
+  from = "/pages/cities/clermont-movers"
+  to = "/clermont-movers"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/pages/cities/clermont-movers.html"
+  to = "/clermont-movers"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/pages/cities/davenport-movers.html"
+  to = "/davenport-movers"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/pages/cities/windermere-movers.html"
+  to = "/windermere-movers"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/pages/cities/winter-garden-movers.html"
+  to = "/winter-garden-movers"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/pages/cities/st-cloud-movers.html"
+  to = "/st-cloud-movers"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/pages/cities/altamonte-springs-movers.html"
+  to = "/altamonte-springs-movers"
+  status = 301
+  force = true
+
+[[redirects]]
   from = "/pages/cities/*"
   to = "/#area"
   status = 301
