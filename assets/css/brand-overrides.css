@@ -1,0 +1,90 @@
+/* ============================================================
+   Toro Movers — Brand overrides for the Copic template
+   Loaded LAST (after main.css) so these win.
+   ============================================================ */
+
+/* Google Fonts loaded via the HTML <link> tag */
+
+:root {
+  --toro-red:      #C8102E;
+  --toro-red-dark: #A50D26;
+  --charcoal:      #1C1C1E;
+  --sand:          #F4EAD5;
+}
+
+/* ── Brand fonts ─────────────────────────────────────────── */
+body,
+p, li, span, a, button, input, select, textarea,
+.dropdown-item, .nav-link, .navbar-nav li a {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+
+h1, h2, h3, h4, h5, h6,
+.main-title, .section-title, .counter,
+.heading, .heading-title {
+  font-family: 'Bebas Neue', 'Impact', sans-serif !important;
+  letter-spacing: 0.01em !important;
+  font-weight: 400 !important;
+}
+
+/* Bring the body type weight back to a normal Inter weight */
+body { font-weight: 400 !important; }
+.btn, .nav-link, .navbar-nav li a, .dropdown-item {
+  font-weight: 600 !important;
+  letter-spacing: 0.02em !important;
+}
+
+/* ── Header logo sizing ──────────────────────────────────── */
+.logo-img img {
+  max-height: 56px;
+  width: auto;
+}
+
+/* ── Force Toro Red on any leftover Copic accents ────────── */
+.bg-shape,
+.hero-bg-shape,
+.btn-style-one,
+.theme-btn,
+.btn-primary,
+.bg-primary {
+  background-color: var(--toro-red) !important;
+}
+
+a:hover,
+.text-primary,
+.theme-color,
+.dropdown-item:hover,
+.navbar-nav li a:hover,
+.navbar-nav .active > a {
+  color: var(--toro-red) !important;
+}
+
+/* Section titles can stay charcoal — only tagline accents are red */
+.section-title { color: var(--charcoal) !important; }
+
+/* ── Buttons ─────────────────────────────────────────────── */
+.btn-style-one,
+.theme-btn,
+button.btn-style-one,
+a.btn-style-one {
+  background-color: var(--toro-red) !important;
+  border-color: var(--toro-red) !important;
+  color: #fff !important;
+  font-family: 'Inter', sans-serif !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.02em !important;
+  border-radius: 999px !important;
+  padding: 14px 32px !important;
+  transition: all 0.2s ease !important;
+}
+.btn-style-one:hover,
+.theme-btn:hover {
+  background-color: var(--toro-red-dark) !important;
+  border-color: var(--toro-red-dark) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(200, 16, 46, 0.25);
+}
+
+/* ── Links ───────────────────────────────────────────────── */
+a { color: var(--toro-red); }
+a:hover { color: var(--toro-red-dark); }

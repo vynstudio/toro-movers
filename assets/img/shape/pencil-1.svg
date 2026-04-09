@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
+  <g id="Vector_Smart_Object" data-name="Vector Smart Object" transform="translate(-111.198 -10.983)">
+    <g id="Group_416" data-name="Group 416">
+      <line id="Line_1" data-name="Line 1" x2="40.935" y2="40.935" transform="translate(118.614 12.633)" fill="none" stroke="#101011" stroke-miterlimit="10" stroke-width="0.91"/>
+      <g id="Group_415" data-name="Group 415">
+        <line id="Line_2" data-name="Line 2" x1="40.935" y1="40.935" transform="translate(112.847 18.4)" fill="none" stroke="#101011" stroke-miterlimit="10" stroke-width="0.91"/>
+        <path id="Path_1276" data-name="Path 1276" d="M118.615,18.4a4.078,4.078,0,1,1,0-5.767A4.079,4.079,0,0,1,118.615,18.4Z" fill="none" stroke="#101011" stroke-miterlimit="10" stroke-width="0.91"/>
+        <path id="Path_1277" data-name="Path 1277" d="M159.549,53.567a4.078,4.078,0,0,1-5.767,5.767" fill="none" stroke="#101011" stroke-miterlimit="10" stroke-width="0.91"/>
+      </g>
+    </g>
+  </g>
+</svg>

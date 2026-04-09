@@ -1,0 +1,66 @@
+[build]
+  publish = "."
+  command = "echo 'Static site — no build step'"
+
+# ============================================================
+# SECURITY HEADERS
+# ============================================================
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(self)"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+
+# ============================================================
+# CACHE
+# ============================================================
+[[headers]]
+  for = "/assets/css/*"
+  [headers.values]
+    Cache-Control = "public, max-age=2592000, stale-while-revalidate=86400"
+
+[[headers]]
+  for = "/assets/js/*"
+  [headers.values]
+    Cache-Control = "public, max-age=2592000, stale-while-revalidate=86400"
+
+[[headers]]
+  for = "/assets/img/*"
+  [headers.values]
+    Cache-Control = "public, max-age=2592000, stale-while-revalidate=86400"
+
+[[headers]]
+  for = "/assets/fonts/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=3600, must-revalidate"
+
+# ============================================================
+# REDIRECTS
+# ============================================================
+# www → non-www
+[[redirects]]
+  from = "https://www.toromovers.net/*"
+  to = "https://toromovers.net/:splat"
+  status = 301
+  force = true
+
+# Pretty URLs (strip .html)
+[[redirects]]
+  from = "/*.html"
+  to = "/:splat"
+  status = 301
+  force = true
+
+# 404 fallback (last)
+[[redirects]]
+  from = "/*"
+  to = "/404.html"
+  status = 404

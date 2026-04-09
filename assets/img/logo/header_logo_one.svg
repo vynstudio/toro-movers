@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="152" height="100" viewBox="0 0 152 100">
+  <g id="Logo" transform="translate(-98 -34)">
+    <text id="Opic" transform="translate(148 97)" fill="#060315" font-size="46" font-family="GlossAndBloom, Gloss And Bloom"><tspan x="0" y="0">Opic</tspan></text>
+    <g id="Vector_Smart_Object" data-name="Vector Smart Object" transform="translate(60.113 -242.49)">
+      <g id="Group_453" data-name="Group 453">
+        <ellipse id="Ellipse_11" data-name="Ellipse 11" cx="10.125" cy="9.988" rx="10.125" ry="9.988" transform="translate(51.184 322.455) rotate(-76.718)" fill="#51cfed"/>
+      </g>
+      <g id="Group_454" data-name="Group 454">
+        <path id="Path_938" data-name="Path 938" d="M62.724,339.49A24.5,24.5,0,1,1,81.887,299.4l-7.4,6.028a15.037,15.037,0,1,0-.654,19.849l7,6.485A25.1,25.1,0,0,1,62.724,339.49Z" fill="#ff3e41"/>
+      </g>
+    </g>
+  </g>
+</svg>
