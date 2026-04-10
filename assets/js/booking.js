@@ -109,7 +109,7 @@
       </div>\
       <div class="bk-est-total"><span>Estimated total</span><span id="bk-est-total">$0</span></div>\
       <div class="bk-est-deposit"><span id="bk-deposit-label">Deposit to reserve</span><span id="bk-deposit-amount">$50</span></div>\
-      <p class="bk-est-note">The deposit holds your date. Balance paid after the move by card, Cash App, or Zelle. If the move takes less time, you pay less.</p>\
+      <p class="bk-est-note">The deposit holds your date. Balance paid after the move by card, Cash App, or Zelle. 2-hour minimum applies, then billed by the hour.</p>\
     </div>\
     <div class="bk-btn-row">\
       <button class="bk-btn-back" id="bk-back-3">&larr; Back</button>\

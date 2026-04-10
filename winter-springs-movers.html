@@ -816,6 +816,15 @@ section.section { padding: 100px 24px; }
 .calc-email-input:focus { border-color: var(--red); outline: none; }
 .calc-email-btn { width: 100%; padding: 14px; background: var(--red); color: var(--white); border: none; border-radius: var(--radius-pill); font-size: 14px; font-weight: 700; cursor: pointer; transition: all .15s var(--ease); }
 .calc-email-btn:hover { background: var(--charcoal); transform: translateY(-1px); }
+.calc-thankyou { text-align: center; padding: 16px 0; }
+.calc-ty-check { width: 52px; height: 52px; border-radius: 50%; background: var(--red); color: #fff; display: grid; place-items: center; margin: 0 auto 16px; }
+.calc-ty-check svg { width: 28px; height: 28px; }
+.calc-thankyou h4 { font-size: 1.3rem; margin-bottom: 8px; }
+.calc-thankyou p { font-size: 14px; color: var(--gray-500); line-height: 1.5; margin-bottom: 8px; }
+.calc-ty-sub { font-size: 13px !important; }
+.calc-ty-btns { display: flex; gap: 10px; justify-content: center; margin-top: 16px; }
+.calc-ty-btn { padding: 12px 24px; border-radius: var(--radius-pill); font-weight: 700; font-size: 14px; text-decoration: none; }
+.calc-ty-btn.call { background: var(--red); color: #fff; }
 .calc-email-btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
 .calc-email-status { font-size: 13px; text-align: center; margin-top: 10px; font-weight: 600; }
 .calc-email-status.success { color: #16a34a; }
@@ -1188,7 +1197,7 @@ section.section { padding: 100px 24px; }
       <h1>Winter Springs movers, <span class="accent">priced honestly.</span></h1>
       <p class="lead">Family-owned movers serving every Winter Springs neighborhood — Tuscawilla, Highlands, Tuskawilla Crossing, Hacienda Village. Loading, packing, long-distance, storage.</p>
       <div class="hero-buttons">
-        <a href="#book" class="btn btn-primary btn-large">Get a Free Quote</a>
+        <a href="#calculator" class="btn btn-primary btn-large">Get a Free Quote</a>
         <a href="#calculator" class="btn btn-outline btn-large">See Pricing</a>
       </div>
     </div>
@@ -1761,7 +1770,7 @@ section.section { padding: 100px 24px; }
   <h2>Ready to move?</h2>
   <p>Get a free quote in 60 seconds. We'll be at your door this week.</p>
   <div class="buttons">
-    <a href="#book" class="btn btn-primary btn-large">Get a Free Quote</a>
+    <a href="#calculator" class="btn btn-primary btn-large">Get a Free Quote</a>
     <a href="tel:3217580094" class="btn btn-outline btn-large">Call (321) 758-0094</a>
   </div>
 </section>
@@ -1864,6 +1873,75 @@ function selectPackage(pkg) {
         // Fallback: native submit if fetch fails. form.submit() does not
         // re-fire the submit event, so there's no recursion risk.
         form.submit();
+      });
+  });
+})();
+
+// Calculator email quote sender
+(function () {
+  var btn = document.getElementById('calc-send-quote');
+  if (!btn) return;
+  btn.addEventListener('click', function () {
+    var name = document.getElementById('calc-name').value.trim();
+    var email = document.getElementById('calc-email-input').value.trim();
+    var phone = document.getElementById('calc-phone').value.trim();
+    var status = document.getElementById('calc-email-status');
+
+    if (!name || !email) {
+      status.textContent = 'Please enter your name and email.';
+      status.className = 'calc-email-status error';
+      status.style.display = '';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+    status.style.display = 'none';
+
+    var hasTruck = state.truck > 0;
+    var total = (state.movers * state.hours * RATE) + state.truck;
+
+    fetch('/.netlify/functions/send-quote', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: name, email: email, phone: phone,
+        movers: state.movers, hours: state.hours,
+        truck: hasTruck, truckFee: state.truck,
+        labor: state.movers * state.hours * RATE,
+        total: total, page: location.pathname,
+      }),
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (data.success) {
+          try { if (window.ToroTrack) window.ToroTrack.lead({ name: name, email: email, phone: phone }); } catch (e) {}
+          var emailDiv = document.getElementById('calc-email');
+          if (emailDiv) {
+            emailDiv.innerHTML = '<div class="calc-thankyou">' +
+              '<div class="calc-ty-check"><svg fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>' +
+              '<h4>Quote sent!</h4>' +
+              '<p>Check your inbox at <strong>' + email + '</strong> for your personalized moving estimate.</p>' +
+              '<p class="calc-ty-sub">A member of our team will call you soon for more details.</p>' +
+              '<div class="calc-ty-btns">' +
+                '<a href="tel:3217580094" class="calc-ty-btn call">Call (321) 758-0094</a>' +
+              '</div>' +
+            '</div>';
+          }
+        } else {
+          status.textContent = 'Something went wrong. Call (321) 758-0094.';
+          status.className = 'calc-email-status error';
+          status.style.display = '';
+          btn.disabled = false;
+          btn.textContent = 'Get My Free Quote';
+        }
+      })
+      .catch(function () {
+        status.textContent = 'Something went wrong. Call (321) 758-0094.';
+        status.className = 'calc-email-status error';
+        status.style.display = '';
+        btn.disabled = false;
+        btn.textContent = 'Get My Free Quote';
       });
   });
 })();

@@ -104,7 +104,7 @@ exports.handler = async (event) => {
   <!-- Note -->
   <tr><td style="padding:0 32px 24px">
     <p style="margin:0;font-size:13px;color:#6B7280;line-height:1.6;background:#f9fafb;padding:16px;border-radius:10px">
-      This is an estimate based on the details you provided. If the move takes less time, you pay less. No hidden fees, no fuel surcharges, no surprises. The number you see is the number you pay.
+      This is an estimate based on the details you provided. 2-hour minimum applies, and after that we bill by the hour. No hidden fees, no fuel surcharges, no surprises. The number you see is the number you pay.
     </p>
   </td></tr>
 
