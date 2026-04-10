@@ -807,6 +807,17 @@ section.section { padding: 100px 24px; }
   line-height: 1;
 }
 .calc-disclaimer { font-size: 12px; color: var(--charcoal-soft); text-align: center; margin-top: 16px; }
+.calc-email { margin-top: 20px; padding-top: 20px; border-top: 2px dashed var(--gray-200); }
+.calc-email-title { font-size: 14px; font-weight: 700; color: var(--charcoal); margin-bottom: 12px; text-align: center; }
+.calc-email-fields { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.calc-email-input { flex: 1; min-width: 120px; padding: 12px 14px; border: 2px solid var(--gray-200); border-radius: 10px; font-size: 14px; color: var(--charcoal); transition: border-color .15s; }
+.calc-email-input:focus { border-color: var(--red); outline: none; }
+.calc-email-btn { width: 100%; padding: 14px; background: var(--red); color: var(--white); border: none; border-radius: var(--radius-pill); font-size: 14px; font-weight: 700; cursor: pointer; transition: all .15s var(--ease); }
+.calc-email-btn:hover { background: var(--charcoal); transform: translateY(-1px); }
+.calc-email-btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+.calc-email-status { font-size: 13px; text-align: center; margin-top: 10px; font-weight: 600; }
+.calc-email-status.success { color: #16a34a; }
+.calc-email-status.error { color: var(--red); }
 @media (max-width: 880px) { .calc-wrap { grid-template-columns: 1fr; gap: 40px; } }
 
 /* ── WHY US (6 features) ───────────────────────────────────── */
@@ -1411,6 +1422,17 @@ section.section { padding: 100px 24px; }
           <span class="total">$<span id="calc-amount">900</span></span>
         </div>
         <p class="calc-disclaimer">$75 per mover per hour · 2-hour minimum · no surprise fees</p>
+        <!-- Email quote capture -->
+        <div class="calc-email" id="calc-email">
+          <p class="calc-email-title">Get this quote emailed to you</p>
+          <div class="calc-email-fields">
+            <input type="text" id="calc-name" class="calc-email-input" placeholder="Your name" required>
+            <input type="email" id="calc-email-input" class="calc-email-input" placeholder="Your email" required>
+            <input type="tel" id="calc-phone" class="calc-email-input" placeholder="Phone (optional)">
+          </div>
+          <button class="calc-email-btn" id="calc-send-quote">Email My Quote</button>
+          <p class="calc-email-status" id="calc-email-status" style="display:none"></p>
+        </div>
       </div>
     </div>
   </div>
