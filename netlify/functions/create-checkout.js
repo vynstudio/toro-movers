@@ -109,7 +109,6 @@ exports.handler = async (event) => {
             product_data: {
               name: `Toro Movers — ${pkgLabels[pkg] || 'Move'} Deposit`,
               description: description,
-              images: ['https://toromovers.net/assets/img/photos/team-family-portrait.webp'],
             },
             unit_amount: depositCents,
           },
