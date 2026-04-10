@@ -217,6 +217,7 @@ body {
 }
 img, svg { max-width: 100%; display: block; }
 a { color: inherit; text-decoration: none; }
+.logo { text-transform: none !important; }
 button, input, select, textarea { font-family: inherit; font-size: inherit; }
 h1, h2, h3, h4, h5 {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -1778,6 +1779,15 @@ function selectPackage(pkg) {
       }
       sessionStorage.setItem('toro_lead_fired', '1');
     } catch (err) { /* never block submit on tracking */ }
+
+    // Send email notification via Resend
+    try {
+      fetch('/.netlify/functions/notify-callback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: data.name, phone: data.phone, email: data.email, page: location.pathname }),
+      });
+    } catch (e) { /* never block on notification */ }
 
     // POST to Netlify Forms (static site form handler)
     var body = new URLSearchParams(fd).toString();
