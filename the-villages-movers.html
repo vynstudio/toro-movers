@@ -761,11 +761,11 @@ section.section { padding: 100px 24px; }
 
 .calc {
   background: var(--gray-50);
-  padding: 40px 36px;
+  padding: 32px 28px;
   border-radius: var(--radius-xl);
   border: 1px solid var(--gray-100);
 }
-.calc-row { margin-bottom: 24px; }
+.calc-row { margin-bottom: 18px; }
 .calc-label {
   display: block;
   font-size: 13px; font-weight: 600;
@@ -773,9 +773,11 @@ section.section { padding: 100px 24px; }
   margin-bottom: 10px;
 }
 .calc-pills { display: flex; gap: 8px; flex-wrap: wrap; }
+.calc-email-sub { font-size: 12px; color: var(--gray-500); text-align: center; margin-bottom: 14px; line-height: 1.5; }
+.calc-email-disclaimer { font-size: 11px; color: var(--gray-500); text-align: center; margin-top: 10px; }
 .calc-pill {
   flex: 1; min-width: 60px;
-  padding: 14px 8px;
+  padding: 11px 6px;
   background: var(--white);
   border: 1.5px solid var(--gray-200);
   border-radius: var(--radius-md);
@@ -967,7 +969,7 @@ section.section { padding: 100px 24px; }
 .lead-form {
   background: var(--white);
   color: var(--charcoal);
-  padding: 40px 36px;
+  padding: 32px 28px;
   border-radius: var(--radius-xl);
 }
 .field { margin-bottom: 18px; }
@@ -1416,21 +1418,18 @@ section.section { padding: 100px 24px; }
             <button class="calc-pill" data-value="275">Yes (+$275)</button>
           </div>
         </div>
-        <div class="calc-total">
-          <span class="label">Your total</span>
-          <span class="total">$<span id="calc-amount">900</span></span>
-        </div>
-        <p class="calc-disclaimer">$75 per mover per hour · 2-hour minimum · no surprise fees</p>
-        <!-- Email quote capture -->
+        <span id="calc-amount" style="display:none">900</span>
         <div class="calc-email" id="calc-email">
-          <p class="calc-email-title">Get this quote emailed to you</p>
+          <p class="calc-email-title">Get your personalized quote by email</p>
+          <p class="calc-email-sub">Enter your info below and we'll email your detailed estimate with pricing breakdown.</p>
           <div class="calc-email-fields">
             <input type="text" id="calc-name" class="calc-email-input" placeholder="Your name" required>
             <input type="email" id="calc-email-input" class="calc-email-input" placeholder="Your email" required>
             <input type="tel" id="calc-phone" class="calc-email-input" placeholder="Phone (optional)">
           </div>
-          <button class="calc-email-btn" id="calc-send-quote">Email My Quote</button>
+          <button class="calc-email-btn" id="calc-send-quote">Get My Free Quote</button>
           <p class="calc-email-status" id="calc-email-status" style="display:none"></p>
+          <p class="calc-email-disclaimer">$75 per mover per hour · 2-hour minimum · no surprise fees</p>
         </div>
       </div>
     </div>
