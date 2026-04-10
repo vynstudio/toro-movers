@@ -946,7 +946,7 @@ section.section { padding: 100px 24px; }
 .book-section .section-eyebrow { background: rgba(255,255,255,0.1); color: var(--white); }
 .book-section .section-title { color: var(--white); }
 .book-section .section-sub { color: rgba(255,255,255,0.75); }
-.book-grid {
+.book-grid { max-width: 900px; margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr 1.1fr;
   gap: 64px;
@@ -975,7 +975,7 @@ section.section { padding: 100px 24px; }
 .book-side .contact-block .label { font-size: 12px; color: rgba(255,255,255,0.6); display: block; }
 .book-side .contact-block strong { font-size: 18px; color: var(--white); display: block; }
 
-.lead-form {
+.lead-form { max-width: 480px;
   background: var(--white);
   color: var(--charcoal);
   padding: 32px 28px;
@@ -1020,7 +1020,7 @@ section.section { padding: 100px 24px; }
   transition: all 0.2s var(--ease);
 }
 .lead-form .submit-btn:hover { background: var(--red-dark); transform: translateY(-2px); box-shadow: 0 12px 32px rgba(200, 16, 46, 0.3); }
-@media (max-width: 880px) { .book-grid { grid-template-columns: 1fr; } }
+@media (max-width: 880px) { .book-grid { max-width: 900px; margin: 0 auto; grid-template-columns: 1fr; } }
 
 /* ── FAQ ───────────────────────────────────────────────────── */
 .faq-section { background: var(--white); }
@@ -1184,7 +1184,7 @@ section.section { padding: 100px 24px; }
         <svg fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
         (321) 758-0094
       </a>
-      <a href="#book" class="btn btn-primary">Get a Free Quote</a>
+      <a href="#calculator" class="btn btn-primary">Get a Free Quote</a>
     </div>
   </div>
 </header>
