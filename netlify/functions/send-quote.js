@@ -111,7 +111,7 @@ exports.handler = async (event) => {
   <!-- CTA -->
   <tr><td style="padding:0 32px 32px;text-align:center">
     <p style="margin:0 0 16px;font-size:14px;color:#374151;font-weight:600">Ready to reserve your move?</p>
-    <a href="https://toromovers.net/#book" style="display:inline-block;background:#C8102E;color:#fff;font-weight:800;font-size:15px;padding:16px 36px;border-radius:999px;text-decoration:none">Reserve This Move</a>
+    <a href="https://toromovers.net/.netlify/functions/reserve-from-email?truck=${truck}&total=${total}&movers=${movers}&hours=${hours}&name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&phone=${encodeURIComponent(phone)}" style="display:inline-block;background:#C8102E;color:#fff;font-weight:800;font-size:15px;padding:16px 36px;border-radius:999px;text-decoration:none">Reserve This Move — Pay $${truck ? 125 : 50} Deposit</a>
     <p style="margin:16px 0 0;font-size:13px;color:#6B7280">Or call <a href="tel:3217580094" style="color:#C8102E;font-weight:700;text-decoration:none">(321) 758-0094</a></p>
   </td></tr>
 
