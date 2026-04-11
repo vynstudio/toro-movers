@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>How Much Does Your Move Cost? | Toro Movers — Orlando & Central Florida</title>
 <meta name="description" content="Get your free moving quote in 60 seconds. Family-owned movers in Orlando & Central Florida. $75/mover/hour. Licensed & insured.">
 <meta name="robots" content="noindex,follow">
@@ -17,461 +17,478 @@
 <script src="assets/js/tracking.js" defer></script>
 <noscript><img height="1" width="1" style="display:none" alt="" src="https://www.facebook.com/tr?id=1637703184084307&ev=PageView&noscript=1"/></noscript>
 <style>
-:root{--red:#C8102E;--red-dark:#A50D26;--red-soft:#FFF1F3;--charcoal:#1C1C1E;--white:#FFF;--gray-50:#F9FAFB;--gray-100:#F3F4F6;--gray-200:#E5E7EB;--gray-500:#6B7280;--ease:cubic-bezier(.16,1,.3,1)}
+:root{--red:#C8102E;--red-dark:#A50D26;--red-soft:#FFF1F3;--charcoal:#1C1C1E;--charcoal-soft:#3a3a3d;--white:#FFF;--gray-50:#F9FAFB;--gray-100:#F3F4F6;--gray-200:#E5E7EB;--gray-500:#6B7280;--ease:cubic-bezier(.16,1,.3,1)}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background:var(--white);color:var(--charcoal);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background:var(--white);color:var(--charcoal);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 img{max-width:100%;display:block}
 a{color:inherit;text-decoration:none}
 h1,h2,h3,h4{font-weight:800;line-height:1.1;letter-spacing:-.02em}
+button{font-family:inherit}
 
-/* HEADER */
-.lp-header{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,.97);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--gray-100);padding:12px 20px;display:flex;align-items:center;justify-content:space-between}
-.lp-logo{display:flex;align-items:center;gap:6px;font-weight:800;font-size:18px;color:var(--charcoal);text-transform:uppercase}
-.lp-logo img{height:28px;width:auto}
-.lp-logo .accent{color:var(--red)}
-.lp-header-call{display:inline-flex;align-items:center;gap:6px;background:var(--red);color:var(--white);font-weight:700;font-size:13px;padding:10px 18px;border-radius:999px;white-space:nowrap}
-.lp-header-call svg{width:14px;height:14px}
+/* ═══════════════════════════════════════════════
+   HEADER — minimal, both layouts
+   ═══════════════════════════════════════════════ */
+.hd{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,.97);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--gray-100);padding:10px 20px;display:flex;align-items:center;justify-content:space-between}
+.hd-logo{display:flex;align-items:center;gap:6px;font-weight:800;font-size:17px;text-transform:uppercase}
+.hd-logo img{height:26px;width:auto}
+.hd-logo .a{color:var(--red)}
+.hd-call{display:inline-flex;align-items:center;gap:5px;background:var(--red);color:#fff;font-weight:700;font-size:12px;padding:9px 16px;border-radius:999px;white-space:nowrap}
+.hd-call svg{width:13px;height:13px}
 
-/* HERO */
-.lp-hero{padding:88px 20px 32px;text-align:center;background:var(--gray-50)}
-.lp-hero-inner{max-width:520px;margin:0 auto}
-.lp-hero h1{font-size:clamp(1.6rem,5vw,2.4rem);margin-bottom:10px}
-.lp-hero h1 .accent{color:var(--red)}
-.lp-hero p{font-size:15px;color:var(--gray-500);max-width:420px;margin:0 auto 20px}
-.lp-hero-badges{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
-.lp-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:var(--charcoal);background:var(--white);padding:6px 12px;border-radius:999px;box-shadow:0 1px 3px rgba(0,0,0,.06);border:1px solid var(--gray-100)}
-.lp-badge .dot{width:5px;height:5px;border-radius:50%;background:var(--red)}
+/* ═══════════════════════════════════════════════
+   MOBILE — Story Flow (default, mobile-first)
+   ═══════════════════════════════════════════════ */
 
-/* MULTI-STEP CALCULATOR */
-.lp-calc-section{padding:40px 20px 48px}
-.lp-calc-wrap{max-width:440px;margin:0 auto}
-.lp-calc{background:var(--white);border:2px solid var(--gray-200);border-radius:20px;padding:28px 24px;box-shadow:0 8px 32px rgba(0,0,0,.06)}
+/* Hero — full viewport */
+.m-hero{min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:80px 24px 40px;background:var(--gray-50)}
+.m-hero h1{font-size:clamp(1.7rem,6vw,2.4rem);margin-bottom:12px}
+.m-hero h1 .a{color:var(--red)}
+.m-hero p{font-size:15px;color:var(--gray-500);max-width:360px;margin:0 auto 28px}
+.m-hero-cta{display:block;width:100%;max-width:320px;padding:18px;background:var(--red);color:#fff;border:none;border-radius:999px;font-size:17px;font-weight:800;cursor:pointer;box-shadow:0 8px 28px rgba(200,16,46,.3);transition:all .15s var(--ease)}
+.m-hero-cta:hover{background:var(--red-dark);transform:translateY(-2px)}
+.m-badges{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:28px}
+.m-badge{font-size:11px;font-weight:700;color:var(--charcoal);background:var(--white);padding:6px 12px;border-radius:999px;box-shadow:0 1px 4px rgba(0,0,0,.06);border:1px solid var(--gray-100);display:inline-flex;align-items:center;gap:4px}
+.m-badge .d{width:5px;height:5px;border-radius:50%;background:var(--red)}
 
-/* Progress bar */
-.lp-progress{margin-bottom:24px}
-.lp-progress-label{font-size:11px;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;display:flex;justify-content:space-between}
-.lp-progress-bar{height:4px;background:var(--gray-200);border-radius:4px;overflow:hidden}
-.lp-progress-fill{height:100%;background:var(--red);border-radius:4px;transition:width .3s var(--ease)}
+/* Quiz — each step is full viewport on mobile */
+.quiz-section{padding:0 0 40px}
+.quiz-wrap{max-width:480px;margin:0 auto;padding:0 20px}
+.quiz{background:var(--white);border:2px solid var(--gray-200);border-radius:24px;padding:28px 22px;box-shadow:0 8px 40px rgba(0,0,0,.06);min-height:420px;display:flex;flex-direction:column}
+
+/* Progress */
+.qp{margin-bottom:22px}
+.qp-top{display:flex;justify-content:space-between;font-size:10px;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:6px}
+.qp-bar{height:4px;background:var(--gray-200);border-radius:4px;overflow:hidden}
+.qp-fill{height:100%;background:var(--red);border-radius:4px;transition:width .35s var(--ease)}
 
 /* Steps */
-.lp-step{display:none;animation:fadeIn .25s var(--ease)}
-.lp-step.active{display:block}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.lp-step-q{font-size:1.15rem;font-weight:800;color:var(--charcoal);margin-bottom:16px;text-align:center}
-.lp-step-sub{font-size:13px;color:var(--gray-500);text-align:center;margin-bottom:20px}
+.qs{display:none;flex:1;flex-direction:column;animation:qIn .3s var(--ease)}
+.qs.on{display:flex}
+@keyframes qIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
+.qs-q{font-size:1.2rem;font-weight:800;text-align:center;margin-bottom:6px}
+.qs-sub{font-size:13px;color:var(--gray-500);text-align:center;margin-bottom:18px}
 
-/* Pills (single select — auto advance) */
-.lp-pills{display:flex;flex-direction:column;gap:10px}
-.lp-pill{display:flex;align-items:center;gap:12px;padding:16px 18px;background:var(--gray-50);border:2px solid var(--gray-200);border-radius:14px;font-size:15px;font-weight:600;color:var(--charcoal);cursor:pointer;transition:all .15s var(--ease);text-align:left}
-.lp-pill:hover{border-color:var(--red);background:var(--red-soft)}
-.lp-pill.selected{border-color:var(--red);background:var(--red);color:var(--white)}
-.lp-pill-icon{width:36px;height:36px;border-radius:10px;background:var(--white);display:grid;place-items:center;flex-shrink:0;font-size:18px}
-.lp-pill.selected .lp-pill-icon{background:rgba(255,255,255,.2)}
-.lp-pill-label{flex:1}
-.lp-pill-desc{font-size:12px;font-weight:400;opacity:.7;margin-top:2px}
+/* Pills — tall cards for mobile thumb targets */
+.qp-pills{display:flex;flex-direction:column;gap:10px;flex:1}
+.qp-pill{display:flex;align-items:center;gap:14px;padding:16px;background:var(--gray-50);border:2px solid var(--gray-200);border-radius:16px;cursor:pointer;transition:all .15s var(--ease);-webkit-tap-highlight-color:transparent}
+.qp-pill:hover{border-color:var(--red);background:var(--red-soft)}
+.qp-pill.sel{border-color:var(--red);background:var(--red);color:#fff}
+.qp-pill-ico{width:40px;height:40px;border-radius:12px;background:var(--white);display:grid;place-items:center;font-size:20px;flex-shrink:0}
+.qp-pill.sel .qp-pill-ico{background:rgba(255,255,255,.25)}
+.qp-pill-txt{font-weight:700;font-size:15px}
+.qp-pill-desc{font-size:12px;font-weight:400;opacity:.7;margin-top:1px}
 
-/* Checkboxes (multi select) */
-.lp-checks{display:flex;flex-wrap:wrap;gap:10px}
-.lp-check{display:flex;align-items:center;gap:8px;padding:12px 16px;background:var(--gray-50);border:2px solid var(--gray-200);border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;transition:all .15s var(--ease);flex:1;min-width:140px}
-.lp-check:hover{border-color:var(--red)}
-.lp-check.checked{border-color:var(--red);background:var(--red-soft)}
-.lp-check input{display:none}
+/* Checks */
+.qc{display:flex;flex-wrap:wrap;gap:10px;flex:1}
+.qc-item{flex:1;min-width:140px;display:flex;align-items:center;gap:8px;padding:14px 16px;background:var(--gray-50);border:2px solid var(--gray-200);border-radius:14px;font-size:14px;font-weight:600;cursor:pointer;transition:all .12s var(--ease);-webkit-tap-highlight-color:transparent}
+.qc-item:hover{border-color:var(--red)}
+.qc-item.ck{border-color:var(--red);background:var(--red-soft)}
+.qc-item input{display:none}
 
 /* Inputs */
-.lp-input-group{display:flex;flex-direction:column;gap:12px}
-.lp-input{padding:14px 16px;border:2px solid var(--gray-200);border-radius:12px;font-size:15px;color:var(--charcoal);transition:border-color .15s;width:100%}
-.lp-input:focus{border-color:var(--red);outline:none}
-.lp-input-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.qi{display:flex;flex-direction:column;gap:12px;flex:1}
+.qi input{padding:16px;border:2px solid var(--gray-200);border-radius:14px;font-size:16px;color:var(--charcoal);transition:border-color .15s;width:100%;-webkit-appearance:none}
+.qi input:focus{border-color:var(--red);outline:none}
+.qi-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 
-/* Navigation */
-.lp-nav{display:flex;gap:10px;margin-top:24px}
-.lp-btn-back{flex:0 0 auto;padding:14px 20px;background:var(--gray-100);color:var(--charcoal);border:none;border-radius:999px;font-size:14px;font-weight:600;cursor:pointer}
-.lp-btn-back:hover{background:var(--gray-200)}
-.lp-btn-next{flex:1;padding:14px;background:var(--red);color:var(--white);border:none;border-radius:999px;font-size:15px;font-weight:800;cursor:pointer;transition:all .15s var(--ease)}
-.lp-btn-next:hover{background:var(--red-dark);transform:translateY(-1px)}
-.lp-btn-next:disabled{opacity:.5;cursor:not-allowed;transform:none}
+/* Nav buttons */
+.qn{display:flex;gap:10px;margin-top:auto;padding-top:20px}
+.qn-back{flex:0 0 auto;padding:14px 20px;background:var(--gray-100);color:var(--charcoal);border:none;border-radius:999px;font-size:14px;font-weight:600;cursor:pointer}
+.qn-back:hover{background:var(--gray-200)}
+.qn-next{flex:1;padding:16px;background:var(--red);color:#fff;border:none;border-radius:999px;font-size:16px;font-weight:800;cursor:pointer;transition:all .15s var(--ease);box-shadow:0 4px 16px rgba(200,16,46,.2)}
+.qn-next:hover{background:var(--red-dark);transform:translateY(-1px)}
+.qn-next:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+/* Status */
+.q-status{font-size:13px;text-align:center;margin-top:10px;font-weight:600}
+.q-status.ok{color:#16a34a}
+.q-status.err{color:var(--red)}
 
 /* Thank you */
-.lp-thankyou{text-align:center;padding:20px 0}
-.lp-ty-check{width:56px;height:56px;border-radius:50%;background:var(--red);color:#fff;display:grid;place-items:center;margin:0 auto 16px}
-.lp-ty-check svg{width:28px;height:28px}
-.lp-thankyou h4{font-size:1.3rem;margin-bottom:8px}
-.lp-thankyou p{font-size:14px;color:var(--gray-500);line-height:1.5;margin-bottom:8px}
-.lp-ty-call{display:inline-flex;align-items:center;gap:8px;margin-top:16px;padding:14px 28px;background:var(--red);color:var(--white);border-radius:999px;font-weight:700;font-size:14px}
+.qty{text-align:center;padding:40px 0;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.qty-ck{width:64px;height:64px;border-radius:50%;background:var(--red);color:#fff;display:grid;place-items:center;margin-bottom:18px}
+.qty-ck svg{width:32px;height:32px}
+.qty h4{font-size:1.4rem;margin-bottom:10px}
+.qty p{font-size:14px;color:var(--gray-500);line-height:1.5;margin-bottom:6px;max-width:320px}
+.qty-call{display:inline-flex;align-items:center;gap:8px;margin-top:18px;padding:14px 28px;background:var(--red);color:#fff;border-radius:999px;font-weight:700;font-size:15px}
+.qty-cd{font-size:12px;color:var(--gray-500);margin-top:14px}
 
-/* TRUST STRIP */
-.lp-trust{background:var(--charcoal);padding:18px 20px}
-.lp-trust-inner{display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;max-width:480px;margin:0 auto}
-.lp-trust-item{display:flex;align-items:center;gap:6px;color:rgba(255,255,255,.9);font-size:11px;font-weight:700;white-space:nowrap}
-.lp-trust-item svg{width:14px;height:14px;flex-shrink:0;color:var(--red)}
+/* ═══════════════════════════════════════════════
+   HOW IT WORKS — 3 steps
+   ═══════════════════════════════════════════════ */
+.hiw{padding:48px 20px;background:var(--gray-50)}
+.hiw-title{text-align:center;font-size:1.2rem;font-weight:800;margin-bottom:24px}
+.hiw-grid{display:flex;flex-direction:column;gap:16px;max-width:480px;margin:0 auto}
+.hiw-card{display:flex;align-items:flex-start;gap:16px;background:var(--white);border:1px solid var(--gray-100);border-radius:16px;padding:20px}
+.hiw-num{width:36px;height:36px;border-radius:10px;background:var(--red);color:#fff;display:grid;place-items:center;font-weight:800;font-size:15px;flex-shrink:0}
+.hiw-card h3{font-size:15px;font-weight:700;margin-bottom:4px}
+.hiw-card p{font-size:13px;color:var(--gray-500);line-height:1.5}
 
-/* REVIEWS */
-.lp-reviews{padding:48px 20px;background:var(--gray-50)}
-.lp-reviews-title{text-align:center;font-size:1.2rem;font-weight:800;margin-bottom:20px}
-.lp-reviews-grid{max-width:440px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
-.lp-review{background:var(--white);border:1px solid var(--gray-100);border-radius:14px;padding:18px}
-.lp-review-stars{color:#FBBC04;font-size:13px;letter-spacing:1px;margin-bottom:6px}
-.lp-review-text{font-size:13px;color:var(--charcoal);line-height:1.55;margin-bottom:10px}
-.lp-review-author{font-size:12px;font-weight:700;color:var(--charcoal)}
-.lp-review-city{font-size:11px;color:var(--gray-500)}
+/* ═══════════════════════════════════════════════
+   REVIEWS
+   ═══════════════════════════════════════════════ */
+.rv{padding:48px 20px}
+.rv-title{text-align:center;font-size:1.2rem;font-weight:800;margin-bottom:20px}
+.rv-grid{display:flex;flex-direction:column;gap:14px;max-width:480px;margin:0 auto}
+.rv-card{background:var(--gray-50);border:1px solid var(--gray-100);border-radius:16px;padding:20px}
+.rv-stars{color:#FBBC04;font-size:13px;letter-spacing:1px;margin-bottom:6px}
+.rv-text{font-size:13px;line-height:1.55;margin-bottom:10px}
+.rv-who{font-size:12px;font-weight:700}
+.rv-where{font-size:11px;color:var(--gray-500)}
 
-/* FAQ */
-.lp-faq{padding:48px 20px}
-.lp-faq-title{text-align:center;font-size:1.2rem;font-weight:800;margin-bottom:20px}
-.lp-faq-list{max-width:440px;margin:0 auto;display:flex;flex-direction:column;gap:8px}
-.lp-faq-item{background:var(--gray-50);border-radius:12px;border:1px solid var(--gray-100)}
-.lp-faq-item summary{padding:14px 18px;cursor:pointer;font-weight:700;font-size:13px;color:var(--charcoal);list-style:none;display:flex;justify-content:space-between;align-items:center}
-.lp-faq-item summary::after{content:'+';font-size:20px;color:var(--red)}
-.lp-faq-item[open] summary::after{content:'\2212'}
-.lp-faq-item .answer{padding:0 18px 14px;font-size:13px;color:var(--gray-500);line-height:1.6}
+/* ═══════════════════════════════════════════════
+   FAQ
+   ═══════════════════════════════════════════════ */
+.fq{padding:48px 20px;background:var(--gray-50)}
+.fq-title{text-align:center;font-size:1.2rem;font-weight:800;margin-bottom:20px}
+.fq-list{max-width:480px;margin:0 auto;display:flex;flex-direction:column;gap:8px}
+.fq-item{background:var(--white);border-radius:14px;border:1px solid var(--gray-100)}
+.fq-item summary{padding:16px 18px;cursor:pointer;font-weight:700;font-size:14px;list-style:none;display:flex;justify-content:space-between;align-items:center}
+.fq-item summary::after{content:'+';font-size:20px;color:var(--red);font-weight:400}
+.fq-item[open] summary::after{content:'\2212'}
+.fq-item .ans{padding:0 18px 16px;font-size:13px;color:var(--gray-500);line-height:1.6}
 
-/* STICKY MOBILE */
-.lp-sticky{display:none;position:fixed;bottom:0;left:0;right:0;z-index:99;background:var(--white);box-shadow:0 -4px 20px rgba(0,0,0,.08);padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));gap:10px}
-.lp-sticky-btn{flex:1;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;min-height:48px;border-radius:12px;text-decoration:none;border:none}
-.lp-sticky-quote{background:var(--red);color:var(--white)}
-.lp-sticky-call{background:var(--charcoal);color:var(--white)}
+/* Footer */
+.ft{background:var(--charcoal);color:rgba(255,255,255,.6);padding:28px 20px;text-align:center;font-size:12px;line-height:1.6}
 
-.lp-footer{background:var(--charcoal);color:rgba(255,255,255,.6);padding:28px 20px;text-align:center;font-size:12px;line-height:1.6}
+/* Sticky mobile CTA */
+.sticky{display:none;position:fixed;bottom:0;left:0;right:0;z-index:99;background:var(--white);box-shadow:0 -4px 20px rgba(0,0,0,.08);padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));gap:10px}
+.sticky-btn{flex:1;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;min-height:48px;border-radius:12px;border:none}
+.sticky-q{background:var(--red);color:#fff}
+.sticky-c{background:var(--charcoal);color:#fff}
 
-@media(max-width:600px){
-  .lp-hero h1{font-size:1.5rem}
-  .lp-sticky{display:flex}
+/* ═══════════════════════════════════════════════
+   MOBILE BREAKPOINT
+   ═══════════════════════════════════════════════ */
+@media(max-width:899px){
+  .sticky{display:flex}
   body{padding-bottom:72px}
-  .lp-header-call span{display:none}
-  .lp-input-row{grid-template-columns:1fr}
-  .lp-checks{flex-direction:column}
+  .hd-call span{display:none}
+  .qi-row{grid-template-columns:1fr}
+  .d-only{display:none!important}
+}
+
+/* ═══════════════════════════════════════════════
+   DESKTOP — split layout (900px+)
+   ═══════════════════════════════════════════════ */
+@media(min-width:900px){
+  .m-hero{display:none}
+  .sticky{display:none!important}
+  .m-only{display:none!important}
+
+  .d-split{display:grid;grid-template-columns:1fr 420px;min-height:100vh;padding-top:56px}
+
+  /* Left column — scrolls */
+  .d-left{padding:64px 48px 48px 64px;display:flex;flex-direction:column;justify-content:center}
+  .d-left h1{font-size:2.6rem;margin-bottom:16px}
+  .d-left h1 .a{color:var(--red)}
+  .d-left>p{font-size:17px;color:var(--gray-500);max-width:440px;margin-bottom:32px;line-height:1.6}
+  .d-badges{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:40px}
+  .d-badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--charcoal);background:var(--gray-50);padding:8px 14px;border-radius:999px;border:1px solid var(--gray-100)}
+  .d-badge .d{width:6px;height:6px;border-radius:50%;background:var(--red)}
+
+  /* Review under badges on desktop */
+  .d-review{background:var(--gray-50);border:1px solid var(--gray-100);border-radius:16px;padding:20px;max-width:400px;margin-top:8px}
+  .d-review .rv-stars{color:#FBBC04;font-size:13px;margin-bottom:6px}
+  .d-review .rv-text{font-size:14px;line-height:1.55;margin-bottom:8px}
+  .d-review .rv-who{font-size:13px;font-weight:700}
+  .d-review .rv-where{font-size:11px;color:var(--gray-500)}
+
+  /* Right column — sticky quiz card */
+  .d-right{position:sticky;top:56px;height:calc(100vh - 56px);display:flex;align-items:center;justify-content:center;padding:24px;background:var(--gray-50);border-left:1px solid var(--gray-100)}
+  .d-right .quiz{width:100%;max-width:380px;min-height:480px}
+
+  /* Below the split */
+  .quiz-section{display:none}
+  .hiw-grid{flex-direction:row;max-width:900px}
+  .hiw-card{flex:1}
+  .rv-grid{flex-direction:row;max-width:900px;margin:0 auto}
+  .rv-card{flex:1}
+  .fq-list{max-width:700px}
 }
 </style>
 </head>
 <body>
 
 <!-- HEADER -->
-<div class="lp-header">
-  <a href="/" class="lp-logo"><img src="assets/img/toro-logo.png" alt="Toro Movers">TORO <span class="accent">MOVERS</span></a>
-  <a href="tel:3217580094" class="lp-header-call"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span>(321) 758-0094</span></a>
+<div class="hd">
+  <a href="/" class="hd-logo"><img src="assets/img/toro-logo.png" alt="">TORO <span class="a">MOVERS</span></a>
+  <a href="tel:3217580094" class="hd-call"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span>(321) 758-0094</span></a>
 </div>
 
-<!-- HERO -->
-<section class="lp-hero">
-  <div class="lp-hero-inner">
-    <h1>How much does your move <span class="accent">actually cost?</span></h1>
-    <p>Answer a few quick questions and we'll email you a detailed quote with pricing breakdown.</p>
-    <div class="lp-hero-badges">
-      <span class="lp-badge"><span class="dot"></span>Licensed & Insured</span>
-      <span class="lp-badge"><span class="dot"></span>4.9★ Google</span>
-      <span class="lp-badge"><span class="dot"></span>Same-Week</span>
-    </div>
+<!-- ═══════════ MOBILE HERO ═══════════ -->
+<section class="m-hero m-only">
+  <h1>How much is your move, <span class="a">really?</span></h1>
+  <p>Answer 7 quick questions. We'll email your detailed quote with full pricing breakdown.</p>
+  <button class="m-hero-cta" onclick="document.getElementById('calculator').scrollIntoView({behavior:'smooth'})">Get My Free Quote ↓</button>
+  <div class="m-badges">
+    <span class="m-badge"><span class="d"></span>Licensed</span>
+    <span class="m-badge"><span class="d"></span>4.9★</span>
+    <span class="m-badge"><span class="d"></span>Family-Owned</span>
+    <span class="m-badge"><span class="d"></span>Same-Week</span>
   </div>
 </section>
 
-<!-- MULTI-STEP CALCULATOR -->
-<section class="lp-calc-section" id="calculator">
-  <div class="lp-calc-wrap">
-    <div class="lp-calc" id="lp-calc">
-
-      <!-- Progress -->
-      <div class="lp-progress">
-        <div class="lp-progress-label"><span id="lp-step-label">Step 1 of 7</span><span id="lp-step-pct">14%</span></div>
-        <div class="lp-progress-bar"><div class="lp-progress-fill" id="lp-bar" style="width:14%"></div></div>
-      </div>
-
-      <!-- Step 1: Type of move -->
-      <div class="lp-step active" data-step="1">
-        <p class="lp-step-q">What type of move do you need?</p>
-        <div class="lp-pills" data-field="moveType">
-          <div class="lp-pill" data-val="loading"><div class="lp-pill-icon">📦</div><div class="lp-pill-label">Loading / Unloading<div class="lp-pill-desc">You have a truck, we do the heavy lifting</div></div></div>
-          <div class="lp-pill" data-val="local"><div class="lp-pill-icon">🚚</div><div class="lp-pill-label">Local Move<div class="lp-pill-desc">We bring the truck — load, drive, unload</div></div></div>
-          <div class="lp-pill" data-val="longdistance"><div class="lp-pill-icon">🗺️</div><div class="lp-pill-label">Long-Distance<div class="lp-pill-desc">Across Florida or out of state</div></div></div>
-          <div class="lp-pill" data-val="packing"><div class="lp-pill-icon">🏠</div><div class="lp-pill-label">Packing Only<div class="lp-pill-desc">We pack your house — you handle the rest</div></div></div>
-        </div>
-      </div>
-
-      <!-- Step 2: Bedrooms -->
-      <div class="lp-step" data-step="2">
-        <p class="lp-step-q">How many bedrooms?</p>
-        <p class="lp-step-sub">This helps us estimate crew size and time.</p>
-        <div class="lp-pills" data-field="bedrooms">
-          <div class="lp-pill" data-val="1"><div class="lp-pill-icon">1</div><div class="lp-pill-label">Studio / 1 Bedroom</div></div>
-          <div class="lp-pill" data-val="2"><div class="lp-pill-icon">2</div><div class="lp-pill-label">2 Bedrooms</div></div>
-          <div class="lp-pill" data-val="3"><div class="lp-pill-icon">3</div><div class="lp-pill-label">3 Bedrooms</div></div>
-          <div class="lp-pill" data-val="4"><div class="lp-pill-icon">4+</div><div class="lp-pill-label">4+ Bedrooms</div></div>
-        </div>
-      </div>
-
-      <!-- Step 3: Stairs -->
-      <div class="lp-step" data-step="3">
-        <p class="lp-step-q">Any stairs involved?</p>
-        <p class="lp-step-sub">No extra charge — just helps us plan the crew.</p>
-        <div class="lp-pills" data-field="stairs">
-          <div class="lp-pill" data-val="none"><div class="lp-pill-icon">1</div><div class="lp-pill-label">Ground floor — no stairs</div></div>
-          <div class="lp-pill" data-val="2nd"><div class="lp-pill-icon">2</div><div class="lp-pill-label">2nd floor</div></div>
-          <div class="lp-pill" data-val="3rd"><div class="lp-pill-icon">3+</div><div class="lp-pill-label">3rd floor or higher</div></div>
-        </div>
-      </div>
-
-      <!-- Step 4: Packing -->
-      <div class="lp-step" data-step="4">
-        <p class="lp-step-q">Need packing help?</p>
-        <div class="lp-pills" data-field="packing">
-          <div class="lp-pill" data-val="none"><div class="lp-pill-icon">✅</div><div class="lp-pill-label">No — I'll pack myself</div></div>
-          <div class="lp-pill" data-val="fragile"><div class="lp-pill-icon">🥂</div><div class="lp-pill-label">Just fragile items<div class="lp-pill-desc">Kitchen, mirrors, artwork</div></div></div>
-          <div class="lp-pill" data-val="full"><div class="lp-pill-icon">📦</div><div class="lp-pill-label">Full-house packing<div class="lp-pill-desc">We pack everything — top to bottom</div></div></div>
-        </div>
-      </div>
-
-      <!-- Step 5: Special items -->
-      <div class="lp-step" data-step="5">
-        <p class="lp-step-q">Any special items?</p>
-        <p class="lp-step-sub">Check any that apply. Skip if none.</p>
-        <div class="lp-checks" id="lp-specials">
-          <label class="lp-check"><input type="checkbox" value="Piano">🎹 Piano</label>
-          <label class="lp-check"><input type="checkbox" value="Gun safe">🔒 Gun safe</label>
-          <label class="lp-check"><input type="checkbox" value="Pool table">🎱 Pool table</label>
-          <label class="lp-check"><input type="checkbox" value="Heavy appliance">🧊 Heavy appliance</label>
-          <label class="lp-check"><input type="checkbox" value="Antiques">🪑 Antiques</label>
-          <label class="lp-check"><input type="checkbox" value="Gym equipment">🏋️ Gym equipment</label>
-        </div>
-        <div class="lp-nav">
-          <button class="lp-btn-back" onclick="goStep(-1)">← Back</button>
-          <button class="lp-btn-next" onclick="goStep(1)">Next →</button>
-        </div>
-      </div>
-
-      <!-- Step 6: Date & Location -->
-      <div class="lp-step" data-step="6">
-        <p class="lp-step-q">When & where?</p>
-        <div class="lp-input-group">
-          <input type="date" id="lp-date" class="lp-input" placeholder="Move date">
-          <div class="lp-input-row">
-            <input type="text" id="lp-zip-from" class="lp-input" placeholder="Pickup ZIP" maxlength="5" inputmode="numeric">
-            <input type="text" id="lp-zip-to" class="lp-input" placeholder="Dropoff ZIP" maxlength="5" inputmode="numeric">
-          </div>
-        </div>
-        <div class="lp-nav">
-          <button class="lp-btn-back" onclick="goStep(-1)">← Back</button>
-          <button class="lp-btn-next" onclick="goStep(1)">Almost done →</button>
-        </div>
-      </div>
-
-      <!-- Step 7: Contact info (email gate) -->
-      <div class="lp-step" data-step="7">
-        <p class="lp-step-q">Where should we send your quote?</p>
-        <p class="lp-step-sub">We'll email your detailed estimate and a member of our team will follow up shortly.</p>
-        <div class="lp-input-group">
-          <input type="text" id="lp-name" class="lp-input" placeholder="Your name" required>
-          <input type="tel" id="lp-phone" class="lp-input" placeholder="Phone number" required inputmode="tel">
-          <input type="email" id="lp-email" class="lp-input" placeholder="Email address" required>
-        </div>
-        <div class="lp-nav">
-          <button class="lp-btn-back" onclick="goStep(-1)">← Back</button>
-          <button class="lp-btn-next" id="lp-submit" onclick="submitQuote()">Get My Free Quote →</button>
-        </div>
-        <p class="lp-gate-status" id="lp-status" style="display:none"></p>
-        <p style="font-size:11px;color:var(--gray-500);text-align:center;margin-top:12px">$75 per mover per hour · 2-hour minimum · Licensed & insured in FL</p>
-      </div>
-
+<!-- ═══════════ DESKTOP SPLIT ═══════════ -->
+<div class="d-split d-only">
+  <div class="d-left">
+    <h1>How much is your move, <span class="a">really?</span></h1>
+    <p>Answer 7 quick questions and we'll email your detailed quote with full pricing breakdown. A member of our team will follow up shortly.</p>
+    <div class="d-badges">
+      <span class="d-badge"><span class="d"></span>Licensed & Insured</span>
+      <span class="d-badge"><span class="d"></span>4.9★ from 29 Reviews</span>
+      <span class="d-badge"><span class="d"></span>Family-Owned</span>
+      <span class="d-badge"><span class="d"></span>Same-Week Scheduling</span>
     </div>
+    <div class="d-review">
+      <div class="rv-stars">★★★★★</div>
+      <p class="rv-text">"Two guys, two hours, $300 — exactly what they quoted. Zero surprises."</p>
+      <div class="rv-who">Maria S.</div>
+      <div class="rv-where">Orlando, FL</div>
+    </div>
+  </div>
+  <div class="d-right">
+    <div class="quiz" id="d-quiz"></div>
+  </div>
+</div>
+
+<!-- ═══════════ MOBILE QUIZ ═══════════ -->
+<section class="quiz-section m-only" id="calculator">
+  <div class="quiz-wrap">
+    <div class="quiz" id="m-quiz"></div>
   </div>
 </section>
 
-<!-- TRUST STRIP -->
-<div class="lp-trust">
-  <div class="lp-trust-inner">
-    <div class="lp-trust-item"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Fully Insured</div>
-    <div class="lp-trust-item"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Family-Owned</div>
-    <div class="lp-trust-item"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>4.9★ Reviews</div>
-    <div class="lp-trust-item"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Same-Week</div>
+<!-- HOW IT WORKS -->
+<section class="hiw">
+  <h2 class="hiw-title">How it works</h2>
+  <div class="hiw-grid">
+    <div class="hiw-card"><div class="hiw-num">1</div><div><h3>Get your quote</h3><p>Answer a few questions. We email your detailed estimate with full breakdown.</p></div></div>
+    <div class="hiw-card"><div class="hiw-num">2</div><div><h3>We call you</h3><p>A member of our team follows up to confirm the details and schedule your move.</p></div></div>
+    <div class="hiw-card"><div class="hiw-num">3</div><div><h3>Move day</h3><p>Our crew shows up on time, wraps everything, and gets it done. Same fair rate.</p></div></div>
   </div>
-</div>
+</section>
 
 <!-- REVIEWS -->
-<section class="lp-reviews">
-  <h2 class="lp-reviews-title">What Central Florida says about us.</h2>
-  <div class="lp-reviews-grid">
-    <div class="lp-review"><div class="lp-review-stars">★★★★★</div><p class="lp-review-text">"Two guys, two hours, $300 — exactly what they quoted. Zero surprises. Wrapped everything carefully and were faster than I expected."</p><div class="lp-review-author">Maria S.</div><div class="lp-review-city">Orlando, FL</div></div>
-    <div class="lp-review"><div class="lp-review-stars">★★★★★</div><p class="lp-review-text">"Booked them last-minute for a Sunday move. Showed up on time, brought the truck, knocked out a 3-bedroom in 4 hours. Honest pricing."</p><div class="lp-review-author">James T.</div><div class="lp-review-city">Lake Mary, FL</div></div>
-    <div class="lp-review"><div class="lp-review-stars">★★★★★</div><p class="lp-review-text">"Most movers won't quote without an in-home visit. Toro put the price right on the website and stuck to it. This is how it should work."</p><div class="lp-review-author">Diana R.</div><div class="lp-review-city">Kissimmee, FL</div></div>
+<section class="rv">
+  <h2 class="rv-title">What Central Florida says about us.</h2>
+  <div class="rv-grid">
+    <div class="rv-card"><div class="rv-stars">★★★★★</div><p class="rv-text">"Two guys, two hours, $300 — exactly what they quoted. Zero surprises. Wrapped everything carefully."</p><div class="rv-who">Maria S.</div><div class="rv-where">Orlando, FL</div></div>
+    <div class="rv-card"><div class="rv-stars">★★★★★</div><p class="rv-text">"Booked last-minute for a Sunday move. Showed up on time, brought the truck, knocked out 3 bedrooms in 4 hours."</p><div class="rv-who">James T.</div><div class="rv-where">Lake Mary, FL</div></div>
+    <div class="rv-card"><div class="rv-stars">★★★★★</div><p class="rv-text">"Most movers won't quote without an in-home visit. Toro put the price on the website and stuck to it."</p><div class="rv-who">Diana R.</div><div class="rv-where">Kissimmee, FL</div></div>
   </div>
 </section>
 
 <!-- FAQ -->
-<section class="lp-faq">
-  <h2 class="lp-faq-title">Common questions</h2>
-  <div class="lp-faq-list">
-    <details class="lp-faq-item"><summary>How much does a move cost?</summary><p class="answer">$75 per mover, per hour, with a 2-hour minimum. A typical 1-bedroom move runs $300-$500. A 2-bedroom with truck runs $700-$900.</p></details>
-    <details class="lp-faq-item"><summary>Are you licensed and insured?</summary><p class="answer">Yes — fully licensed and insured in Florida. We send proof on request.</p></details>
-    <details class="lp-faq-item"><summary>Do you do packing and long-distance?</summary><p class="answer">Yes — loading, unloading, packing, unpacking, local, long-distance, and storage moves. Same hourly rate.</p></details>
-    <details class="lp-faq-item"><summary>How do I pay?</summary><p class="answer">A small deposit holds your date ($50 labor-only, $125 with truck). Balance paid after the move by card, Cash App, or Zelle.</p></details>
+<section class="fq">
+  <h2 class="fq-title">Common questions</h2>
+  <div class="fq-list">
+    <details class="fq-item"><summary>How much does a move cost?</summary><p class="ans">$75 per mover, per hour, with a 2-hour minimum. A typical 1-bedroom move runs $300-$500. A 2-bedroom with truck runs $700-$900.</p></details>
+    <details class="fq-item"><summary>Are you licensed and insured?</summary><p class="ans">Yes — fully licensed and insured in Florida. We send proof on request.</p></details>
+    <details class="fq-item"><summary>Do you do packing and long-distance?</summary><p class="ans">Yes — loading, unloading, packing, unpacking, local, long-distance, and storage moves. Same hourly rate.</p></details>
+    <details class="fq-item"><summary>How do I pay?</summary><p class="ans">A small deposit holds your date ($50 labor-only, $125 with truck). Balance paid after the move by card, Cash App, or Zelle.</p></details>
   </div>
 </section>
 
 <!-- FOOTER -->
-<div class="lp-footer">Toro Movers · Licensed & Insured · Central Florida</div>
+<div class="ft">Toro Movers · Licensed & Insured · Central Florida</div>
 
 <!-- STICKY MOBILE -->
-<div class="lp-sticky">
-  <a href="#calculator" class="lp-sticky-btn lp-sticky-quote">Get Free Quote</a>
-  <a href="tel:3217580094" class="lp-sticky-btn lp-sticky-call">Call Now</a>
+<div class="sticky m-only">
+  <a href="#calculator" class="sticky-btn sticky-q">Get Free Quote</a>
+  <a href="tel:3217580094" class="sticky-btn sticky-c">Call Now</a>
 </div>
 
 <script>
-// Multi-step calculator logic
-var TOTAL_STEPS = 7;
-var currentStep = 1;
-var RATE = 75;
+// ═══════════════════════════════════════════════
+// QUIZ ENGINE — renders into both mobile and desktop containers
+// ═══════════════════════════════════════════════
+var STEPS = [
+  {id:1,q:'What type of move do you need?',type:'pill',field:'moveType',opts:[
+    {v:'loading',ico:'📦',t:'Loading / Unloading',d:'You have a truck, we do the heavy lifting'},
+    {v:'local',ico:'🚚',t:'Local Move',d:'We bring the truck — load, drive, unload'},
+    {v:'longdistance',ico:'🗺️',t:'Long-Distance',d:'Across Florida or out of state'},
+    {v:'packing',ico:'🏠',t:'Packing Only',d:'We pack your house — you handle the rest'}
+  ]},
+  {id:2,q:'How many bedrooms?',sub:'Helps us estimate crew size and time.',type:'pill',field:'bedrooms',opts:[
+    {v:'1',ico:'1',t:'Studio / 1 Bedroom'},
+    {v:'2',ico:'2',t:'2 Bedrooms'},
+    {v:'3',ico:'3',t:'3 Bedrooms'},
+    {v:'4',ico:'4+',t:'4+ Bedrooms'}
+  ]},
+  {id:3,q:'Any stairs involved?',sub:'No extra charge — just helps us plan.',type:'pill',field:'stairs',opts:[
+    {v:'none',ico:'1',t:'Ground floor — no stairs'},
+    {v:'2nd',ico:'2',t:'2nd floor'},
+    {v:'3rd',ico:'3+',t:'3rd floor or higher'}
+  ]},
+  {id:4,q:'Need packing help?',type:'pill',field:'packing',opts:[
+    {v:'none',ico:'✅',t:'No — I\'ll pack myself'},
+    {v:'fragile',ico:'🥂',t:'Just fragile items',d:'Kitchen, mirrors, artwork'},
+    {v:'full',ico:'📦',t:'Full-house packing',d:'We pack everything'}
+  ]},
+  {id:5,q:'Any special items?',sub:'Check any that apply. Skip if none.',type:'check',field:'specials',opts:[
+    {v:'Piano',ico:'🎹'},{v:'Gun safe',ico:'🔒'},{v:'Pool table',ico:'🎱'},
+    {v:'Heavy appliance',ico:'🧊'},{v:'Antiques',ico:'🪑'},{v:'Gym equipment',ico:'🏋️'}
+  ]},
+  {id:6,q:'When & where?',type:'inputs',fields:['date','zipFrom','zipTo']},
+  {id:7,q:'Where should we send your quote?',sub:'A member of our team will follow up shortly.',type:'contact'}
+];
+var TOTAL = STEPS.length;
+var cur = 0;
+var data = {moveType:'',bedrooms:'',stairs:'',packing:'',specials:[],date:'',zipFrom:'',zipTo:'',name:'',phone:'',email:''};
 
-var moveData = {
-  moveType: '', bedrooms: '', stairs: '', packing: '', specials: [],
-  date: '', zipFrom: '', zipTo: '', name: '', phone: '', email: ''
-};
+function render(container) {
+  var s = STEPS[cur];
+  var pct = Math.round(((cur+1)/TOTAL)*100);
+  var h = '<div class="qp"><div class="qp-top"><span>Step '+(cur+1)+' of '+TOTAL+'</span><span>'+pct+'%</span></div><div class="qp-bar"><div class="qp-fill" style="width:'+pct+'%"></div></div></div>';
+  h += '<div class="qs on"><p class="qs-q">'+s.q+'</p>';
+  if (s.sub) h += '<p class="qs-sub">'+s.sub+'</p>';
 
-// Pill click → auto-advance for single-select
-document.querySelectorAll('.lp-pills').forEach(function(group) {
-  group.querySelectorAll('.lp-pill').forEach(function(pill) {
-    pill.addEventListener('click', function() {
-      group.querySelectorAll('.lp-pill').forEach(function(p) { p.classList.remove('selected'); });
-      pill.classList.add('selected');
-      moveData[group.dataset.field] = pill.dataset.val;
-      // Auto-advance after 300ms
-      setTimeout(function() { goStep(1); }, 300);
+  if (s.type === 'pill') {
+    h += '<div class="qp-pills">';
+    s.opts.forEach(function(o){
+      var sel = data[s.field] === o.v ? ' sel' : '';
+      h += '<div class="qp-pill'+sel+'" data-v="'+o.v+'" data-f="'+s.field+'"><div class="qp-pill-ico">'+o.ico+'</div><div><div class="qp-pill-txt">'+o.t+'</div>'+(o.d?'<div class="qp-pill-desc">'+o.d+'</div>':'')+'</div></div>';
     });
-  });
-});
-
-// Checkbox toggles
-document.querySelectorAll('.lp-check').forEach(function(label) {
-  label.addEventListener('click', function(e) {
-    e.preventDefault();
-    var cb = label.querySelector('input[type="checkbox"]');
-    cb.checked = !cb.checked;
-    label.classList.toggle('checked', cb.checked);
-  });
-});
-
-function goStep(dir) {
-  var next = currentStep + dir;
-  if (next < 1 || next > TOTAL_STEPS) return;
-  currentStep = next;
-
-  document.querySelectorAll('.lp-step').forEach(function(s) { s.classList.remove('active'); });
-  var el = document.querySelector('[data-step="' + currentStep + '"]');
-  if (el) el.classList.add('active');
-
-  var pct = Math.round((currentStep / TOTAL_STEPS) * 100);
-  document.getElementById('lp-bar').style.width = pct + '%';
-  document.getElementById('lp-step-label').textContent = 'Step ' + currentStep + ' of ' + TOTAL_STEPS;
-  document.getElementById('lp-step-pct').textContent = pct + '%';
-
-  // Collect specials on step 5 exit
-  if (currentStep === 6) {
-    moveData.specials = [];
-    document.querySelectorAll('#lp-specials input:checked').forEach(function(cb) {
-      moveData.specials.push(cb.value);
+    h += '</div>';
+  } else if (s.type === 'check') {
+    h += '<div class="qc">';
+    s.opts.forEach(function(o){
+      var ck = data.specials.indexOf(o.v) > -1 ? ' ck' : '';
+      var checked = ck ? ' checked' : '';
+      h += '<label class="qc-item'+ck+'"><input type="checkbox" value="'+o.v+'"'+checked+'> '+o.ico+' '+o.v+'</label>';
     });
+    h += '</div>';
+    h += '<div class="qn">'+(cur>0?'<button class="qn-back" onclick="go(-1)">← Back</button>':'')+'<button class="qn-next" onclick="go(1)">Next →</button></div>';
+  } else if (s.type === 'inputs') {
+    h += '<div class="qi"><input type="date" id="q-date" class="qi" value="'+data.date+'" placeholder="Move date"><div class="qi-row"><input type="text" id="q-zf" value="'+data.zipFrom+'" placeholder="Pickup ZIP" maxlength="5" inputmode="numeric"><input type="text" id="q-zt" value="'+data.zipTo+'" placeholder="Dropoff ZIP" maxlength="5" inputmode="numeric"></div></div>';
+    h += '<div class="qn"><button class="qn-back" onclick="go(-1)">← Back</button><button class="qn-next" onclick="go(1)">Almost done →</button></div>';
+  } else if (s.type === 'contact') {
+    h += '<div class="qi"><input type="text" id="q-name" value="'+data.name+'" placeholder="Your name" required><input type="tel" id="q-phone" value="'+data.phone+'" placeholder="Phone number" required inputmode="tel"><input type="email" id="q-email" value="'+data.email+'" placeholder="Email address" required></div>';
+    h += '<div class="qn"><button class="qn-back" onclick="go(-1)">← Back</button><button class="qn-next" id="q-submit" onclick="submitQ()">Get My Free Quote →</button></div>';
+    h += '<p class="q-status" id="q-status" style="display:none"></p>';
+    h += '<p style="font-size:11px;color:var(--gray-500);text-align:center;margin-top:10px">$75/mover/hour · 2-hour minimum · Licensed & insured</p>';
   }
+  h += '</div>';
+  container.innerHTML = h;
+  wireStep(container);
 }
 
-function calculateEstimate() {
-  var br = moveData.bedrooms || '2';
-  var hoursMap = { '1': 2, '2': 3, '3': 4, '4': 5 };
-  var hours = hoursMap[br] || 3;
+function wireStep(c) {
+  // Pill clicks
+  c.querySelectorAll('.qp-pill').forEach(function(p){
+    p.addEventListener('click', function(){
+      data[p.dataset.f] = p.dataset.v;
+      c.querySelectorAll('.qp-pill').forEach(function(x){x.classList.remove('sel')});
+      p.classList.add('sel');
+      setTimeout(function(){ go(1); }, 280);
+    });
+  });
+  // Checkbox clicks
+  c.querySelectorAll('.qc-item').forEach(function(label){
+    label.addEventListener('click', function(e){
+      e.preventDefault();
+      var cb = label.querySelector('input');
+      cb.checked = !cb.checked;
+      label.classList.toggle('ck', cb.checked);
+      // Sync to data
+      data.specials = [];
+      c.querySelectorAll('.qc-item input:checked').forEach(function(x){ data.specials.push(x.value); });
+    });
+  });
+}
 
-  var movers = 2;
-  if (br === '3') movers = 3;
-  if (br === '4') movers = 3;
+function getContainer() {
+  return window.innerWidth >= 900 ? document.getElementById('d-quiz') : document.getElementById('m-quiz');
+}
 
-  var truck = (moveData.moveType === 'local' || moveData.moveType === 'longdistance');
+function go(dir) {
+  // Save input values before navigating
+  var c = getContainer();
+  if (STEPS[cur].type === 'inputs') {
+    var d = c.querySelector('#q-date'); if(d) data.date = d.value;
+    var zf = c.querySelector('#q-zf'); if(zf) data.zipFrom = zf.value;
+    var zt = c.querySelector('#q-zt'); if(zt) data.zipTo = zt.value;
+  }
+  if (STEPS[cur].type === 'contact') {
+    var n = c.querySelector('#q-name'); if(n) data.name = n.value;
+    var p = c.querySelector('#q-phone'); if(p) data.phone = p.value;
+    var e = c.querySelector('#q-email'); if(e) data.email = e.value;
+  }
+
+  var next = cur + dir;
+  if (next < 0 || next >= TOTAL) return;
+  cur = next;
+  render(getContainer());
+}
+
+function calcEstimate() {
+  var hMap = {'1':2,'2':3,'3':4,'4':5};
+  var hours = hMap[data.bedrooms] || 3;
+  var movers = (data.bedrooms==='3'||data.bedrooms==='4') ? 3 : 2;
+  var truck = (data.moveType==='local'||data.moveType==='longdistance');
   var truckFee = truck ? 275 : 0;
-
-  if (moveData.stairs === '2nd') hours += 0.5;
-  if (moveData.stairs === '3rd') hours += 1;
-  if (moveData.packing === 'fragile') hours += 1;
-  if (moveData.packing === 'full') hours += 2;
-  hours += moveData.specials.length * 0.5;
-  hours = Math.ceil(hours * 2) / 2;
-
-  var labor = movers * hours * RATE;
-  return { movers: movers, hours: hours, labor: labor, truck: truck, truckFee: truckFee, total: labor + truckFee };
+  if (data.stairs==='2nd') hours += .5;
+  if (data.stairs==='3rd') hours += 1;
+  if (data.packing==='fragile') hours += 1;
+  if (data.packing==='full') hours += 2;
+  hours += data.specials.length * .5;
+  hours = Math.ceil(hours*2)/2;
+  var labor = movers*hours*75;
+  return {movers:movers,hours:hours,labor:labor,truck:truck,truckFee:truckFee,total:labor+truckFee};
 }
 
-function submitQuote() {
-  var name = document.getElementById('lp-name').value.trim();
-  var phone = document.getElementById('lp-phone').value.trim();
-  var email = document.getElementById('lp-email').value.trim();
-  var status = document.getElementById('lp-status');
+function submitQ() {
+  var c = getContainer();
+  var n = (c.querySelector('#q-name')||{}).value||'';
+  var p = (c.querySelector('#q-phone')||{}).value||'';
+  var e = (c.querySelector('#q-email')||{}).value||'';
+  var st = c.querySelector('#q-status');
 
-  if (!name || !phone || !email) {
-    status.textContent = 'Please fill in all fields.';
-    status.className = 'lp-gate-status error';
-    status.style.display = '';
+  if (!n.trim()||!p.trim()||!e.trim()) {
+    if(st){st.textContent='Please fill in all fields.';st.className='q-status err';st.style.display='';}
     return;
   }
+  data.name=n.trim(); data.phone=p.trim(); data.email=e.trim();
 
-  moveData.name = name;
-  moveData.phone = phone;
-  moveData.email = email;
-  moveData.date = (document.getElementById('lp-date') || {}).value || '';
-  moveData.zipFrom = (document.getElementById('lp-zip-from') || {}).value || '';
-  moveData.zipTo = (document.getElementById('lp-zip-to') || {}).value || '';
+  var btn = c.querySelector('#q-submit');
+  if(btn){btn.disabled=true;btn.textContent='Sending...';}
+  if(st) st.style.display='none';
 
-  var btn = document.getElementById('lp-submit');
-  btn.disabled = true;
-  btn.textContent = 'Sending...';
-  status.style.display = 'none';
+  var est = calcEstimate();
 
-  var est = calculateEstimate();
-
-  fetch('/.netlify/functions/send-quote', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      name: name, email: email, phone: phone,
-      movers: est.movers, hours: est.hours,
-      truck: est.truck, truckFee: est.truckFee,
-      labor: est.labor, total: est.total,
-      packing: moveData.packing,
-      bedrooms: moveData.bedrooms,
-      page: '/lp',
-    }),
+  fetch('/.netlify/functions/send-quote',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({name:data.name,email:data.email,phone:data.phone,movers:est.movers,hours:est.hours,truck:est.truck,truckFee:est.truckFee,labor:est.labor,total:est.total,packing:data.packing,bedrooms:data.bedrooms,page:'/lp'})
   })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      if (data.success) {
-        try { if (window.ToroTrack) window.ToroTrack.lead({ name: name, email: email, phone: phone }); } catch(e) {}
-        document.getElementById('lp-calc').innerHTML =
-          '<div class="lp-thankyou">' +
-            '<div class="lp-ty-check"><svg fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>' +
-            '<h4>Quote sent!</h4>' +
-            '<p>Check your inbox at <strong>' + email + '</strong> for your detailed moving estimate.</p>' +
-            '<p style="font-size:13px;color:var(--gray-500)">A member of our team will follow up shortly.</p>' +
-            '<a href="tel:3217580094" class="lp-ty-call">Call (321) 758-0094</a>' +
-            '<p style="font-size:12px;color:var(--gray-500);margin-top:16px">Redirecting to homepage in <span id="lp-countdown">5</span>s...</p>' +
-          '</div>';
-        // Countdown and redirect
-        var sec = 5;
-        var cd = setInterval(function() {
-          sec--;
-          var el = document.getElementById('lp-countdown');
-          if (el) el.textContent = sec;
-          if (sec <= 0) { clearInterval(cd); window.location.href = '/'; }
-        }, 1000);
-      } else {
-        status.textContent = 'Something went wrong. Call (321) 758-0094.';
-        status.className = 'lp-gate-status error';
-        status.style.display = '';
-        btn.disabled = false;
-        btn.textContent = 'Get My Free Quote →';
-      }
-    })
-    .catch(function() {
-      status.textContent = 'Something went wrong. Call (321) 758-0094.';
-      status.className = 'lp-gate-status error';
-      status.style.display = '';
-      btn.disabled = false;
-      btn.textContent = 'Get My Free Quote →';
-    });
+  .then(function(r){return r.json()})
+  .then(function(res){
+    if(res.success){
+      try{if(window.ToroTrack)window.ToroTrack.lead({name:data.name,email:data.email,phone:data.phone})}catch(x){}
+      c.innerHTML='<div class="qty"><div class="qty-ck"><svg fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><h4>Quote sent!</h4><p>Check your inbox at <strong>'+data.email+'</strong> for your detailed moving estimate.</p><p style="font-size:13px">A member of our team will follow up shortly.</p><a href="tel:3217580094" class="qty-call">Call (321) 758-0094</a><p class="qty-cd">Redirecting in <span id="qty-cd">5</span>s...</p></div>';
+      var s=5;var iv=setInterval(function(){s--;var el=document.getElementById('qty-cd');if(el)el.textContent=s;if(s<=0){clearInterval(iv);window.location.href='/';}},1000);
+    } else { fail(c,btn,st); }
+  })
+  .catch(function(){ fail(c,btn,st); });
 }
+
+function fail(c,btn,st) {
+  if(st){st.textContent='Something went wrong. Call (321) 758-0094.';st.className='q-status err';st.style.display='';}
+  if(btn){btn.disabled=false;btn.textContent='Get My Free Quote →';}
+}
+
+// Init — render step 1 into the correct container
+function init() {
+  var mc = document.getElementById('m-quiz');
+  var dc = document.getElementById('d-quiz');
+  if (window.innerWidth >= 900 && dc) { render(dc); }
+  else if (mc) { render(mc); }
+}
+init();
+// Re-render on resize (desktop ↔ mobile switch)
+var resizeTimer;
+window.addEventListener('resize', function(){ clearTimeout(resizeTimer); resizeTimer = setTimeout(init, 200); });
 </script>
 </body>
 </html>
