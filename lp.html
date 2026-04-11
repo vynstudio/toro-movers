@@ -341,8 +341,11 @@ document.querySelectorAll('.lp-pills').forEach(function(group) {
 
 // Checkbox toggles
 document.querySelectorAll('.lp-check').forEach(function(label) {
-  label.addEventListener('click', function() {
-    label.classList.toggle('checked');
+  label.addEventListener('click', function(e) {
+    e.preventDefault();
+    var cb = label.querySelector('input[type="checkbox"]');
+    cb.checked = !cb.checked;
+    label.classList.toggle('checked', cb.checked);
   });
 });
 
