@@ -446,7 +446,16 @@ function submitQuote() {
             '<p>Check your inbox at <strong>' + email + '</strong> for your detailed moving estimate.</p>' +
             '<p style="font-size:13px;color:var(--gray-500)">A member of our team will follow up shortly.</p>' +
             '<a href="tel:3217580094" class="lp-ty-call">Call (321) 758-0094</a>' +
+            '<p style="font-size:12px;color:var(--gray-500);margin-top:16px">Redirecting to homepage in <span id="lp-countdown">5</span>s...</p>' +
           '</div>';
+        // Countdown and redirect
+        var sec = 5;
+        var cd = setInterval(function() {
+          sec--;
+          var el = document.getElementById('lp-countdown');
+          if (el) el.textContent = sec;
+          if (sec <= 0) { clearInterval(cd); window.location.href = '/'; }
+        }, 1000);
       } else {
         status.textContent = 'Something went wrong. Call (321) 758-0094.';
         status.className = 'lp-gate-status error';
