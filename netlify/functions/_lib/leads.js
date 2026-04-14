@@ -3,7 +3,20 @@
 
 const { getStore } = require('@netlify/blobs');
 
-function store(){ return getStore('leads'); }
+function store(){
+  // Auto-config works on Netlify runtime; if not, fall back to explicit
+  // siteID + token from env vars (required for background/scheduled functions
+  // and some Node runtimes).
+  try {
+    return getStore('leads');
+  } catch (e) {
+    return getStore({
+      name: 'leads',
+      siteID: process.env.NETLIFY_SITE_ID || process.env.SITE_ID,
+      token: process.env.NETLIFY_BLOBS_TOKEN,
+    });
+  }
+}
 
 function leadId(){
   return Date.now().toString(36) + Math.random().toString(36).slice(2,8);

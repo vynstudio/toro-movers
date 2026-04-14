@@ -2,6 +2,13 @@
   publish = "."
   command = "echo 'Static site — no build step'"
 
+[functions]
+  node_bundler = "esbuild"
+  external_node_modules = ["@netlify/blobs"]
+
+[build.environment]
+  NODE_VERSION = "20"
+
 # ============================================================
 # SECURITY HEADERS
 # ============================================================
