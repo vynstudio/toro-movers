@@ -161,6 +161,15 @@ exports.handler = async (event) => {
 
   const resend = new Resend(apiKey);
 
+  // Quote estimate block for INTERNAL email (declared BEFORE use below)
+  const internalQuoteBlock = estimate ? `
+    <div style="margin:18px 0;background:#fef3c7;border:1px solid #fbbf24;border-radius:10px;padding:14px 16px;font-size:14px">
+      <strong style="color:#78350f">Auto-quote sent to customer:</strong>
+      <span style="font-weight:700">$${estimate.totalLow}–$${estimate.totalHigh}</span>
+      <span style="color:#6b7280">· ${estimate.movers} movers · ${estimate.hoursLow}–${estimate.hoursHigh} hrs · $75/hr</span>
+    </div>
+  ` : '';
+
   // ===== INTERNAL EMAIL (to Toro Movers team) =====
   const internalEmail = {
     from: `Toro Movers Leads <${fromEmail}>`,
@@ -221,15 +230,6 @@ exports.handler = async (event) => {
       <div style="font-size:42px;font-weight:900;letter-spacing:-.02em;line-height:1;margin-bottom:6px">$${estimate.totalLow} – $${estimate.totalHigh}</div>
       <div style="font-size:14px;opacity:.95;margin-bottom:18px">${estimate.movers} movers · ${estimate.hoursLow}–${estimate.hoursHigh} hours · $75/hr per mover</div>
       <div style="font-size:12px;opacity:.8;padding-top:14px;border-top:1px solid rgba(255,255,255,.2)">Estimate based on your inputs. Final price confirmed on a 2-minute call.<br>No hidden fees · no fuel surcharge · no per-mile charges.</div>
-    </div>
-  ` : '';
-
-  // Quote estimate block for INTERNAL email (so the team sees what customer was quoted)
-  const internalQuoteBlock = estimate ? `
-    <div style="margin:18px 0;background:#fef3c7;border:1px solid #fbbf24;border-radius:10px;padding:14px 16px;font-size:14px">
-      <strong style="color:#78350f">Auto-quote sent to customer:</strong>
-      <span style="font-weight:700">$${estimate.totalLow}–$${estimate.totalHigh}</span>
-      <span style="color:#6b7280">· ${estimate.movers} movers · ${estimate.hoursLow}–${estimate.hoursHigh} hrs · $75/hr</span>
     </div>
   ` : '';
 
