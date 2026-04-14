@@ -23,10 +23,12 @@ const json = (status, data) => ({
 exports.handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') return { statusCode: 204, headers: json(204,{}).headers, body: '' };
 
-  const pw = event.headers['x-crm-password'] || event.queryStringParameters?.pw || '';
-  const expected = process.env.CRM_PASSWORD;
-  if (!expected) return json(500, { error: 'CRM_PASSWORD not configured' });
-  if (pw !== expected) return json(401, { error: 'Unauthorized' });
+  // AUTH DISABLED — test mode
+  // To re-enable: uncomment these lines and remove the comment below.
+  // const pw = event.headers['x-crm-password'] || event.queryStringParameters?.pw || '';
+  // const expected = process.env.CRM_PASSWORD;
+  // if (!expected) return json(500, { error: 'CRM_PASSWORD not configured' });
+  // if (pw !== expected) return json(401, { error: 'Unauthorized' });
 
   const action = event.queryStringParameters?.action || (event.body ? JSON.parse(event.body).action : '') || 'list';
   const id     = event.queryStringParameters?.id     || (event.body ? JSON.parse(event.body).id     : '');
