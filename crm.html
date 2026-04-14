@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Toro Movers — CRM</title>
+<meta name="theme-color" content="#C8102E">
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" href="assets/img/icon.png">
+
+<style>
+:root{
+  --red:#C8102E; --red-dark:#A00C24; --charcoal:#1a1a1a;
+  --white:#fff; --off:#f8f8f8; --line:#e5e5e5; --mute:#6b7280;
+  --green:#16a34a; --gold:#fbbf24; --blue:#2563eb; --purple:#7c3aed; --gray:#94a3b8;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--off);color:var(--charcoal);line-height:1.5;-webkit-font-smoothing:antialiased;overflow:hidden}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+button,input,select,textarea{font-family:inherit;font-size:inherit}
+button{cursor:pointer;border:none;background:none}
+
+/* ==== LOGIN ==== */
+.login{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#1a1a1a;z-index:1000}
+.login-box{background:#fff;border-radius:16px;padding:40px;max-width:380px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.login-logo{text-align:center;font-weight:900;font-size:26px;letter-spacing:-.3px;margin-bottom:4px}
+.login-logo span{color:var(--red)}
+.login-sub{text-align:center;font-size:13px;color:var(--mute);margin-bottom:24px}
+.login input{width:100%;padding:14px 16px;border:1.5px solid var(--line);border-radius:10px;margin-bottom:12px}
+.login input:focus{outline:none;border-color:var(--red)}
+.login button{width:100%;padding:14px;background:var(--red);color:#fff;border-radius:10px;font-weight:800}
+.login .err{color:var(--red);font-size:13px;text-align:center;margin-top:10px;display:none}
+
+/* ==== APP LAYOUT ==== */
+.app{display:flex;flex-direction:column;height:100vh;height:100dvh}
+.top{background:#0a0a0a;color:#fff;padding:12px 20px;display:flex;align-items:center;gap:16px;border-bottom:1px solid #222}
+.top .logo{font-weight:900;font-size:18px}
+.top .logo span{color:var(--red)}
+.top .tabs{display:flex;gap:4px;margin-left:20px}
+.top .tab{padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;color:rgba(255,255,255,.7);cursor:pointer;transition:all .15s}
+.top .tab:hover{color:#fff;background:rgba(255,255,255,.08)}
+.top .tab.active{color:#fff;background:var(--red)}
+.top .right{margin-left:auto;display:flex;align-items:center;gap:12px;font-size:13px;color:rgba(255,255,255,.7)}
+.refresh{padding:6px 12px;background:rgba(255,255,255,.08);border-radius:6px;color:#fff;font-size:12px;font-weight:600}
+.refresh:hover{background:rgba(255,255,255,.15)}
+.count-badge{background:var(--red);color:#fff;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:800}
+
+/* ==== PANELS ==== */
+.panel{flex:1;overflow:auto;padding:20px}
+
+/* ==== KANBAN ==== */
+.kanban{display:grid;grid-template-columns:repeat(6,minmax(240px,1fr));gap:16px;min-height:100%}
+.col{background:#fff;border-radius:12px;padding:12px;display:flex;flex-direction:column;min-height:200px}
+.col-head{display:flex;align-items:center;justify-content:space-between;padding:4px 4px 12px;border-bottom:2px solid;margin-bottom:10px}
+.col-head .name{font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase}
+.col-head .n{background:#f1f5f9;color:#334155;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:800}
+.col-new    .col-head{border-color:var(--blue)}     .col-new    .col-head .name{color:var(--blue)}
+.col-partial .col-head{border-color:var(--gold)}    .col-partial .col-head .name{color:#a16207}
+.col-contacted .col-head{border-color:var(--purple)} .col-contacted .col-head .name{color:var(--purple)}
+.col-quoted .col-head{border-color:#0891b2}          .col-quoted .col-head .name{color:#0891b2}
+.col-booked .col-head{border-color:var(--green)}     .col-booked .col-head .name{color:var(--green)}
+.col-done   .col-head{border-color:var(--gray)}      .col-done   .col-head .name{color:var(--gray)}
+.col-lost   .col-head{border-color:#dc2626}          .col-lost   .col-head .name{color:#dc2626}
+.col-abandoned .col-head{border-color:#dc2626}       .col-abandoned .col-head .name{color:#dc2626}
+
+/* ==== LEAD CARD ==== */
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:8px;cursor:pointer;transition:all .12s}
+.card:hover{border-color:var(--charcoal);box-shadow:0 4px 12px rgba(0,0,0,.06);transform:translateY(-1px)}
+.card-name{font-weight:800;font-size:14px;margin-bottom:4px}
+.card-row{display:flex;justify-content:space-between;align-items:center;gap:6px;font-size:12px;color:var(--mute);margin-bottom:2px}
+.card-row .price{color:var(--red);font-weight:800;font-size:14px}
+.card-meta{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.chip{background:#f1f5f9;color:#475569;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;letter-spacing:.3px}
+.chip.source{background:#fef3c7;color:#78350f}
+.chip.paid{background:#dcfce7;color:#166534}
+.chip.abandoned{background:#fee2e2;color:#991b1b}
+.chip.es{background:#ede9fe;color:#6d28d9}
+.card-time{font-size:10px;color:#94a3b8;margin-top:4px}
+
+/* ==== CALENDAR ==== */
+.cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.cal-head h2{font-size:20px;font-weight:800}
+.cal-nav button{padding:6px 12px;background:#fff;border:1px solid var(--line);border-radius:8px;font-size:13px;font-weight:600;margin-left:6px}
+.cal-nav button:hover{background:var(--red);color:#fff;border-color:var(--red)}
+.cal{background:#fff;border-radius:12px;padding:16px;display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.cal-dow{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--mute);padding:8px;text-align:center}
+.cal-day{background:#fafafa;border:1px solid var(--line);border-radius:6px;padding:8px;min-height:100px;display:flex;flex-direction:column;gap:4px}
+.cal-day.other{opacity:.35}
+.cal-day.today{background:#fef3c7;border-color:#fbbf24}
+.cal-day-num{font-size:12px;font-weight:700;color:var(--mute);margin-bottom:4px}
+.cal-today .cal-day-num{color:#78350f}
+.cal-event{background:var(--red);color:#fff;padding:3px 6px;border-radius:4px;font-size:10px;font-weight:700;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cal-event.booked{background:var(--green)}
+.cal-event:hover{opacity:.85}
+
+/* ==== LEAD DETAIL MODAL ==== */
+.modal{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;padding:20px}
+.modal.open{display:flex}
+.modal-box{background:#fff;border-radius:14px;max-width:720px;width:100%;max-height:90vh;overflow:auto;box-shadow:0 30px 80px rgba(0,0,0,.3)}
+.modal-head{padding:20px 24px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+.modal-head h2{font-size:22px;font-weight:800}
+.modal-close{width:34px;height:34px;border-radius:50%;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--mute)}
+.modal-close:hover{background:var(--red);color:#fff}
+.modal-body{padding:20px 24px}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 20px;margin-bottom:20px}
+.detail-row{font-size:13px}
+.detail-row .lbl{font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--mute);margin-bottom:2px}
+.detail-row .val{font-weight:600}
+.detail-row a{color:var(--red)}
+.status-row{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+.status-btn{padding:8px 14px;background:#f1f5f9;color:#334155;border-radius:8px;font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;transition:all .12s}
+.status-btn:hover{background:var(--charcoal);color:#fff}
+.status-btn.active{background:var(--red);color:#fff}
+.section-title{font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--mute);margin:20px 0 10px}
+.notes{background:#fafafa;border-radius:10px;padding:14px;margin-bottom:12px}
+.note{padding:8px 0;border-bottom:1px dashed var(--line);font-size:13px}
+.note:last-child{border-bottom:none}
+.note-meta{font-size:10px;color:var(--mute);margin-bottom:3px}
+.note-input{display:flex;gap:8px;margin-top:8px}
+.note-input input{flex:1;padding:10px 12px;border:1.5px solid var(--line);border-radius:8px;font-size:14px}
+.note-input button{padding:10px 16px;background:var(--charcoal);color:#fff;border-radius:8px;font-weight:700;font-size:13px}
+.timeline{background:#fafafa;border-radius:10px;padding:14px;max-height:240px;overflow-y:auto}
+.tl-item{padding:6px 0;border-bottom:1px dashed var(--line);font-size:12px}
+.tl-item:last-child{border-bottom:none}
+.tl-item .at{font-size:10px;color:var(--mute)}
+.actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.actions a{padding:10px 16px;background:var(--red);color:#fff;border-radius:8px;font-weight:700;font-size:13px;display:inline-flex;align-items:center;gap:6px}
+.actions a.secondary{background:#f1f5f9;color:var(--charcoal)}
+.actions a:hover{transform:translateY(-1px);box-shadow:0 4px 10px rgba(0,0,0,.1)}
+
+/* ==== EMPTY / LOADING ==== */
+.empty{text-align:center;padding:60px 20px;color:var(--mute);font-size:14px}
+.loading{text-align:center;padding:40px;color:var(--mute)}
+
+@media (max-width:880px){
+  .kanban{grid-template-columns:repeat(3,minmax(240px,1fr));overflow-x:auto}
+  .top{flex-wrap:wrap}
+  .top .tabs{order:3;width:100%;overflow-x:auto}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login" id="login">
+  <div class="login-box">
+    <div class="login-logo">Toro <span>Movers</span></div>
+    <div class="login-sub">CRM · Admin access only</div>
+    <input type="password" id="pw-input" placeholder="Password" autofocus>
+    <button id="pw-btn">Log in</button>
+    <div class="err" id="pw-err">Wrong password.</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app" id="app" style="display:none">
+  <div class="top">
+    <div class="logo">Toro <span>Movers</span> · CRM</div>
+    <div class="tabs">
+      <button class="tab active" data-view="pipeline">Pipeline</button>
+      <button class="tab" data-view="calendar">Calendar</button>
+      <button class="tab" data-view="recent">Recent</button>
+    </div>
+    <div class="right">
+      <button class="refresh" id="refresh-btn">↻ Refresh</button>
+      <span id="counts"></span>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-pipeline">
+    <div class="kanban" id="kanban"></div>
+  </div>
+
+  <div class="panel" id="panel-calendar" style="display:none">
+    <div class="cal-head">
+      <h2 id="cal-title"></h2>
+      <div class="cal-nav">
+        <button id="cal-prev">← Prev</button>
+        <button id="cal-today">Today</button>
+        <button id="cal-next">Next →</button>
+      </div>
+    </div>
+    <div class="cal" id="cal"></div>
+  </div>
+
+  <div class="panel" id="panel-recent" style="display:none">
+    <div class="loading" id="recent-list">Loading…</div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2 id="m-name">—</h2>
+      <button class="modal-close" id="m-close">×</button>
+    </div>
+    <div class="modal-body" id="m-body"></div>
+  </div>
+</div>
+
+<script>
+var PW = localStorage.getItem('crm_pw') || '';
+var leads = [];
+var calCursor = new Date();
+var currentLead = null;
+
+// ===== LOGIN =====
+function showApp(){
+  document.getElementById('login').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  loadLeads();
+}
+async function tryLogin(pw){
+  try {
+    var r = await fetch('/.netlify/functions/crm?action=list', {
+      headers: { 'x-crm-password': pw }
+    });
+    if (r.ok) {
+      PW = pw;
+      localStorage.setItem('crm_pw', pw);
+      showApp();
+    } else {
+      document.getElementById('pw-err').style.display = 'block';
+    }
+  } catch(e) { alert('Network error'); }
+}
+document.getElementById('pw-btn').addEventListener('click', function(){
+  var pw = document.getElementById('pw-input').value.trim();
+  if (pw) tryLogin(pw);
+});
+document.getElementById('pw-input').addEventListener('keydown', function(e){
+  if (e.key === 'Enter') document.getElementById('pw-btn').click();
+});
+if (PW) tryLogin(PW);
+
+// ===== LOAD LEADS =====
+async function loadLeads(){
+  try {
+    var r = await fetch('/.netlify/functions/crm?action=list', {
+      headers: { 'x-crm-password': PW }
+    });
+    if (!r.ok) { if (r.status === 401){ localStorage.removeItem('crm_pw'); location.reload(); } return; }
+    var j = await r.json();
+    leads = j.leads || [];
+    render();
+    updateCounts();
+  } catch(e){ console.error(e); }
+}
+
+// ===== TABS =====
+document.querySelectorAll('.tab').forEach(function(t){
+  t.addEventListener('click', function(){
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    var v = t.getAttribute('data-view');
+    ['pipeline','calendar','recent'].forEach(function(n){
+      document.getElementById('panel-'+n).style.display = (n === v) ? '' : 'none';
+    });
+    if (v === 'calendar') renderCalendar();
+    if (v === 'recent')   renderRecent();
+  });
+});
+document.getElementById('refresh-btn').addEventListener('click', loadLeads);
+
+// ===== KANBAN =====
+var STAGES = [
+  { id:'new', name:'New' },
+  { id:'partial', name:'Partial' },
+  { id:'contacted', name:'Contacted' },
+  { id:'quoted', name:'Quoted' },
+  { id:'booked', name:'Booked' },
+  { id:'done', name:'Done' },
+];
+function render(){
+  var k = document.getElementById('kanban');
+  k.innerHTML = '';
+  STAGES.forEach(function(s){
+    var col = document.createElement('div');
+    col.className = 'col col-'+s.id;
+    var items = leads.filter(l => l.status === s.id);
+    col.innerHTML = '<div class="col-head"><span class="name">'+s.name+'</span><span class="n">'+items.length+'</span></div>';
+    items.forEach(function(l){ col.appendChild(card(l)); });
+    k.appendChild(col);
+  });
+}
+function card(l){
+  var d = document.createElement('div');
+  d.className = 'card';
+  var est = l.estimate_total || 0;
+  var priceHtml = est ? '<span class="price">$'+est+'</span>' : '<span class="price" style="color:#94a3b8">—</span>';
+  var paidChip = l.depositPaid ? '<span class="chip paid">💳 Paid</span>' : '';
+  var srcChip = l.utm_content ? '<span class="chip source">'+l.utm_content+'</span>' : '';
+  var esChip = (l.utm_content || '').startsWith('es-') ? '<span class="chip es">🇪🇸 ES</span>' : '';
+  d.innerHTML =
+    '<div class="card-row"><div class="card-name">'+esc(l.name||'(no name)')+'</div>'+priceHtml+'</div>'+
+    '<div class="card-row"><span>'+esc(l.phone||'')+'</span><span>'+esc(l.furniture_size||'')+'</span></div>'+
+    '<div class="card-row"><span>'+esc(l.zip_from||'')+(l.zip_to?' → '+esc(l.zip_to):'')+'</span></div>'+
+    '<div class="card-meta">'+paidChip+esChip+srcChip+'</div>'+
+    '<div class="card-time">'+timeAgo(l.createdAt)+'</div>';
+  d.addEventListener('click', function(){ openLead(l.id); });
+  return d;
+}
+
+// ===== CALENDAR =====
+function renderCalendar(){
+  var c = document.getElementById('cal');
+  var title = document.getElementById('cal-title');
+  var year = calCursor.getFullYear(), month = calCursor.getMonth();
+  var first = new Date(year, month, 1);
+  var start = new Date(first); start.setDate(1 - first.getDay());
+  title.textContent = calCursor.toLocaleDateString('en-US', { month:'long', year:'numeric' });
+  c.innerHTML = '';
+  ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(function(d){
+    var el = document.createElement('div');
+    el.className = 'cal-dow';
+    el.textContent = d;
+    c.appendChild(el);
+  });
+  var today = new Date(); today.setHours(0,0,0,0);
+  for (var i=0; i<42; i++){
+    var d = new Date(start); d.setDate(start.getDate()+i);
+    var el = document.createElement('div');
+    el.className = 'cal-day';
+    if (d.getMonth() !== month) el.classList.add('other');
+    if (d.getTime() === today.getTime()) el.classList.add('today');
+    el.innerHTML = '<div class="cal-day-num">'+d.getDate()+'</div>';
+    var isoDay = d.toISOString().slice(0,10);
+    leads.filter(l => l.move_date === isoDay).forEach(function(l){
+      var e = document.createElement('div');
+      e.className = 'cal-event' + (l.depositPaid ? ' booked' : '');
+      e.textContent = (l.name || '(no name)') + (l.estimate_total ? ' · $'+l.estimate_total : '');
+      e.addEventListener('click', function(ev){ ev.stopPropagation(); openLead(l.id); });
+      el.appendChild(e);
+    });
+    c.appendChild(el);
+  }
+}
+document.getElementById('cal-prev').addEventListener('click', function(){ calCursor.setMonth(calCursor.getMonth()-1); renderCalendar(); });
+document.getElementById('cal-next').addEventListener('click', function(){ calCursor.setMonth(calCursor.getMonth()+1); renderCalendar(); });
+document.getElementById('cal-today').addEventListener('click', function(){ calCursor = new Date(); renderCalendar(); });
+
+// ===== RECENT (last 50 all statuses) =====
+function renderRecent(){
+  var p = document.getElementById('recent-list');
+  if (!leads.length) { p.innerHTML = '<div class="empty">No leads yet. They\'ll show up here as soon as someone submits the /quote form.</div>'; return; }
+  var html = '<div style="display:grid;gap:8px">';
+  leads.slice(0,50).forEach(function(l){
+    html += '<div class="card" onclick="openLead(\''+l.id+'\')" style="cursor:pointer">'+
+      '<div class="card-row"><div class="card-name">'+esc(l.name||'(no name)')+'</div><span class="price">'+(l.estimate_total?'$'+l.estimate_total:'—')+'</span></div>'+
+      '<div class="card-row"><span>'+esc(l.phone||'')+' · '+esc(l.email||'')+'</span><span class="chip">'+esc(l.status)+'</span></div>'+
+      '<div class="card-time">'+timeAgo(l.createdAt)+'</div>'+
+    '</div>';
+  });
+  html += '</div>';
+  p.innerHTML = html;
+}
+
+// ===== LEAD DETAIL MODAL =====
+async function openLead(id){
+  location.hash = 'lead/' + id;
+  document.getElementById('modal').classList.add('open');
+  document.getElementById('m-body').innerHTML = '<div class="loading">Loading…</div>';
+  try {
+    var r = await fetch('/.netlify/functions/crm?action=get&id='+id, { headers: { 'x-crm-password': PW } });
+    var j = await r.json();
+    currentLead = j.lead;
+    renderLead(currentLead);
+  } catch(e) { document.getElementById('m-body').innerHTML = '<div class="empty">Failed to load.</div>'; }
+}
+function renderLead(l){
+  document.getElementById('m-name').textContent = l.name || '(no name)';
+  var est = l.estimate || {};
+  var body = document.getElementById('m-body');
+  var statusBtns = STAGES.concat([{id:'lost',name:'Lost'}]).map(function(s){
+    return '<button class="status-btn '+(s.id===l.status?'active':'')+'" data-status="'+s.id+'">'+s.name+'</button>';
+  }).join('');
+
+  body.innerHTML =
+    '<div class="status-row">'+statusBtns+'</div>'+
+    (est.total ? '<div style="background:linear-gradient(135deg,#C8102E,#A00C24);color:#fff;border-radius:10px;padding:14px 18px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;opacity:.85">Quote</div><div style="font-size:26px;font-weight:900">$'+est.total+'</div></div><div style="font-size:12px;opacity:.85;text-align:right">'+est.movers+' movers<br>'+est.hours+' hours</div></div>' : '')+
+    '<div class="detail-grid">'+
+      detailRow('Phone', l.phone ? '<a href="tel:'+esc(l.phone)+'">'+esc(l.phone)+'</a>' : '—') +
+      detailRow('Email', l.email ? '<a href="mailto:'+esc(l.email)+'">'+esc(l.email)+'</a>' : '—') +
+      detailRow('From ZIP', l.zip_from || '—') +
+      detailRow('To ZIP', l.zip_to || '—') +
+      detailRow('Home size', l.furniture_size || '—') +
+      detailRow('Stairs', l.stairs_elevator || '—') +
+      detailRow('Move date', l.move_date || '—') +
+      detailRow('Deposit', l.depositPaid ? '<span style="color:#16a34a;font-weight:800">✓ Paid</span>' : '—') +
+      detailRow('Source', (l.utm_source||'direct')+' / '+(l.utm_medium||'—')) +
+      detailRow('Ad (utm_content)', l.utm_content || '—') +
+    '</div>'+
+    '<div class="actions">'+
+      (l.phone ? '<a href="tel:'+esc(l.phone)+'">📞 Call</a>' : '')+
+      (l.email ? '<a href="mailto:'+esc(l.email)+'" class="secondary">✉️ Email</a>' : '')+
+      (l.stripeSessionId ? '<a href="https://dashboard.stripe.com/payments/'+esc(l.stripeSessionId)+'" class="secondary" target="_blank">💳 View in Stripe</a>' : '')+
+    '</div>'+
+    '<div class="section-title">Notes</div>'+
+    '<div class="notes" id="notes-list">'+
+      (l.notes && l.notes.length ? l.notes.map(function(n){
+        return '<div class="note"><div class="note-meta">'+fmtDate(n.at)+' · '+esc(n.author||'admin')+'</div>'+esc(n.text)+'</div>';
+      }).join('') : '<div style="color:#94a3b8;font-size:13px;text-align:center;padding:10px">No notes yet.</div>')+
+    '</div>'+
+    '<div class="note-input"><input id="note-text" placeholder="Add a note…"><button id="add-note">Add</button></div>'+
+    '<div class="section-title">Timeline</div>'+
+    '<div class="timeline">'+
+      (l.timeline || []).map(function(t){
+        return '<div class="tl-item"><div class="at">'+fmtDate(t.at)+'</div>'+esc(t.text)+'</div>';
+      }).reverse().join('')+
+    '</div>';
+
+  body.querySelectorAll('.status-btn').forEach(function(b){
+    b.addEventListener('click', async function(){
+      var s = b.getAttribute('data-status');
+      var r = await fetch('/.netlify/functions/crm', {
+        method:'POST', headers: { 'Content-Type':'application/json', 'x-crm-password': PW },
+        body: JSON.stringify({ action:'status', id: l.id, status: s })
+      });
+      var j = await r.json();
+      if (j.lead) { currentLead = j.lead; renderLead(j.lead); loadLeads(); }
+    });
+  });
+
+  document.getElementById('add-note').addEventListener('click', async function(){
+    var txt = document.getElementById('note-text').value.trim();
+    if (!txt) return;
+    var r = await fetch('/.netlify/functions/crm', {
+      method:'POST', headers: { 'Content-Type':'application/json', 'x-crm-password': PW },
+      body: JSON.stringify({ action:'note', id: l.id, text: txt })
+    });
+    var j = await r.json();
+    if (j.lead) { currentLead = j.lead; renderLead(j.lead); loadLeads(); }
+  });
+}
+function detailRow(lbl, val){
+  return '<div class="detail-row"><div class="lbl">'+lbl+'</div><div class="val">'+val+'</div></div>';
+}
+document.getElementById('m-close').addEventListener('click', function(){
+  document.getElementById('modal').classList.remove('open');
+  location.hash = '';
+});
+
+// hash routing (direct deep-link from Telegram)
+window.addEventListener('hashchange', function(){
+  var m = location.hash.match(/#lead\/(.+)/);
+  if (m) openLead(m[1]);
+  else document.getElementById('modal').classList.remove('open');
+});
+if (location.hash.startsWith('#lead/')) {
+  var id = location.hash.slice(6);
+  setTimeout(function(){ if (PW) openLead(id); }, 500);
+}
+
+// ===== HELPERS =====
+function esc(s){ return String(s==null?'':s).replace(/[<>"']/g, function(c){ return {'<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function timeAgo(iso){
+  if (!iso) return '';
+  var s = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+  if (s < 60) return 'just now';
+  if (s < 3600) return Math.floor(s/60)+'m ago';
+  if (s < 86400) return Math.floor(s/3600)+'h ago';
+  if (s < 604800) return Math.floor(s/86400)+'d ago';
+  return new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric'});
+}
+function fmtDate(iso){
+  if (!iso) return '';
+  var d = new Date(iso);
+  return d.toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
+}
+function updateCounts(){
+  var today = new Date(); today.setHours(0,0,0,0);
+  var newToday = leads.filter(function(l){ return new Date(l.createdAt) >= today && l.status === 'new'; }).length;
+  var booked = leads.filter(function(l){ return l.status === 'booked'; }).length;
+  document.getElementById('counts').innerHTML =
+    '<span>Today: <span class="count-badge">'+newToday+'</span></span>' +
+    '<span>Booked: <span class="count-badge" style="background:var(--green)">'+booked+'</span></span>';
+}
+
+// Auto-refresh every 30s
+setInterval(function(){ if (PW && document.getElementById('app').style.display !== 'none') loadLeads(); }, 30000);
+</script>
+
+</body>
+</html>

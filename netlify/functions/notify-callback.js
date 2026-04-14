@@ -5,6 +5,7 @@
 // Env vars: RESEND_API_KEY, RESEND_FROM_EMAIL
 
 const { Resend } = require('resend');
+const { createLead, notifyTelegram } = require('./_lib/leads');
 
 const esc = (v) =>
   String(v == null ? '' : v)
@@ -333,6 +334,15 @@ exports.handler = async (event) => {
       html: dripEmail('day4', fullName, estimate, bookNowUrl, fromEmail),
     },
   ] : [];
+
+  // Save lead to CRM + ping Telegram (fire-and-forget for Telegram)
+  let savedLead = null;
+  try {
+    savedLead = await createLead({ ...payload, estimate });
+  } catch(e) { console.error('CRM save failed:', e.message); }
+  if (savedLead) {
+    notifyTelegram(savedLead).catch(e => console.error('Telegram failed:', e.message));
+  }
 
   try {
     await resend.emails.send(internalEmail);

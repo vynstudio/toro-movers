@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/vynstudio/toro-movers#readme",
   "dependencies": {
+    "@netlify/blobs": "^10.7.4",
     "resend": "^6.10.0",
     "stripe": "^22.0.1"
   }
