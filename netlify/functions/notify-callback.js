@@ -76,17 +76,17 @@ exports.handler = async (event) => {
     if (!furniture_size) return null;
 
     var RATE = 75; // $/mover/hour
+    var MOVERS = 2; // always quote 2-mover crew; upsell to larger crews on the call
 
-    // Base crew + base hours by furniture volume
-    var crewHours = {
-      'Studio / just a few': { movers: 2, hours: 2 },
-      '1 bedroom':           { movers: 2, hours: 3 },
-      '2 bedrooms':          { movers: 3, hours: 4 },
-      '3+ bedrooms':         { movers: 4, hours: 5 },
+    // Base hours by furniture volume (scaled for a 2-mover crew)
+    var baseHours = {
+      'Studio / just a few': 2,
+      '1 bedroom':           3,
+      '2 bedrooms':          5,
+      '3+ bedrooms':         7,
     };
-    var base = crewHours[furniture_size] || { movers: 2, hours: 3 };
-    var movers = base.movers;
-    var hours = base.hours;
+    var movers = MOVERS;
+    var hours = baseHours[furniture_size] || 3;
 
     // Boxes add time
     var boxAdd = {
