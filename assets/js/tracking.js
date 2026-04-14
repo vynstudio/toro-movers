@@ -16,11 +16,12 @@
  */
 
 (function () {
-  var PIXEL_ID = '1637703184084307';
+  var PIXEL_ID = '1637703184084307';           // legacy pixel (historical data)
+  var PIXEL_ID_LP = '985575491098437';         // new pixel owned by ad account, for campaign optimization
   var GA4_ID = 'G-1L9NR2HTRT';
   var CAPI_ENDPOINT = '/.netlify/functions/capi';
 
-  // ---------- Meta Pixel base ----------
+  // ---------- Meta Pixel base (dual-init) ----------
   !(function (f, b, e, v, n, t, s) {
     if (f.fbq) return;
     n = f.fbq = function () {
@@ -38,6 +39,7 @@
     s.parentNode.insertBefore(t, s);
   })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
   fbq('init', PIXEL_ID);
+  fbq('init', PIXEL_ID_LP);
 
   // ---------- GA4 base ----------
   var gaScript = document.createElement('script');
