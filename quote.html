@@ -225,7 +225,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
                 <button type="button" class="pill" data-value="Condo">Condo</button>
                 <button type="button" class="pill" data-value="Townhome">Townhome</button>
               </div>
-              <input type="hidden" name="property_type" required>
+              <input type="hidden" name="property_type" data-pill-required>
               <div class="error-msg">Select a property type.</div>
             </div>
             <div class="field">
@@ -235,7 +235,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
                 <button type="button" class="pill" data-value="Stairs">Stairs</button>
                 <button type="button" class="pill" data-value="Elevator">Elevator</button>
               </div>
-              <input type="hidden" name="stairs_elevator" required>
+              <input type="hidden" name="stairs_elevator" data-pill-required>
               <div class="error-msg">Let us know about access.</div>
             </div>
             <div class="field">
@@ -244,7 +244,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
                 <button type="button" class="pill yes" data-value="Yes">Yes</button>
                 <button type="button" class="pill no" data-value="No">No</button>
               </div>
-              <input type="hidden" name="code_access" required>
+              <input type="hidden" name="code_access" data-pill-required>
               <div class="error-msg">Please select one.</div>
             </div>
           </div>
@@ -270,7 +270,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
                 <button type="button" class="pill" data-value="25-50">25-50</button>
                 <button type="button" class="pill" data-value="50+">50+</button>
               </div>
-              <input type="hidden" name="boxes_count" required>
+              <input type="hidden" name="boxes_count" data-pill-required>
               <div class="error-msg">Select an estimate.</div>
             </div>
             <div class="field">
@@ -281,7 +281,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
                 <button type="button" class="pill" data-value="2">2</button>
                 <button type="button" class="pill" data-value="3+">3+</button>
               </div>
-              <input type="hidden" name="tv_count" required>
+              <input type="hidden" name="tv_count" data-pill-required>
               <div class="error-msg">Select a number.</div>
             </div>
             <div class="field">
@@ -292,7 +292,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
                 <button type="button" class="pill" data-value="2 bedrooms">2 bedrooms</button>
                 <button type="button" class="pill" data-value="3+ bedrooms">3+ bedrooms</button>
               </div>
-              <input type="hidden" name="furniture_size" required>
+              <input type="hidden" name="furniture_size" data-pill-required>
               <div class="error-msg">Pick the closest match.</div>
             </div>
           </div>
@@ -316,7 +316,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
                 <button type="button" class="pill yes" data-value="Yes">Yes</button>
                 <button type="button" class="pill no" data-value="No">No</button>
               </div>
-              <input type="hidden" name="assembly" required>
+              <input type="hidden" name="assembly" data-pill-required>
               <div class="error-msg">Please select one.</div>
             </div>
             <div class="field">
@@ -325,7 +325,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
                 <button type="button" class="pill yes" data-value="Yes">Yes</button>
                 <button type="button" class="pill no" data-value="No">No</button>
               </div>
-              <input type="hidden" name="wrapping" required>
+              <input type="hidden" name="wrapping" data-pill-required>
               <div class="error-msg">Please select one.</div>
             </div>
             <div class="field">
@@ -413,6 +413,9 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
   var totalSteps = 5;
   var current = 1;
 
+  // Centralized state — every pill click and input change lives here
+  var state = {};
+
   function show(stepId){
     steps.forEach(function(s){
       s.classList.toggle('active', s.dataset.step === String(stepId));
@@ -421,35 +424,38 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
       fill.style.width = '100%';
     } else {
       fill.style.width = (stepId / totalSteps * 100) + '%';
-      // Fire ViewContent on each step for lead warming
       try { if (window.ToroTrack && window.ToroTrack.viewContent) window.ToroTrack.viewContent('quote_step_' + stepId); } catch(e){}
     }
-    // scroll to top of form
     var card = document.querySelector('.form-card');
     if (card && stepId !== 1) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
     current = stepId;
   }
 
-  // Pill selection
-  form.querySelectorAll('[data-pills]').forEach(function(group){
+  // PILL SELECTION — event delegation on the whole form (bulletproof across browsers)
+  form.addEventListener('click', function(e){
+    var pill = e.target.closest('.pill');
+    if (!pill) return;
+    var group = pill.closest('[data-pills]');
+    if (!group) return;
+    e.preventDefault();
     var name = group.getAttribute('data-pills');
+    var value = pill.getAttribute('data-value');
+    // Mark visually active
+    group.querySelectorAll('.pill').forEach(function(p){ p.classList.remove('active'); });
+    pill.classList.add('active');
+    // Sync hidden input + state
     var hidden = form.querySelector('input[name="' + name + '"]');
-    group.querySelectorAll('.pill').forEach(function(pill){
-      pill.addEventListener('click', function(){
-        group.querySelectorAll('.pill').forEach(function(p){ p.classList.remove('active'); });
-        pill.classList.add('active');
-        hidden.value = pill.dataset.value;
-        var field = group.closest('.field');
-        if (field) field.classList.remove('err');
-      });
-    });
+    if (hidden) hidden.value = value;
+    state[name] = value;
+    var field = group.closest('.field');
+    if (field) field.classList.remove('err');
   });
 
   // Validation per step
   function validateStep(n){
     var step = form.querySelector('.step[data-step="'+n+'"]');
     var ok = true;
-    step.querySelectorAll('input[required]').forEach(function(inp){
+    step.querySelectorAll('input[required], input[data-pill-required]').forEach(function(inp){
       var field = inp.closest('.field');
       var v = (inp.value || '').trim();
       if (!v) { field.classList.add('err'); ok = false; return; }
@@ -491,26 +497,36 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
     btn.disabled = true;
     btn.textContent = 'Sending…';
 
-    var fd = new FormData(form);
+    // BULLETPROOF CAPTURE: merge state object (pills) + FormData (inputs)
     var data = {};
-    fd.forEach(function(v,k){ data[k] = v; });
-    data.name = (data.first_name + ' ' + data.last_name).trim();
-    data.page = '/quote';
+
+    // 1. Start with pill-based state
+    Object.keys(state).forEach(function(k){ data[k] = state[k]; });
+
+    // 2. Override with FormData (real inputs win if user typed something)
+    var fd = new FormData(form);
+    fd.forEach(function(v,k){
+      if (v != null && String(v).trim() !== '') data[k] = v;
+    });
+
+    // 3. Triple-check by reading every named input directly
+    form.querySelectorAll('input[name], select[name], textarea[name]').forEach(function(el){
+      if (!data[el.name] && el.value) data[el.name] = el.value;
+    });
+
+    // Normalize
+    data.first_name = (data.first_name || '').trim();
+    data.last_name  = (data.last_name  || '').trim();
+    data.name       = (data.first_name + ' ' + data.last_name).trim();
+    data.page       = '/quote';
+
     // UTM passthrough
     var params = new URLSearchParams(window.location.search);
     ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','fbclid','gclid'].forEach(function(k){
       if (params.get(k)) data[k] = params.get(k);
     });
 
-    // Build summary for email body
-    data.details = [
-      'Moving from: ' + data.zip_from + ' → ' + data.zip_to,
-      'Property: ' + data.property_type + ' · ' + data.stairs_elevator,
-      'Code access: ' + data.code_access,
-      'Boxes: ' + data.boxes_count + ' · TVs: ' + data.tv_count + ' · Furniture: ' + data.furniture_size,
-      'Disassembly: ' + data.assembly + ' · Wrapping: ' + data.wrapping,
-      data.move_date ? 'Move date: ' + data.move_date : null
-    ].filter(Boolean).join('\n');
+    if (window.console && console.log) console.log('[quote] submitting:', data);
 
     // Fire Lead to pixel + GA4 + CAPI
     try {
@@ -528,12 +544,12 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
     fetch('/.netlify/functions/notify-callback', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
+      keepalive: true
     })
       .then(function(r){ return r.json().catch(function(){return{};}); })
       .then(function(){ show('success'); })
       .catch(function(){
-        // Still show success to user — Lead was fired, we'll follow up manually
         show('success');
       });
   });
