@@ -149,10 +149,12 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 
   .desktop-only{display:none}
 
-  body{background:var(--off);overflow-x:hidden}
+  body{background:#fff;overflow-x:hidden;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
+
+  .mobile-only{display:flex;flex-direction:column;flex:1;min-height:100vh;min-height:100dvh}
 
   .m-header{
-    position:sticky;top:0;z-index:50;
+    flex-shrink:0;
     background:#fff;border-bottom:1px solid var(--line);
     padding:12px 16px;display:flex;align-items:center;justify-content:space-between;
   }
@@ -161,13 +163,14 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
   .m-phone{display:inline-flex;align-items:center;gap:6px;color:var(--red);font-weight:700;font-size:14px}
 
   /* Progress */
-  .m-progress{position:sticky;top:49px;z-index:49;background:#fff;padding:0 16px 10px;border-bottom:1px solid var(--line)}
+  .m-progress{flex-shrink:0;background:#fff;padding:0 16px 10px;border-bottom:1px solid var(--line)}
   .m-progress-track{height:4px;background:#f1f1f3;border-radius:10px;overflow:hidden}
   .m-progress-fill{height:100%;background:var(--red);border-radius:10px;transition:width .35s cubic-bezier(.4,0,.2,1);width:0%}
   .m-progress-label{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--mute);padding:10px 0 8px}
 
-  /* Steps */
-  .m-step{display:none;padding:20px 20px 120px;animation:slide .25s ease}
+  /* Steps container fills remaining viewport, so the bottom CTA actually sticks to the bottom of the form, not the viewport */
+  #m-form{flex:1;display:flex;flex-direction:column;min-height:0}
+  .m-step{display:none;padding:20px 20px 24px;animation:slide .22s ease;flex:1}
   .m-step.active{display:block}
   @keyframes slide{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
 
@@ -206,9 +209,9 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
   .m-yesno-pill:active{transform:scale(.98)}
   .m-yesno-pill.active{background:var(--charcoal);color:#fff;border-color:var(--charcoal)}
 
-  /* Sticky bottom CTA with live price */
+  /* Bottom CTA — sticks to page bottom, not viewport (no more floating) */
   .m-bottom{
-    position:fixed;bottom:0;left:0;right:0;z-index:100;
+    flex-shrink:0;position:sticky;bottom:0;z-index:100;
     background:#fff;border-top:1px solid var(--line);
     padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));
     box-shadow:0 -6px 20px rgba(0,0,0,.06);
@@ -544,16 +547,15 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 
 <script>
 (function(){
-  // ===== PRICING CALCULATOR (matches backend) =====
+  // ===== PRICING CALCULATOR (matches backend exactly) =====
+  // Returns { hours, price } — a single exact quote, 2 movers @ $75/hr
   function estimate(s){
     if (!s.furniture_size) return null;
     var base = {'Studio / just a few':2,'1 bedroom':3,'2 bedrooms':5,'3+ bedrooms':7}[s.furniture_size] || 3;
     var hrs = base;
     if (s.stairs_elevator === 'Stairs') hrs += 0.5;
     hrs = Math.max(2, Math.round(hrs*2)/2);
-    var low = Math.max(2, Math.round(hrs*0.85*2)/2);
-    var high = Math.round(hrs*1.2*2)/2;
-    return { low: Math.round(75*2*low), high: Math.round(75*2*high), movers:2, hoursLow:low, hoursHigh:high };
+    return { hours: hrs, price: Math.round(75*2*hrs), movers: 2 };
   }
 
   // Shared state
@@ -590,9 +592,9 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
     var dsp = document.getElementById('d-submit-price');
     if (dv) {
       if (est) {
-        dv.textContent = '$' + est.low + '–$' + est.high;
+        dv.textContent = '$' + est.price;
         dv.classList.remove('empty');
-        if (dn) dn.style.display = '';
+        if (dn) { dn.textContent = est.movers + ' movers · ' + est.hours + ' hours · $75/hr'; dn.style.display = ''; }
       } else {
         dv.textContent = 'Pick a home size →';
         dv.classList.add('empty');
@@ -604,7 +606,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
     var mp = document.getElementById('m-price');
     var mpv = document.getElementById('m-price-val');
     if (mp && mpv) {
-      if (est) { mpv.textContent = '$'+est.low+'–$'+est.high; mp.classList.remove('empty'); }
+      if (est) { mpv.textContent = '$'+est.price; mp.classList.remove('empty'); }
       else { mp.classList.add('empty'); }
     }
 
@@ -612,7 +614,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
     if (ds && est) {
       dsl.textContent = 'Get My Free Quote';
       dsp.style.display = '';
-      dsp.textContent = '$' + est.low + '–$' + est.high;
+      dsp.textContent = '$' + est.price;
     }
   }
 
@@ -796,7 +798,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
     if (ok) {
       dsl.textContent = 'Get My Free Quote';
       var est = estimate(state);
-      if (est) { dsp.style.display = ''; dsp.textContent = '$' + est.low + '–$' + est.high; }
+      if (est) { dsp.style.display = ''; dsp.textContent = '$' + est.price; }
     } else {
       dsl.textContent = 'Complete the form above';
       dsp.style.display = 'none';

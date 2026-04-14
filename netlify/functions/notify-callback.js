@@ -76,9 +76,8 @@ exports.handler = async (event) => {
     if (!furniture_size) return null;
 
     var RATE = 75; // $/mover/hour
-    var MOVERS = 2; // always quote 2-mover crew; upsell to larger crews on the call
+    var MOVERS = 2;
 
-    // Base hours by furniture volume (scaled for a 2-mover crew)
     var baseHours = {
       'Studio / just a few': 2,
       '1 bedroom':           3,
@@ -88,38 +87,22 @@ exports.handler = async (event) => {
     var movers = MOVERS;
     var hours = baseHours[furniture_size] || 3;
 
-    // Boxes add time
-    var boxAdd = {
-      'Under 10': 0,
-      '10-25':    0.5,
-      '25-50':    1,
-      '50+':      1.5,
-    };
+    // Optional extras — still captured if provided on a legacy form
+    var boxAdd = { 'Under 10': 0, '10-25': 0.5, '25-50': 1, '50+': 1.5 };
     hours += boxAdd[boxes_count] || 0;
-
-    // TVs add time (each mounted/wrapped TV = ~15 min)
     var tvMap = { '0': 0, '1': 0.25, '2': 0.5, '3+': 0.75 };
     hours += tvMap[tv_count] || 0;
-
-    // Access
     if (stairs_elev === 'Stairs')   hours += 0.5;
     if (stairs_elev === 'Elevator') hours += 0.25;
-
-    // Extras
     if (assembly === 'Yes') hours += 1;
     if (wrapping === 'Yes') hours += 0.5;
 
-    // Enforce 2-hour minimum + round to 0.5
+    // 2-hour minimum + round to 0.5
     hours = Math.max(2, Math.round(hours * 2) / 2);
 
-    // Give a realistic ±25% range
-    var hoursLow  = Math.max(2, Math.round(hours * 0.85 * 2) / 2);
-    var hoursHigh = Math.round(hours * 1.2 * 2) / 2;
+    var total = Math.round(RATE * movers * hours);
 
-    var totalLow  = Math.round(RATE * movers * hoursLow);
-    var totalHigh = Math.round(RATE * movers * hoursHigh);
-
-    return { movers: movers, hoursLow: hoursLow, hoursHigh: hoursHigh, totalLow: totalLow, totalHigh: totalHigh };
+    return { movers: movers, hours: hours, total: total, rate: RATE };
   }
 
   const estimate = calcEstimate();
@@ -161,12 +144,29 @@ exports.handler = async (event) => {
 
   const resend = new Resend(apiKey);
 
-  // Quote estimate block for INTERNAL email (declared BEFORE use below)
+  // Book Now link → directly creates Stripe checkout via /book endpoint
+  const baseUrl = process.env.SITE_BASE_URL || 'https://toromovers.net';
+  const bookParams = estimate ? new URLSearchParams({
+    hours: String(estimate.hours),
+    total: String(estimate.total),
+    movers: String(estimate.movers),
+    name: fullName,
+    email: email,
+    phone: phone,
+    zip_from: zip_from,
+    zip_to: zip_to,
+    size: furniture_size,
+    stairs: stairs_elev,
+    date: move_date,
+  }).toString() : '';
+  const bookNowUrl = estimate ? `${baseUrl}/.netlify/functions/book?${bookParams}` : null;
+
+  // Quote block — INTERNAL email
   const internalQuoteBlock = estimate ? `
     <div style="margin:18px 0;background:#fef3c7;border:1px solid #fbbf24;border-radius:10px;padding:14px 16px;font-size:14px">
       <strong style="color:#78350f">Auto-quote sent to customer:</strong>
-      <span style="font-weight:700">$${estimate.totalLow}–$${estimate.totalHigh}</span>
-      <span style="color:#6b7280">· ${estimate.movers} movers · ${estimate.hoursLow}–${estimate.hoursHigh} hrs · $75/hr</span>
+      <span style="font-weight:700">$${estimate.total}</span>
+      <span style="color:#6b7280">· ${estimate.movers} movers · ${estimate.hours} hrs · $75/hr</span>
     </div>
   ` : '';
 
@@ -223,13 +223,17 @@ exports.handler = async (event) => {
     </table>
   ` : '';
 
-  // Quote estimate block for customer email (the big one)
+  // Quote block — CUSTOMER email (hero)
   const customerQuoteBlock = estimate ? `
     <div style="margin:24px 0;background:linear-gradient(135deg,#C8102E,#A00C24);color:#fff;border-radius:14px;padding:28px 24px;text-align:center;box-shadow:0 10px 30px rgba(200,16,46,.25)">
-      <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;opacity:.85;margin-bottom:8px">Your estimated quote</div>
-      <div style="font-size:42px;font-weight:900;letter-spacing:-.02em;line-height:1;margin-bottom:6px">$${estimate.totalLow} – $${estimate.totalHigh}</div>
-      <div style="font-size:14px;opacity:.95;margin-bottom:18px">${estimate.movers} movers · ${estimate.hoursLow}–${estimate.hoursHigh} hours · $75/hr per mover</div>
-      <div style="font-size:12px;opacity:.8;padding-top:14px;border-top:1px solid rgba(255,255,255,.2)">Estimate based on your inputs. Final price confirmed on a 2-minute call.<br>No hidden fees · no fuel surcharge · no per-mile charges.</div>
+      <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;opacity:.85;margin-bottom:8px">Your quote</div>
+      <div style="font-size:52px;font-weight:900;letter-spacing:-.02em;line-height:1;margin-bottom:8px">$${estimate.total}</div>
+      <div style="font-size:15px;opacity:.95;margin-bottom:14px">${estimate.movers} movers · ${estimate.hours} hours · $75/hr per mover</div>
+      ${bookNowUrl ? `
+        <a href="${bookNowUrl}" style="display:inline-block;background:#fff;color:#C8102E;padding:14px 28px;border-radius:999px;text-decoration:none;font-weight:800;font-size:15px;margin:6px 0 8px;box-shadow:0 6px 16px rgba(0,0,0,.15)">Book Now · Pay $50 Deposit →</a>
+        <div style="font-size:11px;opacity:.75">Reserves your spot · refundable up to 24hr before · Stripe secure</div>
+      ` : ''}
+      <div style="font-size:12px;opacity:.7;padding-top:14px;border-top:1px solid rgba(255,255,255,.2);margin-top:14px">No hidden fees · no fuel surcharge · no per-mile charges.</div>
     </div>
   ` : '';
 
@@ -239,7 +243,7 @@ exports.handler = async (event) => {
     to: [email],
     replyTo: fromEmail,
     subject: estimate
-      ? `Your Toro Movers quote: $${estimate.totalLow}–$${estimate.totalHigh}`
+      ? `Your Toro Movers quote: $${estimate.total} — ready to book?`
       : `Your Toro Movers quote request — ${fullName.split(' ')[0]}`,
     html: `
       <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;max-width:600px;margin:0 auto;color:#1a1a1a">
@@ -271,19 +275,148 @@ exports.handler = async (event) => {
     `,
   } : null;
 
+  // ===== DRIP SEQUENCE =====
+  // Schedules 5 follow-up emails after the immediate quote.
+  // Uses Resend's `scheduledAt` (ISO 8601 UTC).
+  // Timing: +2hr, +6hr, Day 2 @ 12:15pm ET, Day 3 @ 12:15pm ET, Day 4 @ 12:15pm ET.
+
+  // Convert "12:15pm America/New_York N days from today" → UTC ISO string
+  function nextNoonEasternISO(daysOffset){
+    // Get current ET date parts
+    const fmt = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/New_York',
+      year:'numeric', month:'2-digit', day:'2-digit'
+    });
+    const parts = {};
+    fmt.formatToParts(new Date()).forEach(p => { if (p.type !== 'literal') parts[p.type] = p.value; });
+    // Build an ISO-ish date string for noon:15 ET
+    const baseMidnightUtc = Date.UTC(+parts.year, +parts.month - 1, +parts.day);
+    const target = new Date(baseMidnightUtc + daysOffset * 24 * 60 * 60 * 1000);
+    // Set to 12:15 local (ET): figure out offset for that specific date
+    // Crude DST check: EDT is roughly Mar 2nd Sunday–Nov 1st Sunday (months 2-10 inclusive most years)
+    const m = target.getUTCMonth();
+    const etOffset = (m >= 2 && m <= 10) ? 4 : 5; // EDT=-4, EST=-5
+    // Target UTC time = 12:15 ET + offset hours
+    target.setUTCHours(12 + etOffset, 15, 0, 0);
+    return target.toISOString();
+  }
+
+  function plusHours(h){
+    return new Date(Date.now() + h * 60 * 60 * 1000).toISOString();
+  }
+
+  // Drip templates — only send to customer after FULL submission (not partial/abandon)
+  const dripList = (email && !isPartial && !isAbandon && estimate) ? [
+    {
+      scheduledAt: plusHours(2),
+      subject: `Quick reminder: your $${estimate.total} Toro Movers quote`,
+      html: dripEmail('2hr', fullName, estimate, bookNowUrl, fromEmail),
+    },
+    {
+      scheduledAt: plusHours(6),
+      subject: `Still thinking about your move? Here's your quote again`,
+      html: dripEmail('6hr', fullName, estimate, bookNowUrl, fromEmail),
+    },
+    {
+      scheduledAt: nextNoonEasternISO(1),
+      subject: `${fullName.split(' ')[0]}, your moving quote is waiting`,
+      html: dripEmail('day2', fullName, estimate, bookNowUrl, fromEmail),
+    },
+    {
+      scheduledAt: nextNoonEasternISO(2),
+      subject: `Last few spots this week — reserve your moving date`,
+      html: dripEmail('day3', fullName, estimate, bookNowUrl, fromEmail),
+    },
+    {
+      scheduledAt: nextNoonEasternISO(3),
+      subject: `Should we release your $${estimate.total} quote slot?`,
+      html: dripEmail('day4', fullName, estimate, bookNowUrl, fromEmail),
+    },
+  ] : [];
+
   try {
-    // Send internal first (always)
     await resend.emails.send(internalEmail);
 
-    // Fire customer email in parallel (don't block internal response)
     if (customerEmail) {
       try { await resend.emails.send(customerEmail); }
       catch (e) { console.error('Customer email failed:', e.message); }
     }
 
-    return { statusCode: 200, headers, body: JSON.stringify({ success: true, customer_email_sent: !!customerEmail }) };
+    // Schedule drip emails — fire-and-forget (don't block response)
+    const dripResults = await Promise.allSettled(dripList.map(d =>
+      resend.emails.send({
+        from: `Toro Movers <${fromEmail}>`,
+        to: [email],
+        replyTo: fromEmail,
+        subject: d.subject,
+        html: d.html,
+        scheduledAt: d.scheduledAt,
+      })
+    ));
+    const scheduled = dripResults.filter(r => r.status === 'fulfilled').length;
+    dripResults.forEach((r, i) => {
+      if (r.status === 'rejected') console.error(`Drip ${i+1} failed:`, r.reason?.message || r.reason);
+    });
+
+    return {
+      statusCode: 200,
+      headers,
+      body: JSON.stringify({ success: true, customer_email_sent: !!customerEmail, drip_scheduled: scheduled }),
+    };
   } catch (err) {
     console.error('Resend error:', err.message);
     return { statusCode: 500, headers, body: JSON.stringify({ error: err.message }) };
   }
 };
+
+// ===== DRIP EMAIL TEMPLATES =====
+function dripEmail(stage, fullName, estimate, bookNowUrl, fromEmail){
+  const first = (fullName || '').split(' ')[0] || 'there';
+  const bookBtn = bookNowUrl ? `
+    <a href="${bookNowUrl}" style="display:inline-block;background:#C8102E;color:#fff;padding:15px 32px;border-radius:999px;text-decoration:none;font-weight:800;font-size:15px;margin:12px 0;box-shadow:0 6px 16px rgba(200,16,46,.25)">Book Now · Pay $50 Deposit →</a>
+  ` : '';
+
+  const copy = {
+    '2hr': {
+      headline: `Hey ${first}, did you get your quote?`,
+      body: `Our team is ready to take your move any day this week. Your quote of <strong>$${estimate.total}</strong> (${estimate.movers} movers × ${estimate.hours} hours) is locked in if you book within 24 hours.<br><br>Reserving your date takes 30 seconds with a refundable $50 deposit.`
+    },
+    '6hr': {
+      headline: `${first}, still moving?`,
+      body: `Just a heads-up — we're booking fast this week and can't hold quotes forever. Your <strong>$${estimate.total}</strong> estimate is still good, but we schedule on a first-come, first-served basis.<br><br>Secure your date now with a $50 deposit (refundable up to 24 hours before your move).`
+    },
+    'day2': {
+      headline: `Your moving quote is still available`,
+      body: `${first}, we haven't heard back — just wanted to make sure you got your Toro Movers quote.<br><br><strong>$${estimate.total}</strong> · ${estimate.movers} movers × ${estimate.hours} hours · flat $75/hr per mover.<br><br>If the timing isn't right, just reply and let us know. Otherwise, reserve your spot below.`
+    },
+    'day3': {
+      headline: `Quick heads-up on your moving spot`,
+      body: `We're getting booked up for the next few weeks. Your <strong>$${estimate.total}</strong> quote is still reserved, but if you need a specific date we'd hate for you to miss it.<br><br>Reply to this email with questions, or lock in your date below.`
+    },
+    'day4': {
+      headline: `Should we release your slot?`,
+      body: `Hey ${first} — we haven't heard from you, so we wanted to check in one last time before releasing your reserved quote slot.<br><br><strong>$${estimate.total}</strong> · ${estimate.movers} movers × ${estimate.hours} hours.<br><br>If you're still planning a move, now's the time. If not, no worries — we won't follow up again.`
+    },
+  }[stage] || { headline: '', body: '' };
+
+  return `
+    <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;max-width:560px;margin:0 auto;color:#1a1a1a">
+      <div style="background:#C8102E;color:#fff;padding:22px 24px;border-radius:12px 12px 0 0;text-align:center">
+        <div style="font-weight:900;font-size:22px;letter-spacing:-.3px">TORO <span style="opacity:.85">MOVERS</span></div>
+      </div>
+      <div style="background:#fff;padding:28px 24px;border:1px solid #e5e5e5;border-top:none;border-radius:0 0 12px 12px">
+        <h2 style="margin:0 0 14px;font-size:22px;line-height:1.2">${copy.headline}</h2>
+        <p style="margin:0 0 18px;color:#3a3a3a;font-size:15px;line-height:1.6">${copy.body}</p>
+        <div style="text-align:center;margin:24px 0">
+          ${bookBtn}
+          <div style="font-size:12px;color:#6b7280">or call <a href="tel:3217580094" style="color:#C8102E;font-weight:700">(321) 758-0094</a></div>
+        </div>
+        <hr style="margin:28px 0 18px;border:none;border-top:1px solid #e5e5e5">
+        <div style="font-size:12px;color:#9ca3af;line-height:1.6">
+          <strong>Toro Movers</strong> · Orlando, FL · Licensed &amp; insured<br>
+          <a href="https://toromovers.net/" style="color:#9ca3af">toromovers.net</a>
+        </div>
+      </div>
+    </div>
+  `;
+}
