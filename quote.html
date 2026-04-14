@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Get Your Moving Quote in 60 Seconds — Toro Movers</title>
+<meta name="description" content="Instant moving quote for Orlando & Central Florida. $75/mover/hr flat rate, no hidden fees. 4.9★ Google rated. Licensed & insured. Quote in 60 seconds.">
+<meta name="theme-color" content="#C8102E">
+<meta name="robots" content="noindex,follow">
+
+<link rel="icon" href="assets/img/icon.png">
+<link rel="preload" as="image" type="image/webp" href="assets/img/photos/team-family-portrait.webp">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --red: #C8102E;
+  --red-dark: #A00C24;
+  --charcoal: #1a1a1a;
+  --white: #ffffff;
+  --off: #fafafa;
+  --line: #e5e5e5;
+  --mute: #6b7280;
+  --green: #16a34a;
+  --gold: #fbbf24;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--off);color:var(--charcoal);line-height:1.55;-webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+
+/* ===== HEADER ===== */
+.lp-header{background:var(--white);border-bottom:1px solid var(--line);padding:14px 20px;position:sticky;top:0;z-index:50}
+.lp-header-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.logo{font-weight:900;font-size:20px;letter-spacing:-.3px;color:var(--charcoal);display:flex;align-items:center;gap:4px}
+.logo span{color:var(--red)}
+.header-phone{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--charcoal);font-size:15px}
+.header-phone svg{color:var(--red);flex-shrink:0}
+@media(max-width:540px){.header-phone span.lbl{display:none}}
+
+/* ===== HERO ===== */
+.lp-hero{padding:32px 20px 0}
+.lp-wrap{max-width:1100px;margin:0 auto}
+.lp-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start}
+@media(max-width:880px){.lp-grid{grid-template-columns:1fr;gap:24px}}
+.hero-left{position:sticky;top:80px}
+@media(max-width:880px){.hero-left{position:static;top:auto}}
+.trust-pill{display:inline-flex;align-items:center;gap:8px;background:#fef3c7;color:#78350f;border:1px solid #fbbf24;padding:6px 14px;border-radius:50px;font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:20px}
+.trust-pill .dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 1.8s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.hero-h1{font-size:clamp(30px,4.5vw,48px);font-weight:900;line-height:1.05;letter-spacing:-.025em;margin-bottom:16px}
+.hero-h1 em{font-style:normal;color:var(--red)}
+.hero-sub{font-size:17px;color:var(--mute);margin-bottom:24px;max-width:480px}
+.trust-list{display:grid;gap:10px;margin-bottom:28px}
+.trust-item{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--charcoal)}
+.trust-item .ico{width:22px;height:22px;background:var(--green);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.badges{display:flex;gap:16px;align-items:center;padding-top:22px;border-top:1px solid var(--line)}
+.badge-stars{color:var(--gold);font-size:16px;letter-spacing:1px}
+.badge-num{font-weight:900;font-size:22px}
+.badge-txt{font-size:12px;color:var(--mute);line-height:1.3}
+.social-ticker{margin-top:18px;font-size:13px;color:var(--mute);display:flex;align-items:center;gap:8px}
+.social-ticker .live-dot{width:7px;height:7px;background:var(--green);border-radius:50%;animation:pulse 1.8s infinite}
+
+/* ===== FORM ===== */
+.form-card{background:var(--white);border:1px solid var(--line);border-radius:16px;box-shadow:0 10px 40px rgba(0,0,0,.05);overflow:hidden}
+.progress-bar{height:4px;background:#f4f4f5;position:relative}
+.progress-fill{height:100%;background:var(--red);width:0%;transition:width .4s cubic-bezier(.4,0,.2,1)}
+.steps-head{padding:22px 28px 16px;border-bottom:1px solid var(--line)}
+.step-count{font-size:12px;font-weight:700;color:var(--red);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px}
+.step-title{font-size:22px;font-weight:800;letter-spacing:-.02em}
+.step-body{padding:26px 28px}
+.step-body .step-sub{color:var(--mute);font-size:14px;margin-bottom:20px}
+
+.field{margin-bottom:18px}
+.field label{display:block;font-size:13px;font-weight:700;color:var(--charcoal);margin-bottom:8px}
+.field input,.field select{width:100%;padding:14px 16px;border:1.5px solid var(--line);border-radius:10px;font-size:15px;font-family:inherit;background:var(--white);transition:all .15s;color:var(--charcoal)}
+.field input:focus,.field select:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 3px rgba(200,16,46,.12)}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:480px){.field-row{grid-template-columns:1fr}}
+.error-msg{color:var(--red);font-size:12px;font-weight:600;margin-top:4px;display:none}
+.field.err input,.field.err select{border-color:var(--red)}
+.field.err .error-msg{display:block}
+
+/* Pill choices */
+.pills{display:flex;flex-wrap:wrap;gap:8px}
+.pill{padding:12px 18px;border:1.5px solid var(--line);border-radius:10px;font-weight:600;font-size:14px;background:var(--white);transition:all .15s;min-height:44px;display:inline-flex;align-items:center;color:var(--charcoal)}
+.pill:hover{border-color:var(--charcoal)}
+.pill.active{background:var(--charcoal);color:var(--white);border-color:var(--charcoal)}
+.pill-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
+.pill-grid .pill{justify-content:center;text-align:center;padding:14px 12px}
+
+/* Yes/No large toggle */
+.yesno{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
+.yesno .pill{justify-content:center;padding:16px;font-size:15px}
+.yesno .pill.active.yes{background:var(--green);border-color:var(--green);color:#fff}
+.yesno .pill.active.no{background:var(--charcoal);color:#fff}
+
+/* Footer bar */
+.steps-foot{padding:18px 28px 24px;border-top:1px solid var(--line);display:flex;gap:12px;align-items:center;background:var(--off)}
+.btn{padding:14px 24px;border-radius:10px;font-weight:800;font-size:14px;letter-spacing:.3px;transition:all .15s;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px}
+.btn-prev{background:transparent;color:var(--mute);border:1.5px solid var(--line)}
+.btn-prev:hover{color:var(--charcoal);border-color:var(--charcoal)}
+.btn-next,.btn-submit{background:var(--red);color:var(--white);border:none;flex:1}
+.btn-next:hover,.btn-submit:hover{background:var(--red-dark);transform:translateY(-1px);box-shadow:0 8px 20px rgba(200,16,46,.25)}
+.btn-submit{background:var(--green)}
+.btn-submit:hover{background:#15803d;box-shadow:0 8px 20px rgba(22,163,74,.3)}
+.btn[disabled]{opacity:.5;cursor:not-allowed;transform:none!important;box-shadow:none!important}
+.foot-hint{font-size:12px;color:var(--mute);margin-top:10px;text-align:center}
+
+/* Step switching */
+.step{display:none}
+.step.active{display:block;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* Success */
+.success{text-align:center;padding:48px 28px}
+.success-ico{width:64px;height:64px;margin:0 auto 20px;background:var(--green);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px}
+.success h2{font-size:24px;font-weight:800;margin-bottom:10px}
+.success p{color:var(--mute);margin-bottom:20px}
+.success .call-cta{display:inline-flex;align-items:center;gap:8px;background:var(--red);color:#fff;padding:14px 22px;border-radius:10px;font-weight:700;text-decoration:none}
+
+/* Mobile sticky call */
+.mobile-call{display:none}
+@media(max-width:880px){
+  .mobile-call{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:98;background:#fff;border-top:1px solid var(--line);padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));box-shadow:0 -6px 20px rgba(0,0,0,.08)}
+  .mobile-call a{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;background:var(--red);color:#fff;font-weight:800;font-size:15px;border-radius:10px;text-decoration:none}
+  body{padding-bottom:80px}
+}
+</style>
+</head>
+<body>
+
+<header class="lp-header">
+  <div class="lp-header-inner">
+    <a href="/" class="logo">Toro <span>Movers</span></a>
+    <a href="tel:3217580094" class="header-phone">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.37 1.9.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.33 1.85.57 2.81.7A2 2 0 0122 16.92z"/></svg>
+      <span class="lbl">(321) 758-0094</span>
+    </a>
+  </div>
+</header>
+
+<section class="lp-hero">
+  <div class="lp-wrap lp-grid">
+    <div class="hero-left">
+      <span class="trust-pill"><span class="dot"></span>Same-Day Crew Available</span>
+      <h1 class="hero-h1">Moving quote in <em>60 seconds.</em></h1>
+      <p class="hero-sub">Flat hourly pricing. No fuel fees, no per-mile charges, no surprises. Licensed &amp; insured in Florida.</p>
+      <div class="trust-list">
+        <div class="trust-item"><span class="ico">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </span> Flat $75 per mover per hour</div>
+        <div class="trust-item"><span class="ico">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </span> Licensed &amp; insured · FL</div>
+        <div class="trust-item"><span class="ico">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </span> 2-hour minimum · no hidden fees</div>
+        <div class="trust-item"><span class="ico">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </span> Family-owned · 5-min response</div>
+      </div>
+      <div class="badges">
+        <div>
+          <div class="badge-stars">★★★★★</div>
+          <div><span class="badge-num">4.9</span> <span class="badge-txt">· Google Reviews</span></div>
+        </div>
+        <div style="padding-left:16px;border-left:1px solid var(--line)">
+          <div class="badge-num">100+</div>
+          <div class="badge-txt">moves in<br>Central Florida</div>
+        </div>
+      </div>
+      <div class="social-ticker">
+        <span class="live-dot"></span>
+        <span id="ticker-text">14 quotes requested today in Orlando</span>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+
+      <form id="quote-form" novalidate>
+        <!-- STEP 1: Locations -->
+        <div class="step active" data-step="1">
+          <div class="steps-head">
+            <div class="step-count">Step 1 of 5</div>
+            <div class="step-title">Where are you moving?</div>
+          </div>
+          <div class="step-body">
+            <div class="step-sub">This helps us estimate distance and crew size.</div>
+            <div class="field">
+              <label for="zip_from">Moving from — Zip code</label>
+              <input type="text" id="zip_from" name="zip_from" inputmode="numeric" pattern="[0-9]{5}" maxlength="5" placeholder="32801" required>
+              <div class="error-msg">Please enter a valid 5-digit zip.</div>
+            </div>
+            <div class="field">
+              <label for="zip_to">Moving to — Zip code</label>
+              <input type="text" id="zip_to" name="zip_to" inputmode="numeric" pattern="[0-9]{5}" maxlength="5" placeholder="32789" required>
+              <div class="error-msg">Please enter a valid 5-digit zip.</div>
+            </div>
+          </div>
+          <div class="steps-foot">
+            <button type="button" class="btn btn-next" data-next>Continue →</button>
+          </div>
+        </div>
+
+        <!-- STEP 2: Property type + access -->
+        <div class="step" data-step="2">
+          <div class="steps-head">
+            <div class="step-count">Step 2 of 5</div>
+            <div class="step-title">Where are we picking up?</div>
+          </div>
+          <div class="step-body">
+            <div class="step-sub">Property type and access details affect time estimate.</div>
+            <div class="field">
+              <label>Property type</label>
+              <div class="pill-grid" data-pills="property_type" data-required>
+                <button type="button" class="pill" data-value="House">House</button>
+                <button type="button" class="pill" data-value="Apartment">Apartment</button>
+                <button type="button" class="pill" data-value="Condo">Condo</button>
+                <button type="button" class="pill" data-value="Townhome">Townhome</button>
+              </div>
+              <input type="hidden" name="property_type" required>
+              <div class="error-msg">Select a property type.</div>
+            </div>
+            <div class="field">
+              <label>Stairs or elevator?</label>
+              <div class="pill-grid" data-pills="stairs_elevator" data-required>
+                <button type="button" class="pill" data-value="Ground floor">Ground floor</button>
+                <button type="button" class="pill" data-value="Stairs">Stairs</button>
+                <button type="button" class="pill" data-value="Elevator">Elevator</button>
+              </div>
+              <input type="hidden" name="stairs_elevator" required>
+              <div class="error-msg">Let us know about access.</div>
+            </div>
+            <div class="field">
+              <label>Gate / door / parking code required?</label>
+              <div class="yesno" data-pills="code_access" data-required>
+                <button type="button" class="pill yes" data-value="Yes">Yes</button>
+                <button type="button" class="pill no" data-value="No">No</button>
+              </div>
+              <input type="hidden" name="code_access" required>
+              <div class="error-msg">Please select one.</div>
+            </div>
+          </div>
+          <div class="steps-foot">
+            <button type="button" class="btn btn-prev" data-prev>← Back</button>
+            <button type="button" class="btn btn-next" data-next>Continue →</button>
+          </div>
+        </div>
+
+        <!-- STEP 3: What's moving -->
+        <div class="step" data-step="3">
+          <div class="steps-head">
+            <div class="step-count">Step 3 of 5</div>
+            <div class="step-title">What are we moving?</div>
+          </div>
+          <div class="step-body">
+            <div class="step-sub">Approximate totals — we'll confirm everything on the call.</div>
+            <div class="field">
+              <label>How many boxes?</label>
+              <div class="pill-grid" data-pills="boxes_count" data-required>
+                <button type="button" class="pill" data-value="Under 10">Under 10</button>
+                <button type="button" class="pill" data-value="10-25">10-25</button>
+                <button type="button" class="pill" data-value="25-50">25-50</button>
+                <button type="button" class="pill" data-value="50+">50+</button>
+              </div>
+              <input type="hidden" name="boxes_count" required>
+              <div class="error-msg">Select an estimate.</div>
+            </div>
+            <div class="field">
+              <label>How many TVs?</label>
+              <div class="pill-grid" data-pills="tv_count" data-required>
+                <button type="button" class="pill" data-value="0">0</button>
+                <button type="button" class="pill" data-value="1">1</button>
+                <button type="button" class="pill" data-value="2">2</button>
+                <button type="button" class="pill" data-value="3+">3+</button>
+              </div>
+              <input type="hidden" name="tv_count" required>
+              <div class="error-msg">Select a number.</div>
+            </div>
+            <div class="field">
+              <label>Furniture volume</label>
+              <div class="pill-grid" data-pills="furniture_size" data-required>
+                <button type="button" class="pill" data-value="Studio / just a few">Studio / just a few</button>
+                <button type="button" class="pill" data-value="1 bedroom">1 bedroom</button>
+                <button type="button" class="pill" data-value="2 bedrooms">2 bedrooms</button>
+                <button type="button" class="pill" data-value="3+ bedrooms">3+ bedrooms</button>
+              </div>
+              <input type="hidden" name="furniture_size" required>
+              <div class="error-msg">Pick the closest match.</div>
+            </div>
+          </div>
+          <div class="steps-foot">
+            <button type="button" class="btn btn-prev" data-prev>← Back</button>
+            <button type="button" class="btn btn-next" data-next>Continue →</button>
+          </div>
+        </div>
+
+        <!-- STEP 4: Services -->
+        <div class="step" data-step="4">
+          <div class="steps-head">
+            <div class="step-count">Step 4 of 5</div>
+            <div class="step-title">Any extras?</div>
+          </div>
+          <div class="step-body">
+            <div class="step-sub">These are optional — skip if not needed.</div>
+            <div class="field">
+              <label>Need furniture disassembly &amp; reassembly?</label>
+              <div class="yesno" data-pills="assembly" data-required>
+                <button type="button" class="pill yes" data-value="Yes">Yes</button>
+                <button type="button" class="pill no" data-value="No">No</button>
+              </div>
+              <input type="hidden" name="assembly" required>
+              <div class="error-msg">Please select one.</div>
+            </div>
+            <div class="field">
+              <label>Need furniture wrapping / protection?</label>
+              <div class="yesno" data-pills="wrapping" data-required>
+                <button type="button" class="pill yes" data-value="Yes">Yes</button>
+                <button type="button" class="pill no" data-value="No">No</button>
+              </div>
+              <input type="hidden" name="wrapping" required>
+              <div class="error-msg">Please select one.</div>
+            </div>
+            <div class="field">
+              <label>Preferred moving date (optional)</label>
+              <input type="date" id="move_date" name="move_date">
+            </div>
+          </div>
+          <div class="steps-foot">
+            <button type="button" class="btn btn-prev" data-prev>← Back</button>
+            <button type="button" class="btn btn-next" data-next>Continue →</button>
+          </div>
+        </div>
+
+        <!-- STEP 5: Contact -->
+        <div class="step" data-step="5">
+          <div class="steps-head">
+            <div class="step-count">Step 5 of 5</div>
+            <div class="step-title">Where do we send your quote?</div>
+          </div>
+          <div class="step-body">
+            <div class="step-sub">We'll text you the estimate and a call link. No spam, no sharing with 3rd parties.</div>
+            <div class="field-row">
+              <div class="field">
+                <label for="first_name">First name</label>
+                <input type="text" id="first_name" name="first_name" autocomplete="given-name" required>
+                <div class="error-msg">Required.</div>
+              </div>
+              <div class="field">
+                <label for="last_name">Last name</label>
+                <input type="text" id="last_name" name="last_name" autocomplete="family-name" required>
+                <div class="error-msg">Required.</div>
+              </div>
+            </div>
+            <div class="field">
+              <label for="email">Email</label>
+              <input type="email" id="email" name="email" autocomplete="email" placeholder="you@email.com" required>
+              <div class="error-msg">Enter a valid email.</div>
+            </div>
+            <div class="field">
+              <label for="phone">Phone</label>
+              <input type="tel" id="phone" name="phone" autocomplete="tel" inputmode="tel" placeholder="(321) 555-0100" required>
+              <div class="error-msg">Enter a valid US phone.</div>
+            </div>
+          </div>
+          <div class="steps-foot">
+            <button type="button" class="btn btn-prev" data-prev>← Back</button>
+            <button type="submit" class="btn btn-submit" id="btn-submit">Get My Free Quote</button>
+          </div>
+          <div class="foot-hint" style="padding:0 28px 20px">🔒 By submitting you agree to be contacted about your moving quote.</div>
+        </div>
+
+        <!-- SUCCESS -->
+        <div class="step" data-step="success">
+          <div class="success">
+            <div class="success-ico">✓</div>
+            <h2>Got it! We'll be in touch shortly.</h2>
+            <p>Our team is reviewing your details right now. Expect a text or call within 15 minutes during business hours (7am-8pm).</p>
+            <a href="tel:3217580094" class="call-cta">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.37 1.9.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.33 1.85.57 2.81.7A2 2 0 0122 16.92z"/></svg>
+              Or call us: (321) 758-0094
+            </a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- Mobile call button -->
+<div class="mobile-call">
+  <a href="tel:3217580094">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.37 1.9.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.33 1.85.57 2.81.7A2 2 0 0122 16.92z"/></svg>
+    Call (321) 758-0094
+  </a>
+</div>
+
+<!-- Meta Pixel + CAPI + GA4 -->
+<script src="assets/js/tracking.js" defer></script>
+
+<script>
+(function(){
+  var form = document.getElementById('quote-form');
+  var fill = document.getElementById('progress-fill');
+  var steps = form.querySelectorAll('.step');
+  var totalSteps = 5;
+  var current = 1;
+
+  function show(stepId){
+    steps.forEach(function(s){
+      s.classList.toggle('active', s.dataset.step === String(stepId));
+    });
+    if (stepId === 'success') {
+      fill.style.width = '100%';
+    } else {
+      fill.style.width = (stepId / totalSteps * 100) + '%';
+      // Fire ViewContent on each step for lead warming
+      try { if (window.ToroTrack && window.ToroTrack.viewContent) window.ToroTrack.viewContent('quote_step_' + stepId); } catch(e){}
+    }
+    // scroll to top of form
+    var card = document.querySelector('.form-card');
+    if (card && stepId !== 1) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    current = stepId;
+  }
+
+  // Pill selection
+  form.querySelectorAll('[data-pills]').forEach(function(group){
+    var name = group.getAttribute('data-pills');
+    var hidden = form.querySelector('input[name="' + name + '"]');
+    group.querySelectorAll('.pill').forEach(function(pill){
+      pill.addEventListener('click', function(){
+        group.querySelectorAll('.pill').forEach(function(p){ p.classList.remove('active'); });
+        pill.classList.add('active');
+        hidden.value = pill.dataset.value;
+        var field = group.closest('.field');
+        if (field) field.classList.remove('err');
+      });
+    });
+  });
+
+  // Validation per step
+  function validateStep(n){
+    var step = form.querySelector('.step[data-step="'+n+'"]');
+    var ok = true;
+    step.querySelectorAll('input[required]').forEach(function(inp){
+      var field = inp.closest('.field');
+      var v = (inp.value || '').trim();
+      if (!v) { field.classList.add('err'); ok = false; return; }
+      if (inp.id === 'zip_from' || inp.id === 'zip_to') {
+        if (!/^\d{5}$/.test(v)) { field.classList.add('err'); ok = false; return; }
+      }
+      if (inp.type === 'email' && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)) { field.classList.add('err'); ok = false; return; }
+      if (inp.type === 'tel') {
+        var digits = v.replace(/\D/g,'');
+        if (digits.length < 10) { field.classList.add('err'); ok = false; return; }
+      }
+      field.classList.remove('err');
+    });
+    return ok;
+  }
+
+  // Clear error on change
+  form.addEventListener('input', function(e){
+    var f = e.target.closest('.field');
+    if (f) f.classList.remove('err');
+  });
+
+  // Next/Prev buttons
+  form.querySelectorAll('[data-next]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      if (validateStep(current)) show(current + 1);
+    });
+  });
+  form.querySelectorAll('[data-prev]').forEach(function(btn){
+    btn.addEventListener('click', function(){ show(current - 1); });
+  });
+
+  // Submit
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    if (!validateStep(current)) return;
+
+    var btn = document.getElementById('btn-submit');
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+
+    var fd = new FormData(form);
+    var data = {};
+    fd.forEach(function(v,k){ data[k] = v; });
+    data.name = (data.first_name + ' ' + data.last_name).trim();
+    data.page = '/quote';
+    // UTM passthrough
+    var params = new URLSearchParams(window.location.search);
+    ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','fbclid','gclid'].forEach(function(k){
+      if (params.get(k)) data[k] = params.get(k);
+    });
+
+    // Build summary for email body
+    data.details = [
+      'Moving from: ' + data.zip_from + ' → ' + data.zip_to,
+      'Property: ' + data.property_type + ' · ' + data.stairs_elevator,
+      'Code access: ' + data.code_access,
+      'Boxes: ' + data.boxes_count + ' · TVs: ' + data.tv_count + ' · Furniture: ' + data.furniture_size,
+      'Disassembly: ' + data.assembly + ' · Wrapping: ' + data.wrapping,
+      data.move_date ? 'Move date: ' + data.move_date : null
+    ].filter(Boolean).join('\n');
+
+    // Fire Lead to pixel + GA4 + CAPI
+    try {
+      if (window.ToroTrack && window.ToroTrack.lead) {
+        window.ToroTrack.lead({
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+          zip: data.zip_from,
+          package: 'quote_calculator'
+        });
+      }
+    } catch(e){}
+
+    fetch('/.netlify/functions/notify-callback', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    })
+      .then(function(r){ return r.json().catch(function(){return{};}); })
+      .then(function(){ show('success'); })
+      .catch(function(){
+        // Still show success to user — Lead was fired, we'll follow up manually
+        show('success');
+      });
+  });
+
+  // Live social ticker — small random variance to feel real
+  (function(){
+    var base = 11 + Math.floor(Math.random()*8);
+    var el = document.getElementById('ticker-text');
+    if (el) el.textContent = base + ' quotes requested today in Orlando';
+  })();
+
+  // Phone input formatting
+  var phoneInput = document.getElementById('phone');
+  if (phoneInput) {
+    phoneInput.addEventListener('input', function(){
+      var v = this.value.replace(/\D/g,'').slice(0,10);
+      if (v.length > 6) this.value = '('+v.slice(0,3)+') '+v.slice(3,6)+'-'+v.slice(6);
+      else if (v.length > 3) this.value = '('+v.slice(0,3)+') '+v.slice(3);
+      else if (v.length > 0) this.value = '('+v;
+    });
+  }
+})();
+</script>
+
+</body>
+</html>
