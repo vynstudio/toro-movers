@@ -69,6 +69,61 @@ exports.handler = async (event) => {
                     : isQuoteForm ? '🟢 QUOTE REQUEST'
                     : 'Callback Request';
 
+  // ===== QUOTE ESTIMATE CALCULATOR =====
+  // Returns { movers, hoursLow, hoursHigh, totalLow, totalHigh } or null
+  function calcEstimate() {
+    if (!isQuoteForm || isPartial || isAbandon) return null;
+    if (!furniture_size) return null;
+
+    var RATE = 75; // $/mover/hour
+
+    // Base crew + base hours by furniture volume
+    var crewHours = {
+      'Studio / just a few': { movers: 2, hours: 2 },
+      '1 bedroom':           { movers: 2, hours: 3 },
+      '2 bedrooms':          { movers: 3, hours: 4 },
+      '3+ bedrooms':         { movers: 4, hours: 5 },
+    };
+    var base = crewHours[furniture_size] || { movers: 2, hours: 3 };
+    var movers = base.movers;
+    var hours = base.hours;
+
+    // Boxes add time
+    var boxAdd = {
+      'Under 10': 0,
+      '10-25':    0.5,
+      '25-50':    1,
+      '50+':      1.5,
+    };
+    hours += boxAdd[boxes_count] || 0;
+
+    // TVs add time (each mounted/wrapped TV = ~15 min)
+    var tvMap = { '0': 0, '1': 0.25, '2': 0.5, '3+': 0.75 };
+    hours += tvMap[tv_count] || 0;
+
+    // Access
+    if (stairs_elev === 'Stairs')   hours += 0.5;
+    if (stairs_elev === 'Elevator') hours += 0.25;
+
+    // Extras
+    if (assembly === 'Yes') hours += 1;
+    if (wrapping === 'Yes') hours += 0.5;
+
+    // Enforce 2-hour minimum + round to 0.5
+    hours = Math.max(2, Math.round(hours * 2) / 2);
+
+    // Give a realistic ±25% range
+    var hoursLow  = Math.max(2, Math.round(hours * 0.85 * 2) / 2);
+    var hoursHigh = Math.round(hours * 1.2 * 2) / 2;
+
+    var totalLow  = Math.round(RATE * movers * hoursLow);
+    var totalHigh = Math.round(RATE * movers * hoursHigh);
+
+    return { movers: movers, hoursLow: hoursLow, hoursHigh: hoursHigh, totalLow: totalLow, totalHigh: totalHigh };
+  }
+
+  const estimate = calcEstimate();
+
   const row = (label, value) => value
     ? `<tr><td style="padding:6px 12px 6px 0;color:#6b7280;font-size:13px;white-space:nowrap">${esc(label)}</td><td style="padding:6px 0;color:#1a1a1a;font-size:14px;font-weight:500">${esc(value)}</td></tr>`
     : '';
@@ -118,6 +173,7 @@ exports.handler = async (event) => {
           <p style="margin:4px 0 0;opacity:.9;font-size:14px">From ${esc(page || 'website')}</p>
         </div>
         <div style="background:#fff;padding:24px;border:1px solid #e5e5e5;border-top:none;border-radius:0 0 12px 12px">
+          ${internalQuoteBlock}
           <h3 style="margin:0 0 8px;font-size:14px;color:#6b7280;text-transform:uppercase;letter-spacing:1px">Contact</h3>
           <table style="border-collapse:collapse;width:100%">
             ${row('Name',  fullName)}
@@ -158,12 +214,33 @@ exports.handler = async (event) => {
     </table>
   ` : '';
 
+  // Quote estimate block for customer email (the big one)
+  const customerQuoteBlock = estimate ? `
+    <div style="margin:24px 0;background:linear-gradient(135deg,#C8102E,#A00C24);color:#fff;border-radius:14px;padding:28px 24px;text-align:center;box-shadow:0 10px 30px rgba(200,16,46,.25)">
+      <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;opacity:.85;margin-bottom:8px">Your estimated quote</div>
+      <div style="font-size:42px;font-weight:900;letter-spacing:-.02em;line-height:1;margin-bottom:6px">$${estimate.totalLow} – $${estimate.totalHigh}</div>
+      <div style="font-size:14px;opacity:.95;margin-bottom:18px">${estimate.movers} movers · ${estimate.hoursLow}–${estimate.hoursHigh} hours · $75/hr per mover</div>
+      <div style="font-size:12px;opacity:.8;padding-top:14px;border-top:1px solid rgba(255,255,255,.2)">Estimate based on your inputs. Final price confirmed on a 2-minute call.<br>No hidden fees · no fuel surcharge · no per-mile charges.</div>
+    </div>
+  ` : '';
+
+  // Quote estimate block for INTERNAL email (so the team sees what customer was quoted)
+  const internalQuoteBlock = estimate ? `
+    <div style="margin:18px 0;background:#fef3c7;border:1px solid #fbbf24;border-radius:10px;padding:14px 16px;font-size:14px">
+      <strong style="color:#78350f">Auto-quote sent to customer:</strong>
+      <span style="font-weight:700">$${estimate.totalLow}–$${estimate.totalHigh}</span>
+      <span style="color:#6b7280">· ${estimate.movers} movers · ${estimate.hoursLow}–${estimate.hoursHigh} hrs · $75/hr</span>
+    </div>
+  ` : '';
+
   // Only send customer confirmation on FULL submission (not partial / abandon)
   const customerEmail = (email && !isPartial && !isAbandon) ? {
     from: `Toro Movers <${fromEmail}>`,
     to: [email],
     replyTo: fromEmail,
-    subject: `Your Toro Movers quote request — ${fullName.split(' ')[0]}`,
+    subject: estimate
+      ? `Your Toro Movers quote: $${estimate.totalLow}–$${estimate.totalHigh}`
+      : `Your Toro Movers quote request — ${fullName.split(' ')[0]}`,
     html: `
       <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;max-width:600px;margin:0 auto;color:#1a1a1a">
         <div style="background:#C8102E;color:#fff;padding:28px 24px;border-radius:12px 12px 0 0;text-align:center">
@@ -171,12 +248,12 @@ exports.handler = async (event) => {
           <div style="margin-top:6px;font-size:14px;opacity:.95">Family-owned movers · Central Florida</div>
         </div>
         <div style="background:#fff;padding:28px 24px;border:1px solid #e5e5e5;border-top:none;border-radius:0 0 12px 12px">
-          <h2 style="margin:0 0 10px;font-size:22px">Thanks, ${esc(fullName.split(' ')[0] || 'there')}! We got your request.</h2>
-          <p style="margin:0 0 18px;color:#3a3a3a;font-size:15px;line-height:1.6">A team member will text or call you shortly (usually within 15 minutes during business hours, 7am-8pm). We'll confirm your details and send you a firm price.</p>
+          <h2 style="margin:0 0 10px;font-size:22px">Thanks, ${esc(fullName.split(' ')[0] || 'there')}! Here's your quote.</h2>
+          <p style="margin:0 0 4px;color:#3a3a3a;font-size:15px;line-height:1.6">Based on the details you provided, here's what your move should cost:</p>
 
-          <div style="background:#fef3c7;border:1px solid #fbbf24;border-radius:10px;padding:14px 16px;margin:18px 0;font-size:14px">
-            <strong style="color:#78350f">What to expect</strong> — Flat $75 per mover per hour · 2-hour minimum · no fuel fees, no per-mile charges · licensed & insured in Florida.
-          </div>
+          ${customerQuoteBlock}
+
+          <p style="margin:18px 0;color:#3a3a3a;font-size:14px;line-height:1.6">A team member will call you within 15 minutes during business hours (7am-8pm) to confirm the final price and lock in your date. If nothing unusual comes up, the price above is what you'll pay.</p>
 
           ${customerQuoteSummary}
 
