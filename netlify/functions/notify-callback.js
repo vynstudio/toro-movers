@@ -62,7 +62,12 @@ exports.handler = async (event) => {
   const gclid        = payload.gclid        || '';
 
   const isQuoteForm = !!(zip_from || zip_to || property_type || boxes_count);
-  const subjectTag  = isQuoteForm ? 'QUOTE REQUEST' : 'Callback Request';
+  const isPartial   = !!payload.partial;
+  const isAbandon   = !!payload.abandon;
+  const subjectTag  = isAbandon ? '⚠️ ABANDONED — EARLY LEAD'
+                    : isPartial ? '🟡 EARLY LEAD (step 2)'
+                    : isQuoteForm ? '🟢 QUOTE REQUEST'
+                    : 'Callback Request';
 
   const row = (label, value) => value
     ? `<tr><td style="padding:6px 12px 6px 0;color:#6b7280;font-size:13px;white-space:nowrap">${esc(label)}</td><td style="padding:6px 0;color:#1a1a1a;font-size:14px;font-weight:500">${esc(value)}</td></tr>`
@@ -153,7 +158,8 @@ exports.handler = async (event) => {
     </table>
   ` : '';
 
-  const customerEmail = email ? {
+  // Only send customer confirmation on FULL submission (not partial / abandon)
+  const customerEmail = (email && !isPartial && !isAbandon) ? {
     from: `Toro Movers <${fromEmail}>`,
     to: [email],
     replyTo: fromEmail,
