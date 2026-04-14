@@ -4,18 +4,14 @@
 const { getStore } = require('@netlify/blobs');
 
 function store(){
-  // Auto-config works on Netlify runtime; if not, fall back to explicit
-  // siteID + token from env vars (required for background/scheduled functions
-  // and some Node runtimes).
-  try {
-    return getStore('leads');
-  } catch (e) {
-    return getStore({
-      name: 'leads',
-      siteID: process.env.NETLIFY_SITE_ID || process.env.SITE_ID,
-      token: process.env.NETLIFY_BLOBS_TOKEN,
-    });
+  // Prefer explicit config when a Netlify PAT is provided (most reliable).
+  // Falls back to auto-config which works on standard Netlify Functions v2.
+  const siteID = process.env.NETLIFY_SITE_ID || '5d1b562a-d00c-4a66-8dd3-5b083eb11ce9';
+  const token = process.env.NETLIFY_BLOBS_TOKEN;
+  if (token) {
+    return getStore({ name: 'leads', siteID, token, consistency: 'strong' });
   }
+  return getStore({ name: 'leads', consistency: 'strong' });
 }
 
 function leadId(){
