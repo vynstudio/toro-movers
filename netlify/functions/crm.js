@@ -6,6 +6,7 @@
 //   GET  ?action=get&id=xxx       → fetch single lead detail
 //   POST body { action, id, ... } → update, note, status
 
+const { getStore } = require('@netlify/blobs'); // surfaced here so Netlify's scanner detects it and injects Blobs runtime context
 const { getLead, listLeads, addNote, setStatus, updateLead } = require('./_lib/leads');
 
 const json = (status, data) => ({

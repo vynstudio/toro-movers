@@ -3,6 +3,7 @@
 // Env: STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const { getStore } = require('@netlify/blobs'); // surface for Netlify scanner
 const { listLeads, updateLead, notifyTelegram, getLead } = require('./_lib/leads');
 
 exports.handler = async (event) => {

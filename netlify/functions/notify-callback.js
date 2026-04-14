@@ -5,6 +5,7 @@
 // Env vars: RESEND_API_KEY, RESEND_FROM_EMAIL
 
 const { Resend } = require('resend');
+const { getStore } = require('@netlify/blobs'); // surfaced here so Netlify's scanner enables Blobs for this function
 const { createLead, notifyTelegram } = require('./_lib/leads');
 
 const esc = (v) =>
