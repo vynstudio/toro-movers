@@ -216,11 +216,10 @@ async function notifyTelegram(lead){
     lead.utm_source ? `📡 Source: ${esc(lead.utm_source)}` : '',
   ].filter(Boolean).join('\n');
 
-  // Quick-action buttons: tapping these updates the lead status via
-  // the telegram-callback webhook, no CRM login needed.
+  // Telegram inline buttons only accept web URLs or callback_data —
+  // `tel:` / `mailto:` are rejected. Phone + email are in the message
+  // body already (tap-to-call works on mobile Telegram there).
   const kb = [
-    lead.phone ? [{ text: '📞 Call', url: `tel:${lead.phone}` }] : [],
-    lead.email ? [{ text: '✉️ Email', url: `mailto:${lead.email}` }] : [],
     [
       { text: '✅ Contacted', callback_data: `contacted:${lead.id}` },
       { text: '💬 Quoted',    callback_data: `quoted:${lead.id}` },
@@ -230,7 +229,7 @@ async function notifyTelegram(lead){
       { text: '❌ Lost',   callback_data: `lost:${lead.id}` },
     ],
     [{ text: '📋 Open in CRM', url: `https://toromovers.net/crm#lead/${lead.id}` }],
-  ].filter(row => row.length);
+  ];
 
   try {
     const r = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {

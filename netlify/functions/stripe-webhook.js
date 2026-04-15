@@ -69,7 +69,6 @@ exports.handler = async (event) => {
               text,
               parse_mode: 'Markdown',
               reply_markup: { inline_keyboard: [
-                [{ text: '📞 Call ' + (match.name || '').split(' ')[0], url: `tel:${match.phone}` }],
                 [{ text: '📋 Open in CRM', url: `https://toromovers.net/crm#lead/${match.id}` }],
                 [{ text: '💳 Open in Stripe', url: `https://dashboard.stripe.com/payments/${session.payment_intent}` }],
               ]},
