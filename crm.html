@@ -2,171 +2,141 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Toro Movers — CRM</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Toro Movers — Leads</title>
 <meta name="theme-color" content="#C8102E">
 <meta name="robots" content="noindex,nofollow">
 <link rel="icon" href="assets/img/icon.png">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
 
 <style>
 :root{
-  --red:#C8102E; --red-dark:#A00C24; --charcoal:#1a1a1a;
-  --white:#fff; --off:#f8f8f8; --line:#e5e5e5; --mute:#6b7280;
-  --green:#16a34a; --gold:#fbbf24; --blue:#2563eb; --purple:#7c3aed; --gray:#94a3b8;
+  --red:#C8102E; --red-dark:#A00C24; --charcoal:#0a0a0a;
+  --white:#fff; --bg:#f5f5f7; --card:#fff; --line:#e7e7eb; --mute:#6b7280;
+  --green:#16a34a; --amber:#f59e0b; --blue:#2563eb;
 }
-*{margin:0;padding:0;box-sizing:border-box}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%}
-body{font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--off);color:var(--charcoal);line-height:1.5;-webkit-font-smoothing:antialiased;overflow:hidden}
-img{max-width:100%;display:block}
-a{color:inherit;text-decoration:none}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--charcoal);line-height:1.4;-webkit-font-smoothing:antialiased}
 button,input,select,textarea{font-family:inherit;font-size:inherit}
-button{cursor:pointer;border:none;background:none}
+button{cursor:pointer;border:none;background:none;padding:0}
+a{color:inherit;text-decoration:none}
 
-/* ==== LOGIN ==== */
-.login{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#1a1a1a;z-index:1000}
-.login-box{background:#fff;border-radius:16px;padding:40px;max-width:380px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.3)}
-.login-logo{text-align:center;font-weight:900;font-size:26px;letter-spacing:-.3px;margin-bottom:4px}
+/* ===== LOGIN ===== */
+.login{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#0a0a0a;z-index:1000}
+.login-box{background:#fff;border-radius:16px;padding:36px 32px;max-width:360px;width:88%;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.login-logo{text-align:center;font-weight:900;font-size:24px;letter-spacing:-.3px;margin-bottom:4px}
 .login-logo span{color:var(--red)}
-.login-sub{text-align:center;font-size:13px;color:var(--mute);margin-bottom:24px}
-.login input{width:100%;padding:14px 16px;border:1.5px solid var(--line);border-radius:10px;margin-bottom:12px}
+.login-sub{text-align:center;font-size:13px;color:var(--mute);margin-bottom:22px}
+.login input{width:100%;padding:14px 16px;border:1.5px solid var(--line);border-radius:12px;margin-bottom:10px;font-size:15px}
 .login input:focus{outline:none;border-color:var(--red)}
-.login button{width:100%;padding:14px;background:var(--red);color:#fff;border-radius:10px;font-weight:800}
-.login .err{color:var(--red);font-size:13px;text-align:center;margin-top:10px;display:none}
+.login button{width:100%;padding:14px;background:var(--red);color:#fff;border-radius:12px;font-weight:700;font-size:15px}
+.err{color:var(--red);font-size:13px;text-align:center;margin-top:10px;display:none}
 
-/* ==== APP LAYOUT ==== */
-.app{display:flex;flex-direction:column;height:100vh;height:100dvh}
-.top{background:#0a0a0a;color:#fff;padding:12px 20px;display:flex;align-items:center;gap:16px;border-bottom:1px solid #222}
-.top .logo{font-weight:900;font-size:18px}
-.top .logo span{color:var(--red)}
-.top .tabs{display:flex;gap:4px;margin-left:20px}
-.top .tab{padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;color:rgba(255,255,255,.7);cursor:pointer;transition:all .15s}
-.top .tab:hover{color:#fff;background:rgba(255,255,255,.08)}
-.top .tab.active{color:#fff;background:var(--red)}
-.tab-badge{background:var(--red);color:#fff;padding:1px 6px;border-radius:10px;font-size:10px;font-weight:800;margin-left:4px;display:none}
-.tab-badge.show{display:inline-block}
-.tab.active .tab-badge{background:#fff;color:var(--red)}
-.top .right{margin-left:auto;display:flex;align-items:center;gap:12px;font-size:13px;color:rgba(255,255,255,.7)}
-.refresh{padding:6px 12px;background:rgba(255,255,255,.08);border-radius:6px;color:#fff;font-size:12px;font-weight:600}
-.refresh:hover{background:rgba(255,255,255,.15)}
-.count-badge{background:var(--red);color:#fff;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:800}
+/* ===== APP ===== */
+.app{max-width:680px;margin:0 auto;min-height:100vh;min-height:100dvh;background:var(--card);display:flex;flex-direction:column}
+@media(min-width:680px){.app{margin-top:20px;margin-bottom:20px;min-height:calc(100vh - 40px);border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.08);overflow:hidden}}
 
-/* ==== PANELS ==== */
-.panel{flex:1;overflow:auto;padding:20px}
+/* Header */
+.hdr{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--line);padding:14px 18px;display:flex;align-items:center;justify-content:space-between}
+.hdr-title{font-weight:800;font-size:20px;letter-spacing:-.4px}
+.hdr-title span{color:var(--red)}
+.hdr-meta{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--mute)}
+.hdr-stat{font-weight:700}
+.hdr-stat.red{color:var(--red)}
+.refresh{font-size:18px;color:var(--mute);padding:4px 8px}
+.refresh:active{color:var(--red);transform:rotate(180deg);transition:transform .3s}
 
-/* ==== KANBAN ==== */
-.kanban{display:grid;grid-template-columns:repeat(6,minmax(240px,1fr));gap:16px;min-height:100%}
-.col{background:#fff;border-radius:12px;padding:12px;display:flex;flex-direction:column;min-height:200px}
-.col-head{display:flex;align-items:center;justify-content:space-between;padding:4px 4px 12px;border-bottom:2px solid;margin-bottom:10px}
-.col-head .name{font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase}
-.col-head .n{background:#f1f5f9;color:#334155;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:800}
-.col-new    .col-head{border-color:var(--blue)}     .col-new    .col-head .name{color:var(--blue)}
-.col-partial .col-head{border-color:var(--gold)}    .col-partial .col-head .name{color:#a16207}
-.col-contacted .col-head{border-color:var(--purple)} .col-contacted .col-head .name{color:var(--purple)}
-.col-quoted .col-head{border-color:#0891b2}          .col-quoted .col-head .name{color:#0891b2}
-.col-booked .col-head{border-color:var(--green)}     .col-booked .col-head .name{color:var(--green)}
-.col-done   .col-head{border-color:var(--gray)}      .col-done   .col-head .name{color:var(--gray)}
-.col-lost   .col-head{border-color:#dc2626}          .col-lost   .col-head .name{color:#dc2626}
-.col-abandoned .col-head{border-color:#dc2626}       .col-abandoned .col-head .name{color:#dc2626}
+/* Filter pills */
+.filters{display:flex;gap:6px;padding:10px 16px;background:#fafafa;border-bottom:1px solid var(--line);overflow-x:auto;-webkit-overflow-scrolling:touch}
+.filter{padding:7px 14px;border-radius:20px;background:#fff;border:1px solid var(--line);font-size:13px;font-weight:600;white-space:nowrap;color:var(--charcoal);flex-shrink:0}
+.filter.active{background:var(--charcoal);color:#fff;border-color:var(--charcoal)}
+.filter .n{display:inline-block;background:#e5e5e5;color:var(--mute);padding:0 6px;border-radius:10px;font-size:11px;margin-left:4px;min-width:18px;text-align:center}
+.filter.active .n{background:rgba(255,255,255,.2);color:#fff}
+.filter.alert .n{background:var(--red);color:#fff}
+.filter.alert.active .n{background:#fff;color:var(--red)}
 
-/* ==== LEAD CARD ==== */
-.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:8px;cursor:pointer;transition:all .12s;position:relative}
-.card:hover{border-color:var(--charcoal);box-shadow:0 4px 12px rgba(0,0,0,.06);transform:translateY(-1px)}
-.card.dragging{opacity:.4;cursor:grabbing}
-.card.stale{border-color:#f59e0b;background:#fffbeb}
-.card.stale::before{content:'⚠️';position:absolute;top:-6px;right:-6px;background:#f59e0b;color:#fff;width:22px;height:22px;border-radius:50%;font-size:11px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(245,158,11,.4)}
-.card.new-unseen{border-color:var(--red);box-shadow:0 0 0 3px rgba(200,16,46,.12)}
-.card.new-unseen::after{content:'NEW';position:absolute;top:-8px;left:10px;background:var(--red);color:#fff;font-size:9px;font-weight:800;letter-spacing:1.5px;padding:2px 8px;border-radius:10px}
-.card-name{font-weight:800;font-size:14px;margin-bottom:4px}
-.card-row{display:flex;justify-content:space-between;align-items:center;gap:6px;font-size:12px;color:var(--mute);margin-bottom:2px}
-.card-row .price{color:var(--red);font-weight:800;font-size:14px}
-.card-meta{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
-.chip{background:#f1f5f9;color:#475569;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;letter-spacing:.3px}
-.chip.source{background:#fef3c7;color:#78350f}
-.chip.paid{background:#dcfce7;color:#166534}
+/* Feed */
+.feed{flex:1;overflow-y:auto}
+.section-title{padding:16px 18px 8px;font-size:11px;font-weight:800;color:var(--mute);text-transform:uppercase;letter-spacing:1.5px;background:var(--bg);border-bottom:1px solid var(--line)}
+.row{background:#fff;border-bottom:1px solid var(--line);padding:14px 18px;display:flex;align-items:flex-start;gap:12px;cursor:pointer;transition:background .1s;position:relative}
+.row:active{background:#f8f8f8}
+.row.unseen{background:#fff5f5}
+.row.unseen::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--red)}
+.row.stale::after{content:'⚠';position:absolute;top:8px;right:12px;color:var(--amber);font-size:14px;font-weight:800}
+.row.expanded{background:#fafafa}
+
+.row-avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#C8102E,#A00C24);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;flex-shrink:0}
+.row-avatar.booked{background:linear-gradient(135deg,#16a34a,#15803d)}
+.row-avatar.lost{background:linear-gradient(135deg,#94a3b8,#64748b)}
+.row-avatar.paid::after{content:'💳';position:absolute;margin-top:26px;margin-left:-10px;font-size:12px}
+
+.row-body{flex:1;min-width:0}
+.row-top{display:flex;align-items:baseline;gap:8px;margin-bottom:2px}
+.row-name{font-weight:700;font-size:15px;letter-spacing:-.2px}
+.row-time{font-size:12px;color:var(--mute);margin-left:auto;flex-shrink:0}
+.row-preview{font-size:13px;color:var(--mute);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:4px}
+.row-price{color:var(--red);font-weight:800;font-size:14px}
+.row-meta{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px}
+.chip{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;letter-spacing:.3px}
+.chip.new{background:#fee2e2;color:#991b1b}
+.chip.partial{background:#fef3c7;color:#78350f}
+.chip.contacted{background:#ede9fe;color:#6d28d9}
+.chip.quoted{background:#cffafe;color:#155e75}
+.chip.booked{background:#dcfce7;color:#166534}
+.chip.done{background:#f1f5f9;color:#475569}
+.chip.lost{background:#fee2e2;color:#991b1b}
 .chip.abandoned{background:#fee2e2;color:#991b1b}
+.chip.paid{background:#dcfce7;color:#166534}
 .chip.es{background:#ede9fe;color:#6d28d9}
-.card-time{font-size:10px;color:#94a3b8;margin-top:4px}
+.chip.source{background:#fff3e0;color:#78350f;font-family:ui-monospace,monospace}
 
-/* Quick actions — tap to call/email without opening modal */
-.card-actions{display:flex;gap:6px;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
-.card-action{flex:1;padding:8px;background:#f8fafc;border-radius:8px;font-size:11px;font-weight:700;letter-spacing:.3px;color:var(--charcoal);text-align:center;display:inline-flex;align-items:center;justify-content:center;gap:4px;transition:all .12s;text-decoration:none}
-.card-action:hover{background:var(--charcoal);color:#fff}
-.card-action.call{color:var(--green)}
-.card-action.call:hover{background:var(--green);color:#fff}
-.card-action.mail{color:var(--blue)}
-.card-action.mail:hover{background:var(--blue);color:#fff}
-.card-action svg{width:12px;height:12px}
+/* Expanded detail */
+.detail{background:#fafafa;border-bottom:1px solid var(--line);padding:18px;animation:slideDown .2s ease}
+@keyframes slideDown{from{opacity:0;max-height:0}to{opacity:1;max-height:2000px}}
+.detail-hero{background:linear-gradient(135deg,var(--red),var(--red-dark));color:#fff;border-radius:14px;padding:18px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
+.detail-hero .big{font-size:32px;font-weight:900;letter-spacing:-.02em;line-height:1}
+.detail-hero .lbl{font-size:10px;font-weight:700;letter-spacing:1.5px;opacity:.8;text-transform:uppercase;margin-bottom:4px}
+.detail-hero .meta{text-align:right;font-size:12px;opacity:.9}
 
-/* Drop zone hint */
-.col.drop-active{background:#fef3c7;outline:2px dashed var(--gold)}
+.detail-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.btn-big{padding:14px;border-radius:12px;font-weight:700;font-size:14px;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;transition:transform .1s}
+.btn-big:active{transform:scale(.97)}
+.btn-call{background:var(--green);color:#fff}
+.btn-mail{background:var(--blue);color:#fff}
 
-/* Attention panel */
-.attention-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-bottom:20px}
-.attention-section h3{font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--mute);margin:0 0 10px;padding:0 4px;display:flex;align-items:center;gap:8px}
-.attention-section h3 .n{background:var(--red);color:#fff;padding:2px 8px;border-radius:10px;font-size:10px}
-.attention-section h3.warn .n{background:#f59e0b}
-.attention-section h3.info .n{background:var(--blue)}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;background:#fff;border-radius:12px;padding:14px;margin-bottom:14px}
+.dg-row{font-size:13px;padding:2px 0}
+.dg-row .lbl{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--mute);margin-bottom:1px}
+.dg-row .val{font-weight:600;color:var(--charcoal)}
+.dg-row a{color:var(--red)}
 
-/* ==== CALENDAR ==== */
-.cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
-.cal-head h2{font-size:20px;font-weight:800}
-.cal-nav button{padding:6px 12px;background:#fff;border:1px solid var(--line);border-radius:8px;font-size:13px;font-weight:600;margin-left:6px}
-.cal-nav button:hover{background:var(--red);color:#fff;border-color:var(--red)}
-.cal{background:#fff;border-radius:12px;padding:16px;display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
-.cal-dow{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--mute);padding:8px;text-align:center}
-.cal-day{background:#fafafa;border:1px solid var(--line);border-radius:6px;padding:8px;min-height:100px;display:flex;flex-direction:column;gap:4px}
-.cal-day.other{opacity:.35}
-.cal-day.today{background:#fef3c7;border-color:#fbbf24}
-.cal-day-num{font-size:12px;font-weight:700;color:var(--mute);margin-bottom:4px}
-.cal-today .cal-day-num{color:#78350f}
-.cal-event{background:var(--red);color:#fff;padding:3px 6px;border-radius:4px;font-size:10px;font-weight:700;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.cal-event.booked{background:var(--green)}
-.cal-event:hover{opacity:.85}
+.status-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px}
+.status-btn{padding:10px;background:#fff;border:1.5px solid var(--line);border-radius:10px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--charcoal);transition:all .1s}
+.status-btn:active{transform:scale(.96)}
+.status-btn.active{background:var(--red);color:#fff;border-color:var(--red)}
 
-/* ==== LEAD DETAIL MODAL ==== */
-.modal{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;padding:20px}
-.modal.open{display:flex}
-.modal-box{background:#fff;border-radius:14px;max-width:720px;width:100%;max-height:90vh;overflow:auto;box-shadow:0 30px 80px rgba(0,0,0,.3)}
-.modal-head{padding:20px 24px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
-.modal-head h2{font-size:22px;font-weight:800}
-.modal-close{width:34px;height:34px;border-radius:50%;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--mute)}
-.modal-close:hover{background:var(--red);color:#fff}
-.modal-body{padding:20px 24px}
-.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 20px;margin-bottom:20px}
-.detail-row{font-size:13px}
-.detail-row .lbl{font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--mute);margin-bottom:2px}
-.detail-row .val{font-weight:600}
-.detail-row a{color:var(--red)}
-.status-row{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
-.status-btn{padding:8px 14px;background:#f1f5f9;color:#334155;border-radius:8px;font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;transition:all .12s}
-.status-btn:hover{background:var(--charcoal);color:#fff}
-.status-btn.active{background:var(--red);color:#fff}
-.section-title{font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--mute);margin:20px 0 10px}
-.notes{background:#fafafa;border-radius:10px;padding:14px;margin-bottom:12px}
-.note{padding:8px 0;border-bottom:1px dashed var(--line);font-size:13px}
-.note:last-child{border-bottom:none}
-.note-meta{font-size:10px;color:var(--mute);margin-bottom:3px}
-.note-input{display:flex;gap:8px;margin-top:8px}
-.note-input input{flex:1;padding:10px 12px;border:1.5px solid var(--line);border-radius:8px;font-size:14px}
-.note-input button{padding:10px 16px;background:var(--charcoal);color:#fff;border-radius:8px;font-weight:700;font-size:13px}
-.timeline{background:#fafafa;border-radius:10px;padding:14px;max-height:240px;overflow-y:auto}
-.tl-item{padding:6px 0;border-bottom:1px dashed var(--line);font-size:12px}
-.tl-item:last-child{border-bottom:none}
-.tl-item .at{font-size:10px;color:var(--mute)}
-.actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
-.actions a{padding:10px 16px;background:var(--red);color:#fff;border-radius:8px;font-weight:700;font-size:13px;display:inline-flex;align-items:center;gap:6px}
-.actions a.secondary{background:#f1f5f9;color:var(--charcoal)}
-.actions a:hover{transform:translateY(-1px);box-shadow:0 4px 10px rgba(0,0,0,.1)}
+.notes-wrap{background:#fff;border-radius:12px;padding:14px;margin-bottom:12px}
+.notes-title{font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--mute);margin-bottom:10px}
+.note{padding:8px 0;border-bottom:1px dashed var(--line);font-size:13px;color:var(--charcoal)}
+.note:last-of-type{border:none}
+.note-at{font-size:10px;color:var(--mute);margin-bottom:2px}
+.note-input{display:flex;gap:6px;margin-top:8px}
+.note-input input{flex:1;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;font-size:13px}
+.note-input button{padding:10px 16px;background:var(--charcoal);color:#fff;border-radius:10px;font-weight:700;font-size:12px}
 
-/* ==== EMPTY / LOADING ==== */
-.empty{text-align:center;padding:60px 20px;color:var(--mute);font-size:14px}
-.loading{text-align:center;padding:40px;color:var(--mute)}
+.timeline-wrap{background:#fff;border-radius:12px;padding:14px;margin-bottom:12px;max-height:240px;overflow-y:auto}
+.tl-item{padding:5px 0;border-bottom:1px dashed var(--line);font-size:12px}
+.tl-item:last-child{border:none}
+.tl-item .at{font-size:10px;color:var(--mute);margin-bottom:1px}
 
-@media (max-width:880px){
-  .kanban{grid-template-columns:repeat(3,minmax(240px,1fr));overflow-x:auto}
-  .top{flex-wrap:wrap}
-  .top .tabs{order:3;width:100%;overflow-x:auto}
-}
+/* Empty */
+.empty{text-align:center;padding:60px 24px;color:var(--mute)}
+.empty .ico{font-size:42px;margin-bottom:10px}
+.empty .t{font-size:17px;font-weight:700;color:var(--charcoal);margin-bottom:4px}
+.empty .s{font-size:13px}
+
+.loading{text-align:center;padding:40px;color:var(--mute);font-size:13px}
 </style>
 </head>
 <body>
@@ -175,70 +145,43 @@ button{cursor:pointer;border:none;background:none}
 <div class="login" id="login">
   <div class="login-box">
     <div class="login-logo">Toro <span>Movers</span></div>
-    <div class="login-sub">CRM · Admin access only</div>
-    <input type="password" id="pw-input" placeholder="Password" autofocus>
-    <button id="pw-btn">Log in</button>
+    <div class="login-sub">Leads</div>
+    <input type="password" id="pw-input" placeholder="Password" autocomplete="current-password" autofocus>
+    <button id="pw-btn">Open</button>
     <div class="err" id="pw-err">Wrong password.</div>
   </div>
 </div>
 
 <!-- APP -->
 <div class="app" id="app" style="display:none">
-  <div class="top">
-    <div class="logo">Toro <span>Movers</span> · CRM</div>
-    <div class="tabs">
-      <button class="tab active" data-view="attention">🔔 Today <span class="tab-badge" id="tab-badge-attn"></span></button>
-      <button class="tab" data-view="pipeline">Pipeline</button>
-      <button class="tab" data-view="calendar">Calendar</button>
-      <button class="tab" data-view="recent">Recent</button>
+  <header class="hdr">
+    <div>
+      <div class="hdr-title">Toro <span>Movers</span></div>
+      <div class="hdr-meta" id="hdr-meta"></div>
     </div>
-    <div class="right">
-      <button class="refresh" id="refresh-btn">↻ Refresh</button>
-      <span id="counts"></span>
-    </div>
+    <button class="refresh" id="refresh" aria-label="Refresh">↻</button>
+  </header>
+
+  <div class="filters" id="filters">
+    <button class="filter active" data-filter="attention">Attention <span class="n" id="n-attn">0</span></button>
+    <button class="filter" data-filter="all">All <span class="n" id="n-all">0</span></button>
+    <button class="filter" data-filter="new">New <span class="n" id="n-new">0</span></button>
+    <button class="filter" data-filter="contacted">Contacted <span class="n" id="n-contacted">0</span></button>
+    <button class="filter" data-filter="quoted">Quoted <span class="n" id="n-quoted">0</span></button>
+    <button class="filter" data-filter="booked">Booked <span class="n" id="n-booked">0</span></button>
+    <button class="filter" data-filter="lost">Lost <span class="n" id="n-lost">0</span></button>
   </div>
 
-  <div class="panel" id="panel-attention">
-    <div id="attention-body"></div>
-  </div>
-
-  <div class="panel" id="panel-pipeline" style="display:none">
-    <div class="kanban" id="kanban"></div>
-  </div>
-
-  <div class="panel" id="panel-calendar" style="display:none">
-    <div class="cal-head">
-      <h2 id="cal-title"></h2>
-      <div class="cal-nav">
-        <button id="cal-prev">← Prev</button>
-        <button id="cal-today">Today</button>
-        <button id="cal-next">Next →</button>
-      </div>
-    </div>
-    <div class="cal" id="cal"></div>
-  </div>
-
-  <div class="panel" id="panel-recent" style="display:none">
-    <div class="loading" id="recent-list">Loading…</div>
-  </div>
-</div>
-
-<!-- MODAL -->
-<div class="modal" id="modal">
-  <div class="modal-box">
-    <div class="modal-head">
-      <h2 id="m-name">—</h2>
-      <button class="modal-close" id="m-close">×</button>
-    </div>
-    <div class="modal-body" id="m-body"></div>
+  <div class="feed" id="feed">
+    <div class="loading">Loading…</div>
   </div>
 </div>
 
 <script>
 var PW = localStorage.getItem('crm_pw') || '';
 var leads = [];
-var calCursor = new Date();
-var currentLead = null;
+var currentFilter = 'attention';
+var expandedId = null;
 
 // ===== LOGIN =====
 function showApp(){
@@ -248,17 +191,10 @@ function showApp(){
 }
 async function tryLogin(pw){
   try {
-    var r = await fetch('/.netlify/functions/crm?action=list', {
-      headers: { 'x-crm-password': pw }
-    });
-    if (r.ok) {
-      PW = pw;
-      localStorage.setItem('crm_pw', pw);
-      showApp();
-    } else {
-      document.getElementById('pw-err').style.display = 'block';
-    }
-  } catch(e) { alert('Network error'); }
+    var r = await fetch('/.netlify/functions/crm?action=list', { headers: { 'x-crm-password': pw } });
+    if (r.ok) { PW = pw; localStorage.setItem('crm_pw', pw); showApp(); }
+    else { document.getElementById('pw-err').style.display = 'block'; }
+  } catch(e){ alert('Network error'); }
 }
 document.getElementById('pw-btn').addEventListener('click', function(){
   var pw = document.getElementById('pw-input').value.trim();
@@ -269,437 +205,270 @@ document.getElementById('pw-input').addEventListener('keydown', function(e){
 });
 if (PW) tryLogin(PW);
 
-// ===== LOAD LEADS =====
+// ===== LOAD =====
 async function loadLeads(){
   try {
-    var r = await fetch('/.netlify/functions/crm?action=list');
-    if (!r.ok) {
-      console.error('CRM error:', r.status, await r.text());
-      document.getElementById('kanban').innerHTML = '<div style="padding:40px;color:#dc2626">Error loading leads. Check function logs.</div>';
-      return;
-    }
+    var r = await fetch('/.netlify/functions/crm?action=list', { headers: { 'x-crm-password': PW } });
+    if (!r.ok) { if (r.status === 401){ localStorage.removeItem('crm_pw'); location.reload(); } return; }
     var j = await r.json();
     leads = j.leads || [];
+    updateFilters();
     render();
-    updateCounts();
-    // Re-render whichever view is active
-    var activeTab = document.querySelector('.tab.active');
-    if (activeTab) {
-      var v = activeTab.getAttribute('data-view');
-      if (v === 'attention') renderAttention();
-      if (v === 'recent')    renderRecent();
-      if (v === 'calendar')  renderCalendar();
-    }
   } catch(e){ console.error(e); }
 }
 
-// ===== TABS =====
-document.querySelectorAll('.tab').forEach(function(t){
-  t.addEventListener('click', function(){
-    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
-    t.classList.add('active');
-    var v = t.getAttribute('data-view');
-    ['attention','pipeline','calendar','recent'].forEach(function(n){
-      document.getElementById('panel-'+n).style.display = (n === v) ? '' : 'none';
-    });
-    if (v === 'calendar')  renderCalendar();
-    if (v === 'recent')    renderRecent();
-    if (v === 'attention') renderAttention();
-  });
-});
-document.getElementById('refresh-btn').addEventListener('click', loadLeads);
-
-// ===== KANBAN =====
-var STAGES = [
-  { id:'new', name:'New' },
-  { id:'partial', name:'Partial' },
-  { id:'contacted', name:'Contacted' },
-  { id:'quoted', name:'Quoted' },
-  { id:'booked', name:'Booked' },
-  { id:'done', name:'Done' },
-];
-function render(){
-  var k = document.getElementById('kanban');
-  k.innerHTML = '';
-  STAGES.forEach(function(s){
-    var col = document.createElement('div');
-    col.className = 'col col-'+s.id;
-    col.dataset.stage = s.id;
-    var items = leads.filter(l => l.status === s.id);
-    col.innerHTML = '<div class="col-head"><span class="name">'+s.name+'</span><span class="n">'+items.length+'</span></div>';
-    items.forEach(function(l){ col.appendChild(card(l)); });
-
-    // Drop zone
-    col.addEventListener('dragover', function(e){ e.preventDefault(); col.classList.add('drop-active'); });
-    col.addEventListener('dragleave', function(){ col.classList.remove('drop-active'); });
-    col.addEventListener('drop', async function(e){
-      e.preventDefault();
-      col.classList.remove('drop-active');
-      var leadId = e.dataTransfer.getData('text/plain');
-      var newStatus = s.id;
-      var lead = leads.find(l => l.id === leadId);
-      if (!lead || lead.status === newStatus) return;
-      // Optimistic UI
-      lead.status = newStatus;
-      render();
-      // Persist
-      try {
-        await fetch('/.netlify/functions/crm', {
-          method:'POST', headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({ action:'status', id: leadId, status: newStatus })
-        });
-      } catch(err){ console.error(err); }
-    });
-
-    k.appendChild(col);
-  });
-}
-
-// ===== ATTENTION PANEL =====
-function renderAttention(){
-  var body = document.getElementById('attention-body');
-  var lastSeen = parseInt(localStorage.getItem('crm_last_seen') || '0', 10);
+// ===== FILTERS =====
+function updateFilters(){
   var now = Date.now();
+  var lastSeen = parseInt(localStorage.getItem('crm_last_seen') || '0', 10);
 
-  var newUnseen = leads.filter(function(l){
-    return new Date(l.createdAt).getTime() > lastSeen && l.status === 'new';
-  });
-  var stale = leads.filter(function(l){
+  function isStale(l){
     var ageH = (now - new Date(l.updatedAt || l.createdAt).getTime()) / 3600000;
     return ageH > 4 && (l.status === 'new' || l.status === 'contacted');
+  }
+  function isUnseen(l){ return new Date(l.createdAt).getTime() > lastSeen && l.status === 'new'; }
+  function isAttention(l){ return isUnseen(l) || isStale(l); }
+
+  document.getElementById('n-attn').textContent = leads.filter(isAttention).length;
+  document.getElementById('n-all').textContent = leads.length;
+  ['new','contacted','quoted','booked','lost'].forEach(function(s){
+    document.getElementById('n-'+s).textContent = leads.filter(l => l.status === s).length;
   });
-  var movingSoon = leads.filter(function(l){
-    if (!l.move_date || l.status === 'done' || l.status === 'lost') return false;
-    var days = (new Date(l.move_date) - now) / 86400000;
-    return days >= 0 && days <= 7;
-  }).sort((a,b) => new Date(a.move_date) - new Date(b.move_date));
-  var bookedUnpaid = leads.filter(l => l.status === 'booked' && !l.depositPaid);
-  var todayNew = leads.filter(function(l){
-    var d = new Date(l.createdAt);
-    var t = new Date(); t.setHours(0,0,0,0);
-    return d >= t && l.status === 'new';
+
+  var attnCount = leads.filter(isAttention).length;
+  var attnFilter = document.querySelector('.filter[data-filter="attention"]');
+  attnFilter.classList.toggle('alert', attnCount > 0);
+
+  var today = new Date(); today.setHours(0,0,0,0);
+  var newToday = leads.filter(l => new Date(l.createdAt) >= today).length;
+  var booked = leads.filter(l => l.status === 'booked').length;
+  document.getElementById('hdr-meta').innerHTML =
+    '<span class="hdr-stat red">'+newToday+'</span> today · <span class="hdr-stat">'+booked+'</span> booked';
+
+  document.title = (attnCount > 0 ? '('+attnCount+') ' : '') + 'Toro Movers — Leads';
+}
+
+document.querySelectorAll('.filter').forEach(function(f){
+  f.addEventListener('click', function(){
+    document.querySelectorAll('.filter').forEach(x => x.classList.remove('active'));
+    f.classList.add('active');
+    currentFilter = f.getAttribute('data-filter');
+    render();
   });
+});
+document.getElementById('refresh').addEventListener('click', loadLeads);
+
+// ===== RENDER FEED =====
+function render(){
+  var feed = document.getElementById('feed');
+  var now = Date.now();
+  var lastSeen = parseInt(localStorage.getItem('crm_last_seen') || '0', 10);
+
+  function isStale(l){
+    var ageH = (now - new Date(l.updatedAt || l.createdAt).getTime()) / 3600000;
+    return ageH > 4 && (l.status === 'new' || l.status === 'contacted');
+  }
+  function isUnseen(l){ return new Date(l.createdAt).getTime() > lastSeen && l.status === 'new'; }
+
+  var list = leads.slice();
+  if (currentFilter === 'attention') {
+    list = list.filter(l => isUnseen(l) || isStale(l));
+  } else if (currentFilter !== 'all') {
+    list = list.filter(l => l.status === currentFilter);
+  }
+
+  if (!list.length) {
+    var msg = currentFilter === 'attention'
+      ? { ico:'✨', t:'All caught up!', s:'No leads need attention right now.' }
+      : { ico:'📭', t:'No leads here', s:'Check back when new quotes come in.' };
+    feed.innerHTML = '<div class="empty"><div class="ico">'+msg.ico+'</div><div class="t">'+msg.t+'</div><div class="s">'+msg.s+'</div></div>';
+    return;
+  }
 
   var html = '';
-
-  if (newUnseen.length) {
-    html += section('🔴 New since last visit', newUnseen, '');
-  }
-  if (stale.length) {
-    html += section('⚠️ Needs follow-up (no update > 4h)', stale, 'warn');
-  }
-  if (movingSoon.length) {
-    html += section('📅 Moving within 7 days', movingSoon, 'info');
-  }
-  if (bookedUnpaid.length) {
-    html += section('💳 Booked but deposit pending', bookedUnpaid, 'warn');
-  }
-  if (todayNew.length) {
-    html += section('🟢 New today', todayNew, '');
-  }
-
-  if (!html) {
-    html = '<div class="empty"><div style="font-size:48px;margin-bottom:10px">✨</div><div style="font-size:18px;font-weight:800;margin-bottom:6px">All caught up.</div>No leads need attention right now.</div>';
-  }
-
-  body.innerHTML = html;
-
-  // Wire cards inside attention panels the same way as kanban cards
-  body.querySelectorAll('[data-lead-id]').forEach(function(d){
-    var id = d.dataset.leadId;
-    var lead = leads.find(l => l.id === id);
-    if (!lead) return;
-    d.addEventListener('click', function(e){
-      if (e.target.closest('.card-action') && !e.target.closest('[data-open-detail]')) return;
-      openLead(id);
-    });
-  });
-
-  // Mark leads as seen
-  localStorage.setItem('crm_last_seen', String(now));
-  updateCounts();
-}
-
-function section(title, list, kind){
-  var html = '<div class="attention-section"><h3 class="'+kind+'">'+title+' <span class="n">'+list.length+'</span></h3><div class="attention-grid">';
   list.forEach(function(l){
-    // Render lightweight card HTML (without drag; reuses .card class)
-    var phoneClean = (l.phone || '').replace(/\D/g,'');
-    var est = l.estimate_total || 0;
-    var priceHtml = est ? '<span class="price">$'+est+'</span>' : '<span class="price" style="color:#94a3b8">—</span>';
-    var paidChip = l.depositPaid ? '<span class="chip paid">💳 $50</span>' : '';
-    var statusChip = '<span class="chip">'+esc(l.status)+'</span>';
-    var moveChip = l.move_date ? '<span class="chip source">📅 '+esc(l.move_date)+'</span>' : '';
-    var srcChip = l.utm_content ? '<span class="chip source">'+esc(l.utm_content)+'</span>' : '';
-    html += '<div class="card" data-lead-id="'+l.id+'">'+
-      '<div class="card-row"><div class="card-name">'+esc(l.name||'(no name)')+'</div>'+priceHtml+'</div>'+
-      '<div class="card-row"><span>'+esc(l.phone||'')+'</span><span>'+esc(l.furniture_size||'')+'</span></div>'+
-      '<div class="card-meta">'+statusChip+paidChip+moveChip+srcChip+'</div>'+
-      '<div class="card-time">'+timeAgo(l.createdAt)+'</div>'+
-      '<div class="card-actions" onclick="event.stopPropagation()">'+
-        (phoneClean ? '<a class="card-action call" href="tel:'+phoneClean+'">📞 Call</a>' : '')+
-        (l.email ? '<a class="card-action mail" href="mailto:'+esc(l.email)+'">✉️ Email</a>' : '')+
-        '<a class="card-action" data-open-detail href="#">Details</a>'+
+    var initials = (l.name || 'NN').split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+    var price = l.estimate_total ? '$'+l.estimate_total : '';
+    var preview = [
+      l.phone,
+      l.furniture_size,
+      l.zip_from && l.zip_to ? l.zip_from+'→'+l.zip_to : l.zip_from,
+    ].filter(Boolean).join(' · ');
+
+    var classes = 'row';
+    if (isUnseen(l)) classes += ' unseen';
+    if (isStale(l)) classes += ' stale';
+    if (expandedId === l.id) classes += ' expanded';
+
+    var avatarClass = l.status === 'booked' ? 'booked' : (l.status === 'lost' ? 'lost' : '');
+
+    html += '<div class="'+classes+'" data-id="'+l.id+'">'+
+      '<div class="row-avatar '+avatarClass+'">'+initials+'</div>'+
+      '<div class="row-body">'+
+        '<div class="row-top">'+
+          '<div class="row-name">'+esc(l.name||'(no name)')+'</div>'+
+          '<div class="row-time">'+timeAgo(l.createdAt)+'</div>'+
+        '</div>'+
+        '<div class="row-preview">'+esc(preview)+'</div>'+
+        '<div class="row-meta">'+
+          (price ? '<span class="row-price">'+price+'</span>' : '')+
+          '<span class="chip '+l.status+'">'+esc(l.status)+'</span>'+
+          (l.depositPaid ? '<span class="chip paid">💳 paid</span>' : '')+
+          ((l.utm_content||'').startsWith('es-') ? '<span class="chip es">🇪🇸</span>' : '')+
+          (l.utm_content ? '<span class="chip source">'+esc(l.utm_content)+'</span>' : '')+
+        '</div>'+
       '</div>'+
     '</div>';
-  });
-  html += '</div></div>';
-  return html;
-}
-function card(l){
-  var d = document.createElement('div');
-  d.className = 'card';
-  d.draggable = true;
-  d.dataset.leadId = l.id;
 
-  // Mark as "new" if not seen since last visit
-  var lastSeen = parseInt(localStorage.getItem('crm_last_seen') || '0', 10);
-  if (new Date(l.createdAt).getTime() > lastSeen && l.status === 'new') {
-    d.classList.add('new-unseen');
-  }
-  // Mark as stale if 'new' or 'contacted' for > 4 hours with no update
-  var ageH = (Date.now() - new Date(l.updatedAt || l.createdAt).getTime()) / 3600000;
-  if (ageH > 4 && (l.status === 'new' || l.status === 'contacted')) {
-    d.classList.add('stale');
-  }
-
-  var est = l.estimate_total || 0;
-  var priceHtml = est ? '<span class="price">$'+est+'</span>' : '<span class="price" style="color:#94a3b8">—</span>';
-  var paidChip = l.depositPaid ? '<span class="chip paid">💳 Paid $50</span>' : '';
-  var srcChip = l.utm_content ? '<span class="chip source">'+esc(l.utm_content)+'</span>' : '';
-  var esChip = (l.utm_content || '').startsWith('es-') ? '<span class="chip es">🇪🇸 ES</span>' : '';
-
-  var phoneClean = (l.phone || '').replace(/\D/g,'');
-  var actions = '';
-  if (phoneClean || l.email) {
-    actions = '<div class="card-actions" onclick="event.stopPropagation()">';
-    if (phoneClean) actions += '<a class="card-action call" href="tel:'+phoneClean+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.37 1.9.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.33 1.85.57 2.81.7A2 2 0 0122 16.92z"/></svg>Call</a>';
-    if (l.email)    actions += '<a class="card-action mail" href="mailto:'+esc(l.email)+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Email</a>';
-    actions += '<a class="card-action" href="#" data-open-detail><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>Details</a>';
-    actions += '</div>';
-  }
-
-  d.innerHTML =
-    '<div class="card-row"><div class="card-name">'+esc(l.name||'(no name)')+'</div>'+priceHtml+'</div>'+
-    '<div class="card-row"><span>'+esc(l.phone||'')+'</span><span>'+esc(l.furniture_size||'')+'</span></div>'+
-    '<div class="card-row"><span>'+esc(l.zip_from||'')+(l.zip_to?' → '+esc(l.zip_to):'')+'</span></div>'+
-    '<div class="card-meta">'+paidChip+esChip+srcChip+'</div>'+
-    '<div class="card-time">'+timeAgo(l.createdAt)+'</div>'+
-    actions;
-
-  d.addEventListener('click', function(e){
-    // Let quick actions work without opening modal
-    if (e.target.closest('.card-action') && !e.target.closest('[data-open-detail]')) return;
-    openLead(l.id);
+    if (expandedId === l.id) {
+      html += renderDetail(l);
+    }
   });
 
-  // Drag events
-  d.addEventListener('dragstart', function(e){
-    d.classList.add('dragging');
-    e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/plain', l.id);
-  });
-  d.addEventListener('dragend', function(){ d.classList.remove('dragging'); });
+  feed.innerHTML = html;
 
-  return d;
-}
-
-// ===== CALENDAR =====
-function renderCalendar(){
-  var c = document.getElementById('cal');
-  var title = document.getElementById('cal-title');
-  var year = calCursor.getFullYear(), month = calCursor.getMonth();
-  var first = new Date(year, month, 1);
-  var start = new Date(first); start.setDate(1 - first.getDay());
-  title.textContent = calCursor.toLocaleDateString('en-US', { month:'long', year:'numeric' });
-  c.innerHTML = '';
-  ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(function(d){
-    var el = document.createElement('div');
-    el.className = 'cal-dow';
-    el.textContent = d;
-    c.appendChild(el);
-  });
-  var today = new Date(); today.setHours(0,0,0,0);
-  for (var i=0; i<42; i++){
-    var d = new Date(start); d.setDate(start.getDate()+i);
-    var el = document.createElement('div');
-    el.className = 'cal-day';
-    if (d.getMonth() !== month) el.classList.add('other');
-    if (d.getTime() === today.getTime()) el.classList.add('today');
-    el.innerHTML = '<div class="cal-day-num">'+d.getDate()+'</div>';
-    var isoDay = d.toISOString().slice(0,10);
-    leads.filter(l => l.move_date === isoDay).forEach(function(l){
-      var e = document.createElement('div');
-      e.className = 'cal-event' + (l.depositPaid ? ' booked' : '');
-      e.textContent = (l.name || '(no name)') + (l.estimate_total ? ' · $'+l.estimate_total : '');
-      e.addEventListener('click', function(ev){ ev.stopPropagation(); openLead(l.id); });
-      el.appendChild(e);
+  feed.querySelectorAll('.row').forEach(function(r){
+    r.addEventListener('click', function(){
+      var id = r.dataset.id;
+      expandedId = (expandedId === id) ? null : id;
+      if (expandedId) {
+        // Mark as seen
+        localStorage.setItem('crm_last_seen', String(Date.now()));
+      }
+      render();
+      if (expandedId) {
+        var el = document.querySelector('.row[data-id="'+expandedId+'"]');
+        if (el) el.scrollIntoView({ behavior:'smooth', block:'start' });
+        loadDetail(expandedId);
+      }
     });
-    c.appendChild(el);
-  }
-}
-document.getElementById('cal-prev').addEventListener('click', function(){ calCursor.setMonth(calCursor.getMonth()-1); renderCalendar(); });
-document.getElementById('cal-next').addEventListener('click', function(){ calCursor.setMonth(calCursor.getMonth()+1); renderCalendar(); });
-document.getElementById('cal-today').addEventListener('click', function(){ calCursor = new Date(); renderCalendar(); });
-
-// ===== RECENT (last 50 all statuses) =====
-function renderRecent(){
-  var p = document.getElementById('recent-list');
-  if (!leads.length) { p.innerHTML = '<div class="empty">No leads yet. They\'ll show up here as soon as someone submits the /quote form.</div>'; return; }
-  var html = '<div style="display:grid;gap:8px">';
-  leads.slice(0,50).forEach(function(l){
-    html += '<div class="card" onclick="openLead(\''+l.id+'\')" style="cursor:pointer">'+
-      '<div class="card-row"><div class="card-name">'+esc(l.name||'(no name)')+'</div><span class="price">'+(l.estimate_total?'$'+l.estimate_total:'—')+'</span></div>'+
-      '<div class="card-row"><span>'+esc(l.phone||'')+' · '+esc(l.email||'')+'</span><span class="chip">'+esc(l.status)+'</span></div>'+
-      '<div class="card-time">'+timeAgo(l.createdAt)+'</div>'+
-    '</div>';
   });
-  html += '</div>';
-  p.innerHTML = html;
 }
 
-// ===== LEAD DETAIL MODAL =====
-async function openLead(id){
-  location.hash = 'lead/' + id;
-  document.getElementById('modal').classList.add('open');
-  document.getElementById('m-body').innerHTML = '<div class="loading">Loading…</div>';
-  try {
-    var r = await fetch('/.netlify/functions/crm?action=get&id='+id);
-    var j = await r.json();
-    currentLead = j.lead;
-    renderLead(currentLead);
-  } catch(e) { document.getElementById('m-body').innerHTML = '<div class="empty">Failed to load.</div>'; }
-}
-function renderLead(l){
-  document.getElementById('m-name').textContent = l.name || '(no name)';
-  var est = l.estimate || {};
-  var body = document.getElementById('m-body');
-  var statusBtns = STAGES.concat([{id:'lost',name:'Lost'}]).map(function(s){
-    return '<button class="status-btn '+(s.id===l.status?'active':'')+'" data-status="'+s.id+'">'+s.name+'</button>';
-  }).join('');
+// ===== DETAIL =====
+function renderDetail(l, full){
+  // `l` is the summary from list; `full` is the full-detail object (async loaded)
+  var lead = full || l;
+  var est = lead.estimate || (l.estimate_total ? { total: l.estimate_total } : null);
+  var phone = (lead.phone || '').replace(/\D/g,'');
 
-  body.innerHTML =
-    '<div class="status-row">'+statusBtns+'</div>'+
-    (est.total ? '<div style="background:linear-gradient(135deg,#C8102E,#A00C24);color:#fff;border-radius:10px;padding:14px 18px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;opacity:.85">Quote</div><div style="font-size:26px;font-weight:900">$'+est.total+'</div></div><div style="font-size:12px;opacity:.85;text-align:right">'+est.movers+' movers<br>'+est.hours+' hours</div></div>' : '')+
-    '<div class="detail-grid">'+
-      detailRow('Phone', l.phone ? '<a href="tel:'+esc(l.phone)+'">'+esc(l.phone)+'</a>' : '—') +
-      detailRow('Email', l.email ? '<a href="mailto:'+esc(l.email)+'">'+esc(l.email)+'</a>' : '—') +
-      detailRow('From ZIP', l.zip_from || '—') +
-      detailRow('To ZIP', l.zip_to || '—') +
-      detailRow('Home size', l.furniture_size || '—') +
-      detailRow('Stairs', l.stairs_elevator || '—') +
-      detailRow('Move date', l.move_date || '—') +
-      detailRow('Deposit', l.depositPaid ? '<span style="color:#16a34a;font-weight:800">✓ Paid</span>' : '—') +
-      detailRow('Source', (l.utm_source||'direct')+' / '+(l.utm_medium||'—')) +
-      detailRow('Ad (utm_content)', l.utm_content || '—') +
-    '</div>'+
-    '<div class="actions">'+
-      (l.phone ? '<a href="tel:'+esc(l.phone)+'">📞 Call</a>' : '')+
-      (l.email ? '<a href="mailto:'+esc(l.email)+'" class="secondary">✉️ Email</a>' : '')+
-      (l.stripeSessionId ? '<a href="https://dashboard.stripe.com/payments/'+esc(l.stripeSessionId)+'" class="secondary" target="_blank">💳 View in Stripe</a>' : '')+
-    '</div>'+
-    '<div class="section-title">Notes</div>'+
-    '<div class="notes" id="notes-list">'+
-      (l.notes && l.notes.length ? l.notes.map(function(n){
-        return '<div class="note"><div class="note-meta">'+fmtDate(n.at)+' · '+esc(n.author||'admin')+'</div>'+esc(n.text)+'</div>';
-      }).join('') : '<div style="color:#94a3b8;font-size:13px;text-align:center;padding:10px">No notes yet.</div>')+
-    '</div>'+
-    '<div class="note-input"><input id="note-text" placeholder="Add a note…"><button id="add-note">Add</button></div>'+
-    '<div class="section-title">Timeline</div>'+
-    '<div class="timeline">'+
-      (l.timeline || []).map(function(t){
-        return '<div class="tl-item"><div class="at">'+fmtDate(t.at)+'</div>'+esc(t.text)+'</div>';
-      }).reverse().join('')+
+  var heroHtml = est && est.total ? (
+    '<div class="detail-hero">'+
+      '<div><div class="lbl">Quote</div><div class="big">$'+est.total+'</div></div>'+
+      '<div class="meta">'+(est.movers?est.movers+' movers':'')+'<br>'+(est.hours?est.hours+' hours':'')+'</div>'+
+    '</div>'
+  ) : '';
+
+  var actionsHtml =
+    '<div class="detail-actions">'+
+      (phone ? '<a class="btn-big btn-call" href="tel:'+phone+'">📞 Call</a>' : '')+
+      (lead.email ? '<a class="btn-big btn-mail" href="mailto:'+esc(lead.email)+'">✉️ Email</a>' : '')+
     '</div>';
 
-  body.querySelectorAll('.status-btn').forEach(function(b){
-    b.addEventListener('click', async function(){
-      var s = b.getAttribute('data-status');
+  var STATUSES = ['new','contacted','quoted','booked','done','lost'];
+  var statusHtml = '<div class="status-grid">' + STATUSES.map(function(s){
+    return '<button class="status-btn '+(lead.status===s?'active':'')+'" data-status="'+s+'" data-id="'+lead.id+'">'+s+'</button>';
+  }).join('') + '</div>';
+
+  var gridHtml = '<div class="detail-grid">'+
+    dgRow('Phone', phone ? '<a href="tel:'+phone+'">'+esc(lead.phone)+'</a>' : '—') +
+    dgRow('Email', lead.email ? '<a href="mailto:'+esc(lead.email)+'">'+esc(lead.email)+'</a>' : '—') +
+    dgRow('From', lead.zip_from || '—') +
+    dgRow('To', lead.zip_to || '—') +
+    dgRow('Size', lead.furniture_size || '—') +
+    dgRow('Stairs', lead.stairs_elevator || '—') +
+    dgRow('Move date', lead.move_date || '—') +
+    dgRow('Ad', lead.utm_content || '—') +
+  '</div>';
+
+  var notes = lead.notes || [];
+  var notesHtml = '<div class="notes-wrap">'+
+    '<div class="notes-title">Notes</div>'+
+    (notes.length
+      ? notes.map(function(n){
+          return '<div class="note"><div class="note-at">'+fmtDate(n.at)+'</div>'+esc(n.text)+'</div>';
+        }).join('')
+      : '<div style="font-size:12px;color:#94a3b8;text-align:center;padding:4px">No notes yet</div>'
+    )+
+    '<div class="note-input"><input class="note-text" placeholder="Add a note…"><button class="note-save" data-id="'+lead.id+'">Save</button></div>'+
+  '</div>';
+
+  var timeline = (lead.timeline || []).slice().reverse();
+  var tlHtml = timeline.length ? '<div class="timeline-wrap">' +
+    '<div class="notes-title">Timeline</div>' +
+    timeline.map(function(t){ return '<div class="tl-item"><div class="at">'+fmtDate(t.at)+'</div>'+esc(t.text)+'</div>'; }).join('') +
+  '</div>' : '';
+
+  return '<div class="detail" data-detail="'+lead.id+'">' +
+    heroHtml + actionsHtml + statusHtml + gridHtml + notesHtml + tlHtml +
+  '</div>';
+}
+function dgRow(lbl, val){ return '<div class="dg-row"><div class="lbl">'+lbl+'</div><div class="val">'+val+'</div></div>'; }
+
+async function loadDetail(id){
+  try {
+    var r = await fetch('/.netlify/functions/crm?action=get&id='+id, { headers: { 'x-crm-password': PW } });
+    var j = await r.json();
+    if (!j.lead) return;
+    var el = document.querySelector('.detail[data-detail="'+id+'"]');
+    if (el) el.outerHTML = renderDetail(leads.find(l => l.id === id) || j.lead, j.lead);
+    wireDetail(id, j.lead);
+  } catch(e){}
+}
+
+function wireDetail(id, lead){
+  document.querySelectorAll('.detail[data-detail="'+id+'"] .status-btn').forEach(function(b){
+    b.addEventListener('click', async function(e){
+      e.stopPropagation();
+      var s = b.dataset.status;
       var r = await fetch('/.netlify/functions/crm', {
-        method:'POST', headers: { 'Content-Type':'application/json' },
-        body: JSON.stringify({ action:'status', id: l.id, status: s })
+        method:'POST', headers: { 'Content-Type':'application/json', 'x-crm-password': PW },
+        body: JSON.stringify({ action:'status', id: id, status: s })
       });
       var j = await r.json();
-      if (j.lead) { currentLead = j.lead; renderLead(j.lead); loadLeads(); }
+      if (j.lead) { loadLeads(); }
     });
   });
-
-  document.getElementById('add-note').addEventListener('click', async function(){
-    var txt = document.getElementById('note-text').value.trim();
-    if (!txt) return;
-    var r = await fetch('/.netlify/functions/crm', {
-      method:'POST', headers: { 'Content-Type':'application/json', 'x-crm-password': PW },
-      body: JSON.stringify({ action:'note', id: l.id, text: txt })
+  var saveBtn = document.querySelector('.detail[data-detail="'+id+'"] .note-save');
+  if (saveBtn) {
+    saveBtn.addEventListener('click', async function(e){
+      e.stopPropagation();
+      var input = document.querySelector('.detail[data-detail="'+id+'"] .note-text');
+      var txt = input.value.trim();
+      if (!txt) return;
+      var r = await fetch('/.netlify/functions/crm', {
+        method:'POST', headers: { 'Content-Type':'application/json', 'x-crm-password': PW },
+        body: JSON.stringify({ action:'note', id: id, text: txt })
+      });
+      var j = await r.json();
+      if (j.lead) { input.value=''; loadDetail(id); }
     });
-    var j = await r.json();
-    if (j.lead) { currentLead = j.lead; renderLead(j.lead); loadLeads(); }
-  });
+  }
 }
-function detailRow(lbl, val){
-  return '<div class="detail-row"><div class="lbl">'+lbl+'</div><div class="val">'+val+'</div></div>';
-}
-document.getElementById('m-close').addEventListener('click', function(){
-  document.getElementById('modal').classList.remove('open');
-  location.hash = '';
-});
 
-// hash routing (direct deep-link from Telegram)
-window.addEventListener('hashchange', function(){
+// Hash deep-link from Telegram (#lead/xxx)
+window.addEventListener('hashchange', handleHash);
+function handleHash(){
   var m = location.hash.match(/#lead\/(.+)/);
-  if (m) openLead(m[1]);
-  else document.getElementById('modal').classList.remove('open');
-});
-if (location.hash.startsWith('#lead/')) {
-  var id = location.hash.slice(6);
-  setTimeout(function(){ openLead(id); }, 500);
+  if (m && PW) { expandedId = m[1]; loadLeads().then(function(){ loadDetail(m[1]); }); }
 }
+if (location.hash.startsWith('#lead/')) setTimeout(handleHash, 400);
 
 // ===== HELPERS =====
-function esc(s){ return String(s==null?'':s).replace(/[<>"']/g, function(c){ return {'<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function esc(s){ return String(s==null?'':s).replace(/[<>"']/g,function(c){return {'<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
 function timeAgo(iso){
   if (!iso) return '';
-  var s = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
-  if (s < 60) return 'just now';
-  if (s < 3600) return Math.floor(s/60)+'m ago';
-  if (s < 86400) return Math.floor(s/3600)+'h ago';
-  if (s < 604800) return Math.floor(s/86400)+'d ago';
+  var s = Math.floor((Date.now() - new Date(iso).getTime())/1000);
+  if (s < 60) return 'now';
+  if (s < 3600) return Math.floor(s/60)+'m';
+  if (s < 86400) return Math.floor(s/3600)+'h';
+  if (s < 604800) return Math.floor(s/86400)+'d';
   return new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric'});
 }
-function fmtDate(iso){
-  if (!iso) return '';
-  var d = new Date(iso);
-  return d.toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
-}
-function updateCounts(){
-  var today = new Date(); today.setHours(0,0,0,0);
-  var now = Date.now();
-  var lastSeen = parseInt(localStorage.getItem('crm_last_seen') || '0', 10);
-
-  var newToday = leads.filter(function(l){ return new Date(l.createdAt) >= today && l.status === 'new'; }).length;
-  var booked = leads.filter(function(l){ return l.status === 'booked'; }).length;
-  var unseenCount = leads.filter(function(l){ return new Date(l.createdAt).getTime() > lastSeen && l.status === 'new'; }).length;
-  var staleCount = leads.filter(function(l){
-    var ageH = (now - new Date(l.updatedAt || l.createdAt).getTime()) / 3600000;
-    return ageH > 4 && (l.status === 'new' || l.status === 'contacted');
-  }).length;
-  var attnTotal = unseenCount + staleCount;
-
-  document.getElementById('counts').innerHTML =
-    '<span>Today: <span class="count-badge">'+newToday+'</span></span>' +
-    '<span>Booked: <span class="count-badge" style="background:var(--green)">'+booked+'</span></span>';
-
-  var tb = document.getElementById('tab-badge-attn');
-  if (tb) {
-    tb.textContent = attnTotal;
-    tb.classList.toggle('show', attnTotal > 0);
-  }
-
-  // Update page title with attention count for tab-level awareness
-  document.title = (attnTotal > 0 ? '('+attnTotal+') ' : '') + 'Toro Movers — CRM';
-}
+function fmtDate(iso){ return new Date(iso).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}); }
 
 // Auto-refresh every 30s
-setInterval(loadLeads, 30000);
+setInterval(function(){ if (PW && document.getElementById('app').style.display !== 'none') loadLeads(); }, 30000);
 </script>
 
 </body>
