@@ -8,6 +8,7 @@
 
 const { getStore } = require('@netlify/blobs'); // surfaced here so Netlify's scanner detects it and injects Blobs runtime context
 const { getLead, listLeads, addNote, setStatus, updateLead } = require('./_lib/leads');
+const { listCrew, addCrew, removeCrew } = require('./_lib/crew');
 
 const json = (status, data) => ({
   statusCode: status,
@@ -44,12 +45,27 @@ exports.handler = async (event) => {
         if (!lead) return json(404, { error: 'Not found' });
         return json(200, { lead });
       }
+      if (action === 'crew') {
+        const crew = await listCrew();
+        return json(200, { crew });
+      }
       return json(400, { error: 'Unknown action' });
     }
 
     if (event.httpMethod === 'POST') {
       const body = JSON.parse(event.body || '{}');
       const { action: a, id: aid } = body;
+
+      // Crew CRUD (no lead id needed)
+      if (a === 'crew_add') {
+        const entry = await addCrew(body.member || {});
+        return json(200, { member: entry });
+      }
+      if (a === 'crew_remove') {
+        const result = await removeCrew(body.crew_id);
+        return json(200, result);
+      }
+
       if (!aid) return json(400, { error: 'id required' });
 
       if (a === 'status') {
