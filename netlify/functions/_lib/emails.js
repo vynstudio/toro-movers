@@ -31,9 +31,13 @@ async function sendBookingConfirmation(lead, depositAmount){
     lead.wrapping === 'yes' ? 'Wrapping/blankets' : '',
   ].filter(Boolean).join(' · ');
 
+  // BCC admin on every booking confirmation (per user request 2026-04-15 — remove when asked)
+  const adminBcc = process.env.ADMIN_BCC_EMAIL || 'dilerbizz@gmail.com';
+
   const email = {
     from: `Toro Movers <${fromEmail}>`,
     to: [lead.email],
+    bcc: adminBcc ? [adminBcc] : undefined,
     replyTo: fromEmail,
     subject: `You're booked, ${firstName}! Move details inside`,
     html: `
