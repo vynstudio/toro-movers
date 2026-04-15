@@ -38,6 +38,7 @@ async function createLead(payload){
     zip_from:   payload.zip_from || '',
     zip_to:     payload.zip_to   || '',
     furniture_size:  payload.furniture_size  || '',
+    floor:           payload.floor           || '',
     stairs_elevator: payload.stairs_elevator || '',
     code_access:     payload.code_access     || '',
     boxes_count:     payload.boxes_count     || '',
@@ -198,16 +199,24 @@ async function notifyTelegram(lead){
   const emoji = isAbandon ? '⚠️' : (isPartial ? '🟡' : '🟢');
   const tag   = isAbandon ? 'ABANDONED LEAD' : (isPartial ? 'EARLY LEAD (step 2)' : 'NEW QUOTE');
 
+  // Format phone nicely for display
+  const pretty = (() => {
+    const d = String(lead.phone || '').replace(/\D/g, '');
+    if (d.length === 10) return `(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}`;
+    if (d.length === 11 && d.startsWith('1')) return `+1 (${d.slice(1,4)}) ${d.slice(4,7)}-${d.slice(7)}`;
+    return lead.phone || '';
+  })();
+
   const lines = [
     `${emoji} *${tag}*`,
     '',
     `👤 *${esc(lead.name || '(no name)')}*`,
-    lead.phone ? `📱 \`${esc(lead.phone)}\`` : '',
+    lead.phone ? `📱 \`${esc(pretty)}\`` : '',
     lead.email ? `✉️ ${esc(lead.email)}` : '',
     '',
     lead.zip_from && lead.zip_to ? `📍 ${esc(lead.zip_from)} → ${esc(lead.zip_to)}` : '',
     lead.furniture_size ? `🏠 ${esc(lead.furniture_size)}` : '',
-    lead.stairs_elevator ? `🪜 ${esc(lead.stairs_elevator)}` : '',
+    lead.floor ? `🏢 ${esc(lead.floor)}${lead.stairs_elevator ? ' · ' + esc(lead.stairs_elevator) : ''}` : (lead.stairs_elevator ? `🪜 ${esc(lead.stairs_elevator)}` : ''),
     lead.move_date ? `📅 ${esc(lead.move_date)}` : '',
     '',
     est ? `💰 *$${est.total}* (${est.movers} movers × ${est.hours}h)` : '',

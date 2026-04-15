@@ -15,6 +15,22 @@ const esc = (v) =>
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
 
+// Strip non-digits + prepend +1 if missing — required for valid tel: URLs
+const cleanPhone = (p) => {
+  const d = String(p || '').replace(/\D/g, '');
+  if (!d) return '';
+  if (d.length === 10) return '+1' + d;
+  if (d.length === 11 && d.startsWith('1')) return '+' + d;
+  return '+' + d; // international or unexpected
+};
+// Pretty format for display: (xxx) xxx-xxxx
+const prettyPhone = (p) => {
+  const d = String(p || '').replace(/\D/g, '');
+  if (d.length === 10) return `(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}`;
+  if (d.length === 11 && d.startsWith('1')) return `+1 (${d.slice(1,4)}) ${d.slice(4,7)}-${d.slice(7)}`;
+  return p || '';
+};
+
 exports.handler = async (event) => {
   const headers = {
     'Access-Control-Allow-Origin': '*',
@@ -94,8 +110,23 @@ exports.handler = async (event) => {
     hours += boxAdd[boxes_count] || 0;
     var tvMap = { '0': 0, '1': 0.25, '2': 0.5, '3+': 0.75 };
     hours += tvMap[tv_count] || 0;
-    if (stairs_elev === 'Stairs')   hours += 0.5;
-    if (stairs_elev === 'Elevator') hours += 0.25;
+
+    // Floor + access time add-ons (matches client-side estimator in quote.html)
+    var floor = payload.floor || '';
+    var floorAdd = {
+      'Ground floor': { Stairs: 0,   Elevator: 0    },
+      '2nd floor':    { Stairs: 0.5, Elevator: 0.25 },
+      '3rd floor':    { Stairs: 1,   Elevator: 0.5  },
+      '4th+ floor':   { Stairs: 1.5, Elevator: 0.75 },
+    };
+    if (floor && floorAdd[floor]) {
+      hours += floorAdd[floor][stairs_elev] || (floor !== 'Ground floor' ? 0.5 : 0);
+    } else {
+      // Legacy form fallback: plain stairs/elevator without explicit floor
+      if (stairs_elev === 'Stairs')   hours += 0.5;
+      if (stairs_elev === 'Elevator') hours += 0.25;
+    }
+
     if (assembly === 'Yes') hours += 1;
     if (wrapping === 'Yes') hours += 0.5;
 
@@ -113,12 +144,18 @@ exports.handler = async (event) => {
     ? `<tr><td style="padding:6px 12px 6px 0;color:#6b7280;font-size:13px;white-space:nowrap">${esc(label)}</td><td style="padding:6px 0;color:#1a1a1a;font-size:14px;font-weight:500">${esc(value)}</td></tr>`
     : '';
 
+  // Rendered phone as a tap-to-call link with pretty display
+  const phoneLink = phone
+    ? `<a href="tel:${cleanPhone(phone)}" style="color:#C8102E;font-weight:700;text-decoration:none">${esc(prettyPhone(phone))}</a>`
+    : '';
+
   const moveDetailsHtml = isQuoteForm ? `
     <h3 style="margin:24px 0 8px;font-size:14px;color:#6b7280;text-transform:uppercase;letter-spacing:1px">Move Details</h3>
     <table style="border-collapse:collapse;width:100%">
       ${row('From ZIP', zip_from)}
       ${row('To ZIP', zip_to)}
       ${row('Property', property_type)}
+      ${row('Floor', payload.floor)}
       ${row('Stairs/Elevator', stairs_elev)}
       ${row('Code access', code_access)}
       ${row('Boxes', boxes_count)}
@@ -188,13 +225,13 @@ exports.handler = async (event) => {
           <h3 style="margin:0 0 8px;font-size:14px;color:#6b7280;text-transform:uppercase;letter-spacing:1px">Contact</h3>
           <table style="border-collapse:collapse;width:100%">
             ${row('Name',  fullName)}
-            ${row('Phone', phone)}
+            ${phone ? `<tr><td style="padding:6px 12px 6px 0;color:#6b7280;font-size:13px">Phone</td><td style="padding:6px 0;font-size:14px;font-weight:600">${phoneLink}</td></tr>` : ''}
             ${row('Email', email)}
           </table>
           ${moveDetailsHtml}
           ${utmHtml}
           <div style="margin-top:28px;display:flex;gap:10px;flex-wrap:wrap">
-            <a href="tel:${esc(phone)}" style="background:#C8102E;color:#fff;padding:14px 22px;border-radius:999px;text-decoration:none;font-weight:700;font-size:14px">📞 Call ${esc(fullName.split(' ')[0])}</a>
+            <a href="tel:${cleanPhone(phone)}" style="background:#C8102E;color:#fff;padding:14px 22px;border-radius:999px;text-decoration:none;font-weight:700;font-size:14px">📞 Call ${esc(fullName.split(' ')[0])}</a>
             ${email ? `<a href="mailto:${esc(email)}" style="background:#1a1a1a;color:#fff;padding:14px 22px;border-radius:999px;text-decoration:none;font-weight:700;font-size:14px">✉️ Reply by Email</a>` : ''}
           </div>
         </div>
@@ -214,6 +251,7 @@ exports.handler = async (event) => {
       ${customerRow('From ZIP', zip_from)}
       ${customerRow('To ZIP', zip_to)}
       ${customerRow('Property', property_type)}
+      ${customerRow('Floor', payload.floor)}
       ${customerRow('Access', stairs_elev)}
       ${customerRow('Code access', code_access)}
       ${customerRow('Boxes', boxes_count)}

@@ -320,10 +320,20 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
         </div>
       </div>
       <div class="m-field">
-        <label>Has stairs at pickup?</label>
+        <label>Which floor at pickup?</label>
+        <div class="m-size-grid" data-pills="floor">
+          <button type="button" class="m-yesno-pill" data-value="Ground floor">Ground floor</button>
+          <button type="button" class="m-yesno-pill" data-value="2nd floor">2nd floor</button>
+          <button type="button" class="m-yesno-pill" data-value="3rd floor">3rd floor</button>
+          <button type="button" class="m-yesno-pill" data-value="4th+ floor">4th+ floor</button>
+        </div>
+        <input type="hidden" name="floor">
+      </div>
+      <div class="m-field" id="m-access-field" style="display:none">
+        <label>Stairs or elevator?</label>
         <div class="m-yesno" data-pills="stairs_elevator">
-          <button type="button" class="m-yesno-pill" data-value="Ground floor">No, ground floor</button>
-          <button type="button" class="m-yesno-pill" data-value="Stairs">Yes, stairs</button>
+          <button type="button" class="m-yesno-pill" data-value="Stairs">Stairs</button>
+          <button type="button" class="m-yesno-pill" data-value="Elevator">Elevator</button>
         </div>
         <input type="hidden" name="stairs_elevator">
       </div>
@@ -480,10 +490,20 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
             </div>
           </div>
           <div class="field-d" style="margin-top:12px">
-            <label>Stairs at pickup?</label>
+            <label>Pickup floor</label>
+            <div class="yesno-row" data-pills="floor" style="grid-template-columns:repeat(4,1fr);max-width:none">
+              <button type="button" class="yesno-pill" data-value="Ground floor">Ground</button>
+              <button type="button" class="yesno-pill" data-value="2nd floor">2nd</button>
+              <button type="button" class="yesno-pill" data-value="3rd floor">3rd</button>
+              <button type="button" class="yesno-pill" data-value="4th+ floor">4th+</button>
+            </div>
+            <input type="hidden" name="floor">
+          </div>
+          <div class="field-d" id="d-access-field" style="margin-top:12px;display:none">
+            <label>Stairs or elevator?</label>
             <div class="yesno-row" data-pills="stairs_elevator">
-              <button type="button" class="yesno-pill" data-value="Ground floor">Ground floor</button>
-              <button type="button" class="yesno-pill" data-value="Stairs">Has stairs</button>
+              <button type="button" class="yesno-pill" data-value="Stairs">Stairs</button>
+              <button type="button" class="yesno-pill" data-value="Elevator">Elevator</button>
             </div>
             <input type="hidden" name="stairs_elevator">
           </div>
@@ -548,12 +568,21 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 <script>
 (function(){
   // ===== PRICING CALCULATOR (matches backend exactly) =====
-  // Returns { hours, price } — a single exact quote, 2 movers @ $75/hr
+  // 2 movers @ $75/hr. Floor + access add time.
   function estimate(s){
     if (!s.furniture_size) return null;
     var base = {'Studio / just a few':2,'1 bedroom':3,'2 bedrooms':5,'3+ bedrooms':7}[s.furniture_size] || 3;
     var hrs = base;
-    if (s.stairs_elevator === 'Stairs') hrs += 0.5;
+    var floor = s.floor || 'Ground floor';
+    var access = s.stairs_elevator || '';
+    var floorAdd = {
+      'Ground floor':              { Stairs:0,    Elevator:0    },
+      '2nd floor':                 { Stairs:0.5,  Elevator:0.25 },
+      '3rd floor':                 { Stairs:1,    Elevator:0.5  },
+      '4th+ floor':                { Stairs:1.5,  Elevator:0.75 },
+    };
+    var add = (floorAdd[floor] && floorAdd[floor][access]) || (floor !== 'Ground floor' ? 0.5 : 0);
+    hrs += add;
     hrs = Math.max(2, Math.round(hrs*2)/2);
     return { hours: hrs, price: Math.round(75*2*hrs), movers: 2 };
   }
@@ -578,7 +607,25 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
     group.querySelectorAll('button').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-value') === value); });
     var hidden = group.parentElement.querySelector('input[name="'+name+'"]') || group.nextElementSibling;
     if (hidden && hidden.tagName === 'INPUT' && hidden.type === 'hidden') hidden.value = value;
+
+    // Show/hide the access question based on floor selection
+    if (name === 'floor') {
+      var showAccess = value && value !== 'Ground floor';
+      var mAccess = document.getElementById('m-access-field');
+      var dAccess = document.getElementById('d-access-field');
+      if (mAccess) mAccess.style.display = showAccess ? '' : 'none';
+      if (dAccess) dAccess.style.display = showAccess ? '' : 'none';
+      // Clear stairs_elevator if switching back to Ground
+      if (!showAccess) {
+        state.stairs_elevator = '';
+        document.querySelectorAll('input[name="stairs_elevator"]').forEach(function(i){ i.value = ''; });
+        document.querySelectorAll('[data-pills="stairs_elevator"] button').forEach(function(b){ b.classList.remove('active'); });
+      }
+    }
+
     updatePrice();
+    mUpdateCTA && mUpdateCTA();
+    dUpdateSubmit && dUpdateSubmit();
   }
 
   function updatePrice(){
@@ -734,6 +781,11 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
       if (f) f.classList.remove('err');
     });
     if (n === 1 && !state.furniture_size) ok = false;
+    if (n === 2) {
+      if (!state.floor) ok = false;
+      // Access only required when floor is not Ground
+      if (state.floor && state.floor !== 'Ground floor' && !state.stairs_elevator) ok = false;
+    }
     return ok;
   }
   function mUpdateCTA(){
@@ -786,6 +838,8 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
       if ((el.id === 'd_zip_from' || el.id === 'd_zip_to') && !/^\d{5}$/.test(v)) { ok = false; return; }
     });
     if (!state.furniture_size) ok = false;
+    if (!state.floor) ok = false;
+    if (state.floor && state.floor !== 'Ground floor' && !state.stairs_elevator) ok = false;
     return ok;
   }
   function dUpdateSubmit(){
