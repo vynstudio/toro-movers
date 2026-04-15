@@ -28,9 +28,39 @@ exports.handler = async (event) => {
   const email = (q.email || '').trim().toLowerCase();
   const leadId = (q.leadId || '').trim();
   const depositOverride = q.deposit ? Number(q.deposit) : null;
+  const previewTo = (q.to || '').trim();
+  const isSample = q.sample === '1' || q.sample === 'true';
+
+  // Sample preview mode — no real lead lookup, uses fake data, sends to ?to=
+  if (isSample) {
+    if (!previewTo) return json(400, { error: 'Sample mode requires ?to=email' });
+    const sampleLead = {
+      id: 'sample',
+      name: 'Jane Preview',
+      email: previewTo,
+      phone: '(321) 555-0100',
+      zip_from: '32801',
+      zip_to: '32789',
+      furniture_size: '2 bedroom apartment',
+      floor: '3rd floor',
+      stairs_elevator: 'elevator',
+      move_date: 'Saturday, April 20, 2026',
+      boxes_count: '25',
+      tv_count: '2',
+      assembly: 'yes',
+      wrapping: 'yes',
+      estimate: { hours: 4, total: 600, movers: 2 },
+    };
+    try {
+      const result = await sendBookingConfirmation(sampleLead, depositOverride ?? 150);
+      return json(200, { ok: true, preview: true, to: previewTo, resendId: result?.data?.id || null });
+    } catch(e) {
+      return json(500, { error: e.message });
+    }
+  }
 
   if (!email && !leadId) {
-    return json(400, { error: 'Provide ?email= or ?leadId=' });
+    return json(400, { error: 'Provide ?email= or ?leadId= (or ?sample=1&to=YOUR_EMAIL for preview)' });
   }
 
   let lead;
@@ -44,6 +74,9 @@ exports.handler = async (event) => {
 
   if (!lead) return json(404, { error: 'Lead not found', email, leadId });
   if (!lead.email) return json(400, { error: 'Lead has no email on file', leadId: lead.id });
+
+  // Preview: override recipient but keep real lead data
+  if (previewTo) lead = { ...lead, email: previewTo };
 
   const deposit = depositOverride ?? lead.estimate?.deposit ?? 150;
 
