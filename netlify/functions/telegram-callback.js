@@ -238,9 +238,9 @@ async function handleTextMessage(msg){
     else if (cmd === 'show')     await cmdShow(chatId, args);
     else if (cmd === 'status')   await cmdStatus(chatId, args);
     else if (cmd === 'note')     await cmdNote(chatId, args);
-    else if (cmd === 'send-confirmation' || cmd === 'confirm') await cmdSendConfirmation(chatId, args);
-    else if (cmd === 'send-review' || cmd === 'review')        await cmdSendReview(chatId, args);
-    else if (cmd === 'new-lead' || cmd === 'new')              await cmdNewLeadStart(chatId);
+    else if (cmd === 'send_confirmation' || cmd === 'send-confirmation' || cmd === 'confirm') await cmdSendConfirmation(chatId, args);
+    else if (cmd === 'send_review' || cmd === 'send-review' || cmd === 'review')               await cmdSendReview(chatId, args);
+    else if (cmd === 'new_lead' || cmd === 'new-lead' || cmd === 'new')                         await cmdNewLeadStart(chatId);
     else if (cmd === 'cancel') {
       await clearWizardState(chatId);
       await tg('sendMessage', { chat_id: chatId, text: '🚫 Wizard cancelled.' });
