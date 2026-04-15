@@ -83,17 +83,53 @@ exports.handler = async () => {
     const winners = sorted.filter(a => a._leads > 0 || parseFloat(a.ctr || 0) >= 2).slice(0, 3);
     const losers  = sorted.filter(a => a._spend >= 0.5 && parseFloat(a.ctr || 0) < 0.5).slice(0, 3);
 
+    // Time-of-day context (Eastern)
+    const etHour = parseInt(new Date().toLocaleString('en-US', {
+      timeZone: 'America/New_York',
+      hour: '2-digit',
+      hour12: false,
+    }), 10);
+    let header, focus;
+    if (etHour < 11)      { header = '☀️ *Morning Ads Report*';  focus = 'morning'; }
+    else if (etHour < 16) { header = '🕑 *Midday Ads Check-in*'; focus = 'midday'; }
+    else                  { header = '🌙 *End-of-Day Wrap-up*';  focus = 'evening'; }
+
+    const tSpend = parseFloat(t.spend || 0);
+    const tCpl = tLeads ? (tSpend / tLeads).toFixed(2) : '—';
+
     const lines = [];
-    lines.push('☀️ *Toro Movers — Daily Ads Report*');
-    lines.push(`_${new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}_`);
+    lines.push(header);
+    lines.push(`_${new Date().toLocaleDateString('en-US', { timeZone:'America/New_York', weekday: 'long', month: 'short', day: 'numeric' })}_`);
     lines.push('');
-    lines.push('*YESTERDAY*');
-    lines.push(`💰 Spend: *${fmt$(y.spend)}*  ·  📈 CTR: *${fmtPct(y.ctr)}*  ·  CPC: *${fmt$(y.cpc)}*`);
-    lines.push(`👁 ${y.impressions || 0} impr  ·  🎯 *${yLeads} leads* @ *${yLeads ? '$'+yCpl : '—'}*/lead`);
-    lines.push('');
-    lines.push('*LAST 7 DAYS*');
-    lines.push(`💰 ${fmt$(w.spend)}  ·  🎯 ${wLeads} leads @ ${wLeads ? '$'+wCpl : '—'}/lead`);
-    lines.push('');
+
+    if (focus === 'morning') {
+      // Morning: recap yesterday + 7-day + today pacing start
+      lines.push('*YESTERDAY*');
+      lines.push(`💰 ${fmt$(y.spend)}  ·  📈 ${fmtPct(y.ctr)} CTR  ·  ${fmt$(y.cpc)} CPC`);
+      lines.push(`👁 ${y.impressions || 0} impr  ·  🎯 *${yLeads} leads* @ *${yLeads ? '$'+yCpl : '—'}*/lead`);
+      lines.push('');
+      lines.push('*LAST 7 DAYS*');
+      lines.push(`💰 ${fmt$(w.spend)}  ·  🎯 ${wLeads} leads @ ${wLeads ? '$'+wCpl : '—'}/lead`);
+      lines.push('');
+    } else if (focus === 'midday') {
+      // Midday: today-so-far pacing + yesterday comparison
+      lines.push('*TODAY SO FAR*');
+      lines.push(`💰 ${fmt$(t.spend)}  ·  📈 ${fmtPct(t.ctr)} CTR  ·  ${fmt$(t.cpc)} CPC`);
+      lines.push(`👁 ${t.impressions || 0} impr  ·  🎯 *${tLeads} leads* @ *${tLeads ? '$'+tCpl : '—'}*/lead`);
+      lines.push('');
+      lines.push('*VS YESTERDAY*');
+      lines.push(`Yesterday: ${fmt$(y.spend)} · ${yLeads} leads · ${fmtPct(y.ctr)} CTR`);
+      lines.push('');
+    } else {
+      // Evening: full day recap
+      lines.push('*TODAY FINAL*');
+      lines.push(`💰 ${fmt$(t.spend)}  ·  📈 ${fmtPct(t.ctr)} CTR  ·  ${fmt$(t.cpc)} CPC`);
+      lines.push(`👁 ${t.impressions || 0} impr  ·  🎯 *${tLeads} leads* @ *${tLeads ? '$'+tCpl : '—'}*/lead`);
+      lines.push('');
+      lines.push('*LAST 7 DAYS*');
+      lines.push(`💰 ${fmt$(w.spend)}  ·  🎯 ${wLeads} leads @ ${wLeads ? '$'+wCpl : '—'}/lead`);
+      lines.push('');
+    }
 
     if (winners.length) {
       lines.push('*🏆 TOP PERFORMERS*');
@@ -110,8 +146,6 @@ exports.handler = async () => {
       });
       lines.push('');
     }
-
-    lines.push(`📍 Today so far: ${fmt$(t.spend)} · ${tLeads} leads`);
 
     await sendTG(lines.join('\n'));
     return { statusCode: 200, body: JSON.stringify({ ok: true, sent: true }) };

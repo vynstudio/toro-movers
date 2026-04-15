@@ -5,9 +5,10 @@
 [functions]
   node_bundler = "esbuild"
 
-# Daily Meta ads report → Telegram, 9am Eastern (13:00 UTC during EDT)
+# Meta ads report → Telegram, 3x daily in Eastern time
+# 9am ET → 13:00 UTC (EDT), 1pm ET → 17:00 UTC, 9pm ET → 01:00 UTC (+1d)
 [functions."daily-report"]
-  schedule = "0 13 * * *"
+  schedule = "0 13,17,1 * * *"
 
 [build.environment]
   NODE_VERSION = "20"
