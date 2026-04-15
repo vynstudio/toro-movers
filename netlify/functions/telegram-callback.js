@@ -9,7 +9,8 @@
 
 const { getStore } = require('@netlify/blobs'); // surface for scanner
 const { Resend } = require('resend');
-const { setStatus, getLead, listLeads, addNote } = require('./_lib/leads');
+const { setStatus, getLead, listLeads, addNote, createLead, updateLead } = require('./_lib/leads');
+const { sendBookingConfirmation } = require('./_lib/emails');
 
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const ALLOWED_CHAT = process.env.TELEGRAM_CHAT_ID; // allowlist: only this chat can command
@@ -213,6 +214,12 @@ async function handleTextMessage(msg){
     return { statusCode: 200, body: 'ok' };
   }
 
+  // Wizard state lookup — if user is mid-conversation, route their reply there
+  const wizardState = await getWizardState(chatId);
+  if (wizardState && !text.startsWith('/cancel')) {
+    return handleWizardReply(chatId, text, wizardState);
+  }
+
   // Extract command + args
   const match = text.match(/^\/(\w+)(?:@\w+)?(?:\s+([\s\S]+))?$/);
   if (!match) {
@@ -231,6 +238,13 @@ async function handleTextMessage(msg){
     else if (cmd === 'show')     await cmdShow(chatId, args);
     else if (cmd === 'status')   await cmdStatus(chatId, args);
     else if (cmd === 'note')     await cmdNote(chatId, args);
+    else if (cmd === 'send-confirmation' || cmd === 'confirm') await cmdSendConfirmation(chatId, args);
+    else if (cmd === 'send-review' || cmd === 'review')        await cmdSendReview(chatId, args);
+    else if (cmd === 'new-lead' || cmd === 'new')              await cmdNewLeadStart(chatId);
+    else if (cmd === 'cancel') {
+      await clearWizardState(chatId);
+      await tg('sendMessage', { chat_id: chatId, text: '🚫 Wizard cancelled.' });
+    }
     else {
       await tg('sendMessage', { chat_id: chatId, text: `Unknown command: /${cmd}\nTry /help` });
     }
@@ -239,6 +253,34 @@ async function handleTextMessage(msg){
     await tg('sendMessage', { chat_id: chatId, text: `⚠️ Command failed: ${e.message}` });
   }
   return { statusCode: 200, body: 'ok' };
+}
+
+// ===== WIZARD STATE =====
+// Stored in Netlify Blobs under key `wizard:<chatId>`. Auto-expires after 30 min.
+function wizStore(){
+  const siteID = process.env.NETLIFY_SITE_ID || '5d1b562a-d00c-4a66-8dd3-5b083eb11ce9';
+  const tokenV = process.env.NETLIFY_BLOBS_TOKEN;
+  if (tokenV) return getStore({ name: 'leads', siteID, token: tokenV, consistency: 'strong' });
+  return getStore({ name: 'leads', consistency: 'strong' });
+}
+async function getWizardState(chatId){
+  try {
+    const raw = await wizStore().get('wizard:'+chatId);
+    if (!raw) return null;
+    const s = JSON.parse(raw);
+    if (Date.now() - (s.updatedAt || 0) > 30*60*1000) {
+      await wizStore().delete('wizard:'+chatId);
+      return null;
+    }
+    return s;
+  } catch(e){ return null; }
+}
+async function setWizardState(chatId, state){
+  state.updatedAt = Date.now();
+  await wizStore().set('wizard:'+chatId, JSON.stringify(state));
+}
+async function clearWizardState(chatId){
+  try { await wizStore().delete('wizard:'+chatId); } catch(e){}
 }
 
 function esc(s){
@@ -266,13 +308,23 @@ async function cmdHelp(chatId){
   const text = [
     '*Toro Movers Bot — Commands*',
     '',
+    '*View:*',
     '/today — jobs scheduled for today',
     '/tomorrow — jobs scheduled for tomorrow',
     '/week — this week\'s pipeline + totals',
     '/lead `<name>` — search leads by name',
     '/show `<id>` — full detail of one lead',
-    '/status `<id>` `<new>` — change status (new/contacted/quoted/booked/done/lost)',
-    '/note `<id>` `<text>` — add a note to a lead',
+    '',
+    '*Edit:*',
+    '/status `<id>` `<new>` — change status',
+    '/note `<id>` `<text>` — add a note',
+    '/new-lead — capture a new lead (wizard)',
+    '/cancel — exit the wizard',
+    '',
+    '*Customer messaging:*',
+    '/send-confirmation `<id>` — send booking confirmation',
+    '/send-review `<id>` — send Google review request',
+    '',
     '/help — this menu',
     '',
     'Open CRM: https://toromovers.net/crm',
@@ -391,4 +443,159 @@ async function cmdNote(chatId, args){
   const lead = await addNote(id, text, 'telegram');
   if (!lead) return tg('sendMessage', { chat_id: chatId, text: `❌ Lead \`${esc(id)}\` not found.`, parse_mode: 'Markdown' });
   await tg('sendMessage', { chat_id: chatId, text: `📝 Note added to *${esc(lead.name)}*`, parse_mode: 'Markdown' });
+}
+
+async function cmdSendConfirmation(chatId, id){
+  if (!id) return tg('sendMessage', { chat_id: chatId, text: 'Usage: /send-confirmation `<id>`', parse_mode: 'Markdown' });
+  const lead = await getLead(id.trim());
+  if (!lead) return tg('sendMessage', { chat_id: chatId, text: `❌ Lead \`${esc(id)}\` not found.`, parse_mode: 'Markdown' });
+  if (!lead.email) return tg('sendMessage', { chat_id: chatId, text: `❌ ${esc(lead.name)} has no email on file.`, parse_mode: 'Markdown' });
+  // Figure out deposit from timeline
+  let deposit = 0;
+  (lead.timeline||[]).forEach(t => {
+    const m = (t.text||'').match(/\$(\d+)\s*deposit/i);
+    if (m && t.type === 'payment') deposit = Math.max(deposit, parseInt(m[1], 10));
+  });
+  if (!deposit) deposit = lead.estimate?.truck ? 125 : 50;
+  try {
+    await sendBookingConfirmation(lead, deposit);
+    await tg('sendMessage', { chat_id: chatId, text: `📧 Confirmation sent to ${esc(lead.email)} (deposit $${deposit})`, parse_mode: 'Markdown' });
+  } catch(e) {
+    await tg('sendMessage', { chat_id: chatId, text: `⚠️ Send failed: ${e.message}` });
+  }
+}
+
+async function cmdSendReview(chatId, id){
+  if (!id) return tg('sendMessage', { chat_id: chatId, text: 'Usage: /send-review `<id>`', parse_mode: 'Markdown' });
+  const lead = await getLead(id.trim());
+  if (!lead) return tg('sendMessage', { chat_id: chatId, text: `❌ Lead \`${esc(id)}\` not found.`, parse_mode: 'Markdown' });
+  if (!lead.email) return tg('sendMessage', { chat_id: chatId, text: `❌ ${esc(lead.name)} has no email on file.`, parse_mode: 'Markdown' });
+  try {
+    await sendReviewRequest(lead);
+    await tg('sendMessage', { chat_id: chatId, text: `⭐ Review request sent to ${esc(lead.email)}\n+3 day follow-up scheduled.`, parse_mode: 'Markdown' });
+  } catch(e) {
+    await tg('sendMessage', { chat_id: chatId, text: `⚠️ Send failed: ${e.message}` });
+  }
+}
+
+// ===== /NEW-LEAD WIZARD =====
+// Step-by-step lead capture. State stored per chat_id in Blobs.
+const WIZARD_STEPS = [
+  { key: 'name',            prompt: '👤 *New lead — step 1/8*\nCustomer name?' },
+  { key: 'phone',           prompt: '📱 Phone? (or `skip`)' },
+  { key: 'email',           prompt: '✉️ Email? (or `skip`)' },
+  { key: 'move_date',       prompt: '📅 Move date? (e.g. `2026-05-15` or `skip`)' },
+  { key: 'move_time',       prompt: '⏰ Move time? (e.g. `11:00 AM` or `skip`)' },
+  { key: 'pickup_address',  prompt: '📍 Pickup address? (or `skip`)' },
+  { key: 'dropoff_address', prompt: '🏁 Dropoff address? (or `skip`)' },
+  { key: 'service',         prompt: '👷 Service? Reply one of:\n  `labor` (2 movers, no truck, $300 min)\n  `truck` (2 movers + truck, $575 min)\n  `custom` (I\'ll ask for movers + hours)' },
+];
+
+async function cmdNewLeadStart(chatId){
+  await setWizardState(chatId, { type: 'new-lead', step: 0, data: {} });
+  await tg('sendMessage', { chat_id: chatId, text: WIZARD_STEPS[0].prompt + '\n\nType /cancel anytime to exit.', parse_mode: 'Markdown' });
+}
+
+async function handleWizardReply(chatId, text, state){
+  if (state.type !== 'new-lead') return { statusCode: 200, body: 'ok' };
+  const step = WIZARD_STEPS[state.step];
+  const raw = text.trim();
+  const skipped = raw.toLowerCase() === 'skip';
+
+  // Service step — branch into custom sub-flow
+  if (step.key === 'service' && !state.data.serviceResolved) {
+    const choice = raw.toLowerCase();
+    if (choice === 'labor') {
+      state.data.service = 'labor';
+      state.data.estimate = { movers: 2, hours: 2, total: 300, truck: false };
+      state.data.serviceResolved = true;
+    } else if (choice === 'truck') {
+      state.data.service = 'truck';
+      state.data.estimate = { movers: 2, hours: 2, total: 575, truck: true };
+      state.data.serviceResolved = true;
+    } else if (choice === 'custom') {
+      state.step = 'custom_movers';
+      state.data.estimate = {};
+      await setWizardState(chatId, state);
+      await tg('sendMessage', { chat_id: chatId, text: '👥 How many movers? (e.g. `2` or `3`)' });
+      return { statusCode: 200, body: 'ok' };
+    } else {
+      await tg('sendMessage', { chat_id: chatId, text: 'Reply `labor`, `truck`, or `custom`.' });
+      return { statusCode: 200, body: 'ok' };
+    }
+  } else if (state.step === 'custom_movers') {
+    const n = parseInt(raw, 10);
+    if (isNaN(n) || n < 1) {
+      await tg('sendMessage', { chat_id: chatId, text: 'Send a number (1-5).' });
+      return { statusCode: 200, body: 'ok' };
+    }
+    state.data.estimate.movers = n;
+    state.step = 'custom_hours';
+    await setWizardState(chatId, state);
+    await tg('sendMessage', { chat_id: chatId, text: '⏱️ How many hours? (e.g. `3` or `4.5`)' });
+    return { statusCode: 200, body: 'ok' };
+  } else if (state.step === 'custom_hours') {
+    const h = parseFloat(raw);
+    if (isNaN(h) || h < 1) {
+      await tg('sendMessage', { chat_id: chatId, text: 'Send a number (e.g. `3` or `4.5`).' });
+      return { statusCode: 200, body: 'ok' };
+    }
+    state.data.estimate.hours = h;
+    state.step = 'custom_truck';
+    await setWizardState(chatId, state);
+    await tg('sendMessage', { chat_id: chatId, text: '🚚 Include truck? (`yes` / `no`)' });
+    return { statusCode: 200, body: 'ok' };
+  } else if (state.step === 'custom_truck') {
+    const yes = /^y/i.test(raw);
+    const est = state.data.estimate;
+    est.truck = yes;
+    est.total = Math.round(75 * est.movers * est.hours) + (yes ? 275 : 0);
+    state.data.serviceResolved = true;
+  } else if (!skipped) {
+    // Normal step — store the raw input under the step key
+    state.data[step.key] = raw;
+  }
+
+  // Advance — skip to finalize if service just resolved
+  if (state.data.serviceResolved || (typeof state.step === 'number' && state.step >= WIZARD_STEPS.length - 1)) {
+    return finalizeNewLead(chatId, state.data);
+  }
+
+  const nextIdx = (typeof state.step === 'number' ? state.step : 0) + 1;
+  state.step = nextIdx;
+  await setWizardState(chatId, state);
+  await tg('sendMessage', { chat_id: chatId, text: WIZARD_STEPS[nextIdx].prompt, parse_mode: 'Markdown' });
+  return { statusCode: 200, body: 'ok' };
+}
+
+async function finalizeNewLead(chatId, data){
+  await clearWizardState(chatId);
+  const payload = {
+    name: data.name || '',
+    phone: data.phone || '',
+    email: data.email || '',
+    move_date: data.move_date || '',
+    move_time: data.move_time || '',
+    pickup_address: data.pickup_address || '',
+    dropoff_address: data.dropoff_address || '',
+    estimate: data.estimate || null,
+    page: 'telegram-wizard',
+  };
+  const lead = await createLead(payload);
+  await updateLead(lead.id, { status: 'quoted' });
+  const est = data.estimate || {};
+  const lines = [
+    '✅ *Lead created*',
+    '',
+    `👤 *${esc(lead.name)}*`,
+    `\`${lead.id}\``,
+    data.phone ? `📱 ${esc(data.phone)}` : '',
+    data.email ? `✉️ ${esc(data.email)}` : '',
+    data.move_date ? `📅 ${esc(data.move_date)}${data.move_time?' '+esc(data.move_time):''}` : '',
+    est.movers ? `👷 ${est.movers} movers${est.truck?' + truck':''} · ${est.hours||'?'}h · $${est.total||'?'}` : '',
+    '',
+    `Open: https://toromovers.net/crm#lead/${lead.id}`,
+  ].filter(Boolean).join('\n');
+  await tg('sendMessage', { chat_id: chatId, text: lines, parse_mode: 'Markdown', disable_web_page_preview: true });
+  return { statusCode: 200, body: 'ok' };
 }

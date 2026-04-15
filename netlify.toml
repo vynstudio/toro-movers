@@ -15,6 +15,11 @@
 [functions."follow-up-reminder"]
   schedule = "0 12 * * *"
 
+# Morning briefing at 6am Eastern (10:00 UTC EDT)
+# Today's jobs + tomorrow preview + weekly pipeline + prep flags
+[functions."morning-briefing"]
+  schedule = "0 10 * * *"
+
 [build.environment]
   NODE_VERSION = "20"
 
