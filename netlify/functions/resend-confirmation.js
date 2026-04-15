@@ -72,7 +72,34 @@ exports.handler = async (event) => {
     if (match) lead = await getLead(match.id);
   }
 
-  if (!lead) return json(404, { error: 'Lead not found', email, leadId });
+  // Manual mode — customer paid via direct Stripe link, no CRM lead exists.
+  // Build a lead object from query params. Usage:
+  //   ?email=X&manual=1&name=X&move_date=X&zip_from=X&zip_to=X&hours=X&movers=X&total=X&deposit=X
+  if (!lead && q.manual === '1') {
+    lead = {
+      id: 'manual-' + Date.now().toString(36),
+      name: q.name || '',
+      email: email,
+      phone: q.phone || '',
+      zip_from: q.zip_from || '',
+      zip_to: q.zip_to || '',
+      furniture_size: q.furniture_size || '',
+      floor: q.floor || '',
+      stairs_elevator: q.stairs_elevator || '',
+      move_date: q.move_date || '',
+      boxes_count: q.boxes_count || '',
+      tv_count: q.tv_count || '',
+      assembly: q.assembly || '',
+      wrapping: q.wrapping || '',
+      estimate: {
+        hours: Number(q.hours) || 0,
+        movers: Number(q.movers) || 0,
+        total: Number(q.total) || 0,
+      },
+    };
+  }
+
+  if (!lead) return json(404, { error: 'Lead not found. Add &manual=1&name=...&move_date=... for customers who paid via direct Stripe link.', email, leadId });
   if (!lead.email) return json(400, { error: 'Lead has no email on file', leadId: lead.id });
 
   // Preview: override recipient but keep real lead data
