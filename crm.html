@@ -171,8 +171,19 @@ button{cursor:pointer;border:none;background:none}
 </head>
 <body>
 
-<!-- APP (auth disabled for test) -->
-<div class="app" id="app">
+<!-- LOGIN -->
+<div class="login" id="login">
+  <div class="login-box">
+    <div class="login-logo">Toro <span>Movers</span></div>
+    <div class="login-sub">CRM · Admin access only</div>
+    <input type="password" id="pw-input" placeholder="Password" autofocus>
+    <button id="pw-btn">Log in</button>
+    <div class="err" id="pw-err">Wrong password.</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app" id="app" style="display:none">
   <div class="top">
     <div class="logo">Toro <span>Movers</span> · CRM</div>
     <div class="tabs">
@@ -224,13 +235,39 @@ button{cursor:pointer;border:none;background:none}
 </div>
 
 <script>
-var PW = ''; // auth disabled
+var PW = localStorage.getItem('crm_pw') || '';
 var leads = [];
 var calCursor = new Date();
 var currentLead = null;
 
-// Auto-load on page ready
-loadLeads();
+// ===== LOGIN =====
+function showApp(){
+  document.getElementById('login').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  loadLeads();
+}
+async function tryLogin(pw){
+  try {
+    var r = await fetch('/.netlify/functions/crm?action=list', {
+      headers: { 'x-crm-password': pw }
+    });
+    if (r.ok) {
+      PW = pw;
+      localStorage.setItem('crm_pw', pw);
+      showApp();
+    } else {
+      document.getElementById('pw-err').style.display = 'block';
+    }
+  } catch(e) { alert('Network error'); }
+}
+document.getElementById('pw-btn').addEventListener('click', function(){
+  var pw = document.getElementById('pw-input').value.trim();
+  if (pw) tryLogin(pw);
+});
+document.getElementById('pw-input').addEventListener('keydown', function(e){
+  if (e.key === 'Enter') document.getElementById('pw-btn').click();
+});
+if (PW) tryLogin(PW);
 
 // ===== LOAD LEADS =====
 async function loadLeads(){

@@ -216,11 +216,21 @@ async function notifyTelegram(lead){
     lead.utm_source ? `📡 Source: ${esc(lead.utm_source)}` : '',
   ].filter(Boolean).join('\n');
 
+  // Quick-action buttons: tapping these updates the lead status via
+  // the telegram-callback webhook, no CRM login needed.
   const kb = [
-    [{ text: '📞 Call', url: `tel:${lead.phone}` }],
-    [{ text: '✉️ Email', url: `mailto:${lead.email}` }],
+    lead.phone ? [{ text: '📞 Call', url: `tel:${lead.phone}` }] : [],
+    lead.email ? [{ text: '✉️ Email', url: `mailto:${lead.email}` }] : [],
+    [
+      { text: '✅ Contacted', callback_data: `contacted:${lead.id}` },
+      { text: '💬 Quoted',    callback_data: `quoted:${lead.id}` },
+    ],
+    [
+      { text: '🎉 Booked', callback_data: `booked:${lead.id}` },
+      { text: '❌ Lost',   callback_data: `lost:${lead.id}` },
+    ],
     [{ text: '📋 Open in CRM', url: `https://toromovers.net/crm#lead/${lead.id}` }],
-  ];
+  ].filter(row => row.length);
 
   try {
     const r = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
