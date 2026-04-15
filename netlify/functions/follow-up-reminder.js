@@ -105,9 +105,12 @@ exports.handler = async () => {
         ],
         [
           { text: '🎉 Booked', callback_data: `booked:${lead.id}` },
-          { text: '❌ Lost',   callback_data: `lost:${lead.id}` },
+          { text: '🏁 Done',   callback_data: `done:${lead.id}` },
         ],
-        [{ text: '📋 Open in CRM', url: `https://toromovers.net/crm#lead/${lead.id}` }],
+        [
+          { text: '❌ Lost', callback_data: `lost:${lead.id}` },
+          { text: '📋 Open in CRM', url: `https://toromovers.net/crm#lead/${lead.id}` },
+        ],
       ];
 
       await tg('sendMessage', {
