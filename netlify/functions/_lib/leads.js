@@ -228,6 +228,7 @@ async function notifyTelegram(lead){
   // Telegram inline buttons only accept web URLs or callback_data —
   // `tel:` / `mailto:` are rejected. Phone + email are in the message
   // body already (tap-to-call works on mobile Telegram there).
+  // Tapping "🏁 Done" fires the review-request email flow automatically.
   const kb = [
     [
       { text: '✅ Contacted', callback_data: `contacted:${lead.id}` },
@@ -235,9 +236,12 @@ async function notifyTelegram(lead){
     ],
     [
       { text: '🎉 Booked', callback_data: `booked:${lead.id}` },
-      { text: '❌ Lost',   callback_data: `lost:${lead.id}` },
+      { text: '🏁 Done',   callback_data: `done:${lead.id}` },
     ],
-    [{ text: '📋 Open in CRM', url: `https://toromovers.net/crm#lead/${lead.id}` }],
+    [
+      { text: '❌ Lost', callback_data: `lost:${lead.id}` },
+      { text: '📋 Open in CRM', url: `https://toromovers.net/crm#lead/${lead.id}` },
+    ],
   ];
 
   try {
