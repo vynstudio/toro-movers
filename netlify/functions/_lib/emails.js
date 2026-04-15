@@ -22,7 +22,7 @@ async function sendBookingConfirmation(lead, depositAmount){
     </tr>` : '';
 
   const fromTo = (lead.zip_from && lead.zip_to) ? `${lead.zip_from} → ${lead.zip_to}` : '';
-  const truckLabel = (est.truck === true || est.truck === 'yes' || est.truck === 1) ? ' + Toro truck 🚚' : '';
+  const truckLabel = (est.truck === true || est.truck === 'yes' || est.truck === 1) ? ' + moving truck' : '';
   const crew   = est.movers ? `${est.movers} movers${truckLabel}` : '';
   const hours  = est.hours  ? `${est.hours} hrs (estimated)` : '';
   const extras = [
