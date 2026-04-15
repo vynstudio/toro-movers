@@ -299,14 +299,28 @@ exports.handler = async (event) => {
     </div>
   ` : '';
 
+  // Night-mode: if submitted between 9pm-7am ET, set expectations that
+  // we're closed instead of promising an immediate 15-minute callback.
+  const etHour = parseInt(new Date().toLocaleString('en-US', {
+    timeZone: 'America/New_York', hour: '2-digit', hour12: false
+  }), 10);
+  const isNightTime = etHour >= 21 || etHour < 7;
+  const callbackLine = isNightTime
+    ? `<p style="margin:18px 0;color:#3a3a3a;font-size:14px;line-height:1.6"><strong style="color:#C8102E">We're closed for the night.</strong> A team member will call you at <strong>8am tomorrow morning</strong> to confirm the price and lock in your date. If nothing unusual comes up, the quote above is what you'll pay.</p>`
+    : `<p style="margin:18px 0;color:#3a3a3a;font-size:14px;line-height:1.6">A team member will call you within 15 minutes during business hours (7am-8pm) to confirm the final price and lock in your date. If nothing unusual comes up, the quote above is what you'll pay.</p>`;
+
+  const subjectLine = estimate
+    ? (isNightTime
+        ? `Your Toro Movers quote: $${estimate.total} — we'll call you at 8am`
+        : `Your Toro Movers quote: $${estimate.total} — ready to book?`)
+    : `Your Toro Movers quote request — ${fullName.split(' ')[0]}`;
+
   // Only send customer confirmation on FULL submission (not partial / abandon)
   const customerEmail = (email && !isPartial && !isAbandon) ? {
     from: `Toro Movers <${fromEmail}>`,
     to: [email],
     replyTo: fromEmail,
-    subject: estimate
-      ? `Your Toro Movers quote: $${estimate.total} — ready to book?`
-      : `Your Toro Movers quote request — ${fullName.split(' ')[0]}`,
+    subject: subjectLine,
     html: `
       <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;max-width:600px;margin:0 auto;color:#1a1a1a">
         <div style="background:#C8102E;color:#fff;padding:28px 24px;border-radius:12px 12px 0 0;text-align:center">
@@ -319,7 +333,7 @@ exports.handler = async (event) => {
 
           ${customerQuoteBlock}
 
-          <p style="margin:18px 0;color:#3a3a3a;font-size:14px;line-height:1.6">A team member will call you within 15 minutes during business hours (7am-8pm) to confirm the final price and lock in your date. If nothing unusual comes up, the price above is what you'll pay.</p>
+          ${callbackLine}
 
           ${customerQuoteSummary}
 
