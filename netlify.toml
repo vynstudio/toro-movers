@@ -10,6 +10,11 @@
 [functions."daily-report"]
   schedule = "0 13,17,1 * * *"
 
+# Morning untouched-leads follow-up, 8am Eastern (12:00 UTC EDT)
+# Lists every 'new' or 'partial' lead >3h old with Telegram quick-action buttons
+[functions."follow-up-reminder"]
+  schedule = "0 12 * * *"
+
 [build.environment]
   NODE_VERSION = "20"
 

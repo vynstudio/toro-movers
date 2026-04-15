@@ -264,16 +264,38 @@ exports.handler = async (event) => {
   ` : '';
 
   // Quote block — CUSTOMER email (hero)
+  // Mirror the LP's "YOUR ESTIMATE" dark panel: big price + breakdown +
+  // trust badges row (stars · 100+ moves · 15-min callback promise),
+  // then the Book Now CTA.
   const customerQuoteBlock = estimate ? `
-    <div style="margin:24px 0;background:linear-gradient(135deg,#C8102E,#A00C24);color:#fff;border-radius:14px;padding:28px 24px;text-align:center;box-shadow:0 10px 30px rgba(200,16,46,.25)">
-      <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;opacity:.85;margin-bottom:8px">Your quote</div>
-      <div style="font-size:52px;font-weight:900;letter-spacing:-.02em;line-height:1;margin-bottom:8px">$${estimate.total}</div>
-      <div style="font-size:15px;opacity:.95;margin-bottom:14px">${estimate.movers} movers · ${estimate.hours} hours · $75/hr per mover</div>
+    <div style="margin:24px 0;background:linear-gradient(135deg,#0a0a0a 0%,#2a1a1a 50%,#3a1a1a 100%);color:#fff;border-radius:16px;padding:32px 24px;text-align:center;box-shadow:0 12px 32px rgba(0,0,0,.25);border:1px solid rgba(200,16,46,.3)">
+      <div style="font-size:11px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.6);margin-bottom:10px">Your Estimate</div>
+      <div style="font-size:56px;font-weight:900;letter-spacing:-.03em;line-height:1;margin-bottom:10px;color:#fff">$${estimate.total}</div>
+      <div style="font-size:14px;color:rgba(255,255,255,.75);margin-bottom:20px">${estimate.movers} movers  ·  ${estimate.hours} hours  ·  $75/hr per mover</div>
+
       ${bookNowUrl ? `
-        <a href="${bookNowUrl}" style="display:inline-block;background:#fff;color:#C8102E;padding:14px 28px;border-radius:999px;text-decoration:none;font-weight:800;font-size:15px;margin:6px 0 8px;box-shadow:0 6px 16px rgba(0,0,0,.15)">Book Now · Pay $50 Deposit →</a>
-        <div style="font-size:11px;opacity:.75">Reserves your spot · refundable up to 24hr before · Stripe secure</div>
+        <a href="${bookNowUrl}" style="display:inline-block;background:#C8102E;color:#fff;padding:16px 32px;border-radius:999px;text-decoration:none;font-weight:800;font-size:15px;margin:4px 0 10px;box-shadow:0 8px 20px rgba(200,16,46,.45)">Book Now · Pay $50 Deposit →</a>
+        <div style="font-size:11px;color:rgba(255,255,255,.55)">Refundable up to 24hr before move · Secured by Stripe</div>
       ` : ''}
-      <div style="font-size:12px;opacity:.7;padding-top:14px;border-top:1px solid rgba(255,255,255,.2);margin-top:14px">No hidden fees · no fuel surcharge · no per-mile charges.</div>
+
+      <table role="presentation" cellpadding="0" cellspacing="0" style="margin:22px auto 0;border-top:1px solid rgba(255,255,255,.12);padding-top:20px;width:100%">
+        <tr>
+          <td style="width:33.33%;text-align:center">
+            <div style="color:#fbbf24;font-size:14px;letter-spacing:2px;margin-bottom:3px">★★★★★</div>
+            <div style="font-size:18px;font-weight:900;color:#fff;line-height:1">4.9</div>
+            <div style="font-size:10px;color:rgba(255,255,255,.55);letter-spacing:1.5px;text-transform:uppercase;margin-top:3px">Google</div>
+          </td>
+          <td style="width:33.33%;text-align:center;border-left:1px solid rgba(255,255,255,.12);border-right:1px solid rgba(255,255,255,.12)">
+            <div style="font-size:18px;font-weight:900;color:#fff;line-height:1;margin-bottom:6px">100+</div>
+            <div style="font-size:10px;color:rgba(255,255,255,.55);letter-spacing:1.5px;text-transform:uppercase">Central FL<br>moves</div>
+          </td>
+          <td style="width:33.33%;text-align:center">
+            <div style="font-size:18px;font-weight:900;color:#fff;line-height:1;margin-bottom:6px">15 min</div>
+            <div style="font-size:10px;color:rgba(255,255,255,.55);letter-spacing:1.5px;text-transform:uppercase">Callback<br>promise</div>
+          </td>
+        </tr>
+      </table>
+      <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:16px">No hidden fees · no fuel surcharge · no per-mile charges</div>
     </div>
   ` : '';
 
