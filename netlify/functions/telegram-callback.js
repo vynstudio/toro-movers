@@ -9,9 +9,10 @@
 
 const { getStore } = require('@netlify/blobs'); // surface for scanner
 const { Resend } = require('resend');
-const { setStatus, getLead } = require('./_lib/leads');
+const { setStatus, getLead, listLeads, addNote } = require('./_lib/leads');
 
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const ALLOWED_CHAT = process.env.TELEGRAM_CHAT_ID; // allowlist: only this chat can command
 
 async function tg(method, body){
   try {
@@ -31,8 +32,19 @@ exports.handler = async (event) => {
   try { update = JSON.parse(event.body || '{}'); }
   catch { return { statusCode: 200, body: 'ok' }; }
 
+  // Text message handler — commands from the user's phone
+  if (update.message && update.message.text) {
+    return handleTextMessage(update.message);
+  }
+
   const cb = update.callback_query;
   if (!cb) return { statusCode: 200, body: 'ok' };
+
+  // Allowlist check — only the designated chat can tap buttons too
+  if (ALLOWED_CHAT && String(cb.message?.chat?.id) !== String(ALLOWED_CHAT)) {
+    await tg('answerCallbackQuery', { callback_query_id: cb.id, text: 'Not authorized.' });
+    return { statusCode: 200, body: 'ok' };
+  }
 
   const data = cb.data || '';
   const [action, leadId] = data.split(':');
@@ -188,3 +200,195 @@ async function sendReviewRequest(lead){
 }
 
 module.exports.sendReviewRequest = sendReviewRequest;
+
+// ===== TEXT COMMAND HANDLER =====
+// Handles /today, /week, /tomorrow, /lead, /show, /status, /note, /help
+async function handleTextMessage(msg){
+  const chatId = msg.chat?.id;
+  const text = (msg.text || '').trim();
+
+  // Allowlist — only the designated chat ID may run commands
+  if (ALLOWED_CHAT && String(chatId) !== String(ALLOWED_CHAT)) {
+    await tg('sendMessage', { chat_id: chatId, text: '🚫 Not authorized.' });
+    return { statusCode: 200, body: 'ok' };
+  }
+
+  // Extract command + args
+  const match = text.match(/^\/(\w+)(?:@\w+)?(?:\s+([\s\S]+))?$/);
+  if (!match) {
+    // Non-command text — ignore silently (future: forward to Claude chat)
+    return { statusCode: 200, body: 'ok' };
+  }
+  const cmd = match[1].toLowerCase();
+  const args = (match[2] || '').trim();
+
+  try {
+    if (cmd === 'help' || cmd === 'start') await cmdHelp(chatId);
+    else if (cmd === 'today')    await cmdDayJobs(chatId, 0, 'Today');
+    else if (cmd === 'tomorrow') await cmdDayJobs(chatId, 1, 'Tomorrow');
+    else if (cmd === 'week')     await cmdWeek(chatId);
+    else if (cmd === 'lead')     await cmdLead(chatId, args);
+    else if (cmd === 'show')     await cmdShow(chatId, args);
+    else if (cmd === 'status')   await cmdStatus(chatId, args);
+    else if (cmd === 'note')     await cmdNote(chatId, args);
+    else {
+      await tg('sendMessage', { chat_id: chatId, text: `Unknown command: /${cmd}\nTry /help` });
+    }
+  } catch(e) {
+    console.error('command error:', e);
+    await tg('sendMessage', { chat_id: chatId, text: `⚠️ Command failed: ${e.message}` });
+  }
+  return { statusCode: 200, body: 'ok' };
+}
+
+function esc(s){
+  return String(s == null ? '' : s)
+    .replace(/\\/g,'\\\\').replace(/_/g,'\\_').replace(/\*/g,'\\*').replace(/\[/g,'\\[').replace(/`/g,'\\`');
+}
+
+function parseMoveDate(l){
+  if (!l.move_date) return null;
+  const d = new Date(l.move_date);
+  return isNaN(d.getTime()) ? null : d;
+}
+
+function sameDay(a, b){ return a && b && a.toDateString() === b.toDateString(); }
+
+function fmtLeadLine(l){
+  const d = parseMoveDate(l);
+  const when = d ? d.toLocaleString('en-US',{month:'short',day:'numeric'}) : '—';
+  const t = l.move_time ? ' '+l.move_time : '';
+  const est = l.estimate_total ? ` · $${l.estimate_total}` : '';
+  return `\`${l.id}\` · *${esc(l.name||'(no name)')}* · ${when}${t}${est}`;
+}
+
+async function cmdHelp(chatId){
+  const text = [
+    '*Toro Movers Bot — Commands*',
+    '',
+    '/today — jobs scheduled for today',
+    '/tomorrow — jobs scheduled for tomorrow',
+    '/week — this week\'s pipeline + totals',
+    '/lead `<name>` — search leads by name',
+    '/show `<id>` — full detail of one lead',
+    '/status `<id>` `<new>` — change status (new/contacted/quoted/booked/done/lost)',
+    '/note `<id>` `<text>` — add a note to a lead',
+    '/help — this menu',
+    '',
+    'Open CRM: https://toromovers.net/crm',
+  ].join('\n');
+  await tg('sendMessage', { chat_id: chatId, text, parse_mode: 'Markdown', disable_web_page_preview: true });
+}
+
+async function cmdDayJobs(chatId, dayOffset, label){
+  const target = new Date(); target.setDate(target.getDate() + dayOffset);
+  const leads = await listLeads();
+  const jobs = leads.filter(l => {
+    const d = parseMoveDate(l);
+    return sameDay(d, target) && l.status !== 'lost' && l.status !== 'abandoned';
+  });
+  if (!jobs.length) {
+    await tg('sendMessage', { chat_id: chatId, text: `📅 *${label}* — no jobs scheduled.`, parse_mode: 'Markdown' });
+    return;
+  }
+  const total = jobs.reduce((s,l) => s + (l.estimate_total||0), 0);
+  const lines = [`📅 *${label}* — ${jobs.length} job${jobs.length>1?'s':''} · $${total}`, ''];
+  jobs.forEach(l => lines.push(fmtLeadLine(l)));
+  await tg('sendMessage', { chat_id: chatId, text: lines.join('\n'), parse_mode: 'Markdown', disable_web_page_preview: true });
+}
+
+async function cmdWeek(chatId){
+  const now = new Date(); now.setHours(0,0,0,0);
+  const weekStart = new Date(now); weekStart.setDate(now.getDate() - now.getDay());
+  const weekEnd = new Date(weekStart); weekEnd.setDate(weekStart.getDate() + 7);
+
+  const leads = await listLeads();
+  const weekJobs = leads.filter(l => {
+    const d = parseMoveDate(l);
+    return d && d >= weekStart && d < weekEnd && l.status === 'booked';
+  });
+  const quoted = leads.filter(l => l.status === 'quoted');
+  const newLeads = leads.filter(l => l.status === 'new');
+  const weekRevenue = weekJobs.reduce((s,l) => s + (l.estimate_total||0), 0);
+  const quotedTotal = quoted.reduce((s,l) => s + (l.estimate_total||0), 0);
+
+  const lines = [
+    '📊 *This Week*',
+    '',
+    `🟢 *${weekJobs.length} booked* · $${weekRevenue}`,
+    `🟠 *${quoted.length} quoted* · $${quotedTotal} pipeline`,
+    `🔵 *${newLeads.length} new* leads waiting`,
+    '',
+    weekJobs.length ? '*Scheduled moves:*' : '',
+  ];
+  weekJobs.sort((a,b) => new Date(a.move_date) - new Date(b.move_date));
+  weekJobs.forEach(l => lines.push(fmtLeadLine(l)));
+  await tg('sendMessage', { chat_id: chatId, text: lines.filter(Boolean).join('\n'), parse_mode: 'Markdown', disable_web_page_preview: true });
+}
+
+async function cmdLead(chatId, query){
+  if (!query) return tg('sendMessage', { chat_id: chatId, text: 'Usage: /lead `<name>`', parse_mode: 'Markdown' });
+  const q = query.toLowerCase();
+  const leads = await listLeads();
+  const matches = leads.filter(l =>
+    (l.name||'').toLowerCase().includes(q) ||
+    (l.email||'').toLowerCase().includes(q) ||
+    (l.phone||'').replace(/\D/g,'').includes(q.replace(/\D/g,''))
+  ).slice(0,5);
+  if (!matches.length) {
+    await tg('sendMessage', { chat_id: chatId, text: `🔍 No leads match "${esc(query)}"`, parse_mode: 'Markdown' });
+    return;
+  }
+  const lines = [`🔍 *${matches.length} match${matches.length>1?'es':''}* for "${esc(query)}"`, ''];
+  matches.forEach(l => lines.push(fmtLeadLine(l) + ` · _${l.status}_`));
+  lines.push('', '_Copy an id and use /show `<id>` for details._');
+  await tg('sendMessage', { chat_id: chatId, text: lines.join('\n'), parse_mode: 'Markdown', disable_web_page_preview: true });
+}
+
+async function cmdShow(chatId, id){
+  if (!id) return tg('sendMessage', { chat_id: chatId, text: 'Usage: /show `<id>`', parse_mode: 'Markdown' });
+  const lead = await getLead(id);
+  if (!lead) return tg('sendMessage', { chat_id: chatId, text: `❌ Lead \`${esc(id)}\` not found.`, parse_mode: 'Markdown' });
+  const est = lead.estimate || {};
+  const d = parseMoveDate(lead);
+  const route = (lead.pickup_address || lead.zip_from) && (lead.dropoff_address || lead.zip_to)
+    ? `${lead.pickup_address || lead.zip_from} → ${lead.dropoff_address || lead.zip_to}`
+    : '';
+  const lines = [
+    `*${esc(lead.name || '(no name)')}*  ·  _${lead.status}_`,
+    lead.phone ? `📱 ${esc(lead.phone)}` : '',
+    lead.email ? `✉️ ${esc(lead.email)}` : '',
+    d ? `📅 ${d.toLocaleString('en-US',{weekday:'short',month:'short',day:'numeric'})}${lead.move_time?' '+lead.move_time:''}` : '',
+    route ? `📍 ${esc(route)}` : '',
+    est.movers ? `👷 ${est.movers} movers${est.truck?' + truck':''} · ${est.hours||'?'}h` : '',
+    est.total ? `💰 $${est.total}${lead.depositPaid?' (deposit paid)':''}` : '',
+    '',
+    `Open: https://toromovers.net/crm#lead/${lead.id}`,
+  ].filter(Boolean).join('\n');
+  await tg('sendMessage', { chat_id: chatId, text: lines, parse_mode: 'Markdown', disable_web_page_preview: true });
+}
+
+async function cmdStatus(chatId, args){
+  const parts = args.split(/\s+/);
+  const id = parts[0];
+  const newStatus = (parts[1] || '').toLowerCase();
+  const valid = ['new','contacted','quoted','booked','done','lost'];
+  if (!id || !valid.includes(newStatus)) {
+    return tg('sendMessage', { chat_id: chatId, text: `Usage: /status \`<id>\` \`<${valid.join('|')}>\``, parse_mode: 'Markdown' });
+  }
+  const lead = await setStatus(id, newStatus);
+  if (!lead) return tg('sendMessage', { chat_id: chatId, text: `❌ Lead \`${esc(id)}\` not found.`, parse_mode: 'Markdown' });
+  const emoji = { new:'🔵', contacted:'✅', quoted:'💬', booked:'🎉', done:'🏁', lost:'❌' }[newStatus];
+  await tg('sendMessage', { chat_id: chatId, text: `${emoji} *${esc(lead.name)}* → *${newStatus.toUpperCase()}*`, parse_mode: 'Markdown' });
+}
+
+async function cmdNote(chatId, args){
+  const space = args.indexOf(' ');
+  if (space < 0) return tg('sendMessage', { chat_id: chatId, text: 'Usage: /note `<id>` `<text>`', parse_mode: 'Markdown' });
+  const id = args.slice(0, space).trim();
+  const text = args.slice(space+1).trim();
+  if (!id || !text) return tg('sendMessage', { chat_id: chatId, text: 'Usage: /note `<id>` `<text>`', parse_mode: 'Markdown' });
+  const lead = await addNote(id, text, 'telegram');
+  if (!lead) return tg('sendMessage', { chat_id: chatId, text: `❌ Lead \`${esc(id)}\` not found.`, parse_mode: 'Markdown' });
+  await tg('sendMessage', { chat_id: chatId, text: `📝 Note added to *${esc(lead.name)}*`, parse_mode: 'Markdown' });
+}
