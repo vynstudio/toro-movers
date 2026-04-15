@@ -3,24 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Toro Movers — Leads</title>
+<title>Toro Movers — CRM</title>
 <meta name="theme-color" content="#C8102E">
 <meta name="robots" content="noindex,nofollow">
 <link rel="icon" href="assets/img/icon.png">
 <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
-
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>
 :root{
   --red:#C8102E; --red-dark:#A00C24; --charcoal:#0a0a0a;
   --white:#fff; --bg:#f5f5f7; --card:#fff; --line:#e7e7eb; --mute:#6b7280;
-  --green:#16a34a; --amber:#f59e0b; --blue:#2563eb;
+  --green:#16a34a; --amber:#f59e0b; --blue:#2563eb; --purple:#8b5cf6; --grey:#9ca3af;
+  --s-new:#2563eb; --s-contacted:#8b5cf6; --s-quoted:#f59e0b; --s-booked:#16a34a;
+  --s-done:#9ca3af; --s-lost:#ef4444; --s-partial:#fbbf24; --s-abandoned:#f97316;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%}
-body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--charcoal);line-height:1.4;-webkit-font-smoothing:antialiased}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--charcoal);line-height:1.4;-webkit-font-smoothing:antialiased;overflow:hidden}
 button,input,select,textarea{font-family:inherit;font-size:inherit}
 button{cursor:pointer;border:none;background:none;padding:0}
 a{color:inherit;text-decoration:none}
+input,select,textarea{border:1px solid var(--line);border-radius:8px;padding:9px 12px;background:#fff;outline:none;transition:border-color .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--red)}
 
 /* ===== LOGIN ===== */
 .login{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#0a0a0a;z-index:1000}
@@ -28,115 +32,205 @@ a{color:inherit;text-decoration:none}
 .login-logo{text-align:center;font-weight:900;font-size:24px;letter-spacing:-.3px;margin-bottom:4px}
 .login-logo span{color:var(--red)}
 .login-sub{text-align:center;font-size:13px;color:var(--mute);margin-bottom:22px}
-.login input{width:100%;padding:14px 16px;border:1.5px solid var(--line);border-radius:12px;margin-bottom:10px;font-size:15px}
-.login input:focus{outline:none;border-color:var(--red)}
-.login button{width:100%;padding:14px;background:var(--red);color:#fff;border-radius:12px;font-weight:700;font-size:15px}
-.err{color:var(--red);font-size:13px;text-align:center;margin-top:10px;display:none}
+.login input{width:100%;padding:12px 14px;font-size:15px;margin-bottom:12px}
+.login button{width:100%;padding:12px;background:var(--red);color:#fff;border-radius:10px;font-weight:700;font-size:15px}
+.login button:hover{background:var(--red-dark)}
+.pw-err{color:var(--s-lost);font-size:13px;text-align:center;margin-top:6px;display:none}
 
 /* ===== APP ===== */
-.app{max-width:680px;margin:0 auto;min-height:100vh;min-height:100dvh;background:var(--card);display:flex;flex-direction:column}
-@media(min-width:680px){.app{margin-top:20px;margin-bottom:20px;min-height:calc(100vh - 40px);border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.08);overflow:hidden}}
+.app{display:none;height:100vh;flex-direction:column}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:#fff;border-bottom:1px solid var(--line);flex-shrink:0;overflow-x:auto}
+.logo{font-weight:900;font-size:16px;letter-spacing:-.2px;white-space:nowrap}
+.logo span{color:var(--red)}
+.stat-strip{display:flex;gap:12px;font-size:12px;color:var(--mute);white-space:nowrap;overflow-x:auto}
+.stat-strip b{color:var(--charcoal);font-weight:700}
+.stat-strip .money{color:var(--green)}
+.spacer{flex:1}
+.view-switcher{display:flex;background:var(--bg);border-radius:9px;padding:3px;gap:2px}
+.view-switcher button{padding:7px 14px;border-radius:7px;font-size:13px;font-weight:600;color:var(--mute);white-space:nowrap}
+.view-switcher button.active{background:#fff;color:var(--charcoal);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.sub-switcher{display:flex;gap:6px}
+.sub-switcher button{padding:6px 11px;border-radius:7px;font-size:12px;font-weight:600;color:var(--mute);border:1px solid var(--line);background:#fff}
+.sub-switcher button.active{background:var(--charcoal);color:#fff;border-color:var(--charcoal)}
+.icon-btn{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;color:var(--charcoal);background:var(--bg)}
+.icon-btn:hover{background:#e7e7eb}
+.icon-btn svg{width:18px;height:18px}
+.btn-primary{background:var(--red);color:#fff;padding:9px 16px;border-radius:9px;font-weight:700;font-size:13px;white-space:nowrap}
+.btn-primary:hover{background:var(--red-dark)}
 
-/* Header */
-.hdr{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--line);padding:14px 18px;display:flex;align-items:center;justify-content:space-between}
-.hdr-title{font-weight:800;font-size:20px;letter-spacing:-.4px}
-.hdr-title span{color:var(--red)}
-.hdr-meta{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--mute)}
-.hdr-stat{font-weight:700}
-.hdr-stat.red{color:var(--red)}
-.refresh{font-size:18px;color:var(--mute);padding:4px 8px}
-.refresh:active{color:var(--red);transform:rotate(180deg);transition:transform .3s}
+/* ===== MAIN LAYOUT ===== */
+.workspace{display:flex;flex:1;overflow:hidden;min-height:0}
+.sidebar{width:260px;background:#fff;border-right:1px solid var(--line);overflow-y:auto;flex-shrink:0}
+.sb-section{padding:14px 16px;border-bottom:1px solid var(--line)}
+.sb-title{font-size:11px;font-weight:700;color:var(--mute);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.sb-title .count{background:var(--red);color:#fff;padding:1px 7px;border-radius:10px;font-size:10px;font-weight:800}
+.sb-title .count.zero{background:var(--line);color:var(--mute)}
+.sb-lead{display:block;padding:9px 11px;border-radius:8px;background:var(--bg);margin-bottom:6px;font-size:12px;cursor:pointer;border-left:3px solid transparent;transition:background .15s}
+.sb-lead:hover{background:#e7e7eb}
+.sb-lead.new{border-left-color:var(--s-new)}
+.sb-lead.contacted{border-left-color:var(--s-contacted)}
+.sb-lead.quoted{border-left-color:var(--s-quoted)}
+.sb-lead-name{font-weight:700;color:var(--charcoal);margin-bottom:2px}
+.sb-lead-meta{color:var(--mute);font-size:11px}
+.sb-empty{font-size:12px;color:var(--mute);font-style:italic;padding:4px}
 
-/* Filter pills */
-.filters{display:flex;gap:6px;padding:10px 16px;background:#fafafa;border-bottom:1px solid var(--line);overflow-x:auto;-webkit-overflow-scrolling:touch}
-.filter{padding:7px 14px;border-radius:20px;background:#fff;border:1px solid var(--line);font-size:13px;font-weight:600;white-space:nowrap;color:var(--charcoal);flex-shrink:0}
-.filter.active{background:var(--charcoal);color:#fff;border-color:var(--charcoal)}
-.filter .n{display:inline-block;background:#e5e5e5;color:var(--mute);padding:0 6px;border-radius:10px;font-size:11px;margin-left:4px;min-width:18px;text-align:center}
-.filter.active .n{background:rgba(255,255,255,.2);color:#fff}
-.filter.alert .n{background:var(--red);color:#fff}
-.filter.alert.active .n{background:#fff;color:var(--red)}
+.main{flex:1;overflow:auto;position:relative;background:var(--bg)}
 
-/* Feed */
-.feed{flex:1;overflow-y:auto}
-.section-title{padding:16px 18px 8px;font-size:11px;font-weight:800;color:var(--mute);text-transform:uppercase;letter-spacing:1.5px;background:var(--bg);border-bottom:1px solid var(--line)}
-.row{background:#fff;border-bottom:1px solid var(--line);padding:14px 18px;display:flex;align-items:flex-start;gap:12px;cursor:pointer;transition:background .1s;position:relative}
-.row:active{background:#f8f8f8}
-.row.unseen{background:#fff5f5}
-.row.unseen::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--red)}
-.row.stale::after{content:'⚠';position:absolute;top:8px;right:12px;color:var(--amber);font-size:14px;font-weight:800}
-.row.expanded{background:#fafafa}
+/* ===== CALENDAR — WEEK ===== */
+.cal-wrap{min-width:800px}
+.cal-header{display:grid;grid-template-columns:60px repeat(7,1fr);background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+.cal-nav{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:6}
+.cal-nav-label{font-weight:700;font-size:15px}
+.cal-nav-btns{display:flex;gap:4px}
+.cal-nav-btns button{width:32px;height:32px;border-radius:8px;background:var(--bg);color:var(--charcoal);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
+.cal-nav-btns button:hover{background:#e7e7eb}
+.cal-day-header{padding:10px 6px;text-align:center;border-right:1px solid var(--line);font-size:11px}
+.cal-day-header:first-child{border-right:1px solid var(--line)}
+.cal-day-header .dow{color:var(--mute);font-weight:600;text-transform:uppercase;letter-spacing:.5px;font-size:10px}
+.cal-day-header .dom{font-weight:800;font-size:16px;color:var(--charcoal);margin-top:2px}
+.cal-day-header.today .dom{color:var(--red)}
+.cal-day-header.today{background:rgba(200,16,46,.04)}
+.cal-body{display:grid;grid-template-columns:60px repeat(7,1fr);position:relative}
+.cal-hour{border-right:1px solid var(--line);border-bottom:1px solid #f0f0f0;padding:4px 6px;font-size:10px;color:var(--mute);text-align:right;min-height:54px;font-weight:600}
+.cal-slot{border-right:1px solid var(--line);border-bottom:1px solid #f0f0f0;min-height:54px;position:relative;background:#fff}
+.cal-slot.today{background:rgba(200,16,46,.02)}
+.cal-slot.weekend{background:rgba(0,0,0,.01)}
 
-.row-avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#C8102E,#A00C24);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;flex-shrink:0}
-.row-avatar.booked{background:linear-gradient(135deg,#16a34a,#15803d)}
-.row-avatar.lost{background:linear-gradient(135deg,#94a3b8,#64748b)}
-.row-avatar.paid::after{content:'💳';position:absolute;margin-top:26px;margin-left:-10px;font-size:12px}
+/* ===== CALENDAR — DAY ===== */
+.dayview .cal-wrap{min-width:unset}
+.dayview .cal-header,.dayview .cal-body{grid-template-columns:60px 1fr}
+.dayview .cal-hour{min-height:60px}
+.dayview .cal-slot{min-height:60px}
 
-.row-body{flex:1;min-width:0}
-.row-top{display:flex;align-items:baseline;gap:8px;margin-bottom:2px}
-.row-name{font-weight:700;font-size:15px;letter-spacing:-.2px}
-.row-time{font-size:12px;color:var(--mute);margin-left:auto;flex-shrink:0}
-.row-preview{font-size:13px;color:var(--mute);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:4px}
-.row-price{color:var(--red);font-weight:800;font-size:14px}
-.row-meta{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px}
-.chip{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;letter-spacing:.3px}
-.chip.new{background:#fee2e2;color:#991b1b}
-.chip.partial{background:#fef3c7;color:#78350f}
-.chip.contacted{background:#ede9fe;color:#6d28d9}
-.chip.quoted{background:#cffafe;color:#155e75}
-.chip.booked{background:#dcfce7;color:#166534}
-.chip.done{background:#f1f5f9;color:#475569}
-.chip.lost{background:#fee2e2;color:#991b1b}
-.chip.abandoned{background:#fee2e2;color:#991b1b}
-.chip.paid{background:#dcfce7;color:#166534}
-.chip.es{background:#ede9fe;color:#6d28d9}
-.chip.source{background:#fff3e0;color:#78350f;font-family:ui-monospace,monospace}
+/* ===== CALENDAR — MONTH ===== */
+.monthview .mo-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:var(--line);border-bottom:1px solid var(--line)}
+.mo-dow{background:#fff;padding:10px 6px;text-align:center;font-size:11px;font-weight:700;color:var(--mute);text-transform:uppercase;letter-spacing:.5px}
+.mo-cell{background:#fff;min-height:110px;padding:8px;position:relative;overflow:hidden}
+.mo-cell.out{background:#fafafa;color:var(--mute)}
+.mo-cell.today .mo-num{background:var(--red);color:#fff;width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center}
+.mo-num{font-weight:700;font-size:13px;margin-bottom:4px;display:inline-block}
+.mo-job{display:block;padding:3px 6px;margin-bottom:2px;font-size:11px;border-radius:4px;background:var(--s-booked);color:#fff;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
+.mo-more{font-size:10px;color:var(--mute);cursor:pointer;font-weight:700}
 
-/* Expanded detail */
-.detail{background:#fafafa;border-bottom:1px solid var(--line);padding:18px;animation:slideDown .2s ease}
-@keyframes slideDown{from{opacity:0;max-height:0}to{opacity:1;max-height:2000px}}
-.detail-hero{background:linear-gradient(135deg,var(--red),var(--red-dark));color:#fff;border-radius:14px;padding:18px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
-.detail-hero .big{font-size:32px;font-weight:900;letter-spacing:-.02em;line-height:1}
-.detail-hero .lbl{font-size:10px;font-weight:700;letter-spacing:1.5px;opacity:.8;text-transform:uppercase;margin-bottom:4px}
-.detail-hero .meta{text-align:right;font-size:12px;opacity:.9}
+/* ===== JOB BLOCK ===== */
+.job-block{position:absolute;left:3px;right:3px;border-radius:7px;padding:5px 8px;cursor:pointer;color:#fff;font-size:11px;box-shadow:0 1px 3px rgba(0,0,0,.12);border-left:3px solid rgba(0,0,0,.3);overflow:hidden;z-index:2;transition:transform .1s}
+.job-block:hover{transform:translateX(-1px);box-shadow:0 3px 8px rgba(0,0,0,.2);z-index:3}
+.job-block.s-new{background:var(--s-new)}
+.job-block.s-contacted{background:var(--s-contacted)}
+.job-block.s-quoted{background:var(--s-quoted)}
+.job-block.s-booked{background:var(--s-booked)}
+.job-block.s-done{background:var(--s-done)}
+.job-block.s-lost{background:var(--s-lost)}
+.job-block.s-partial{background:var(--s-partial)}
+.job-block.s-abandoned{background:var(--s-abandoned)}
+.job-block .jb-time{font-weight:800;font-size:10px;opacity:.95}
+.job-block .jb-name{font-weight:700;font-size:12px;margin:2px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.job-block .jb-route{font-size:10px;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-.detail-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
-.btn-big{padding:14px;border-radius:12px;font-weight:700;font-size:14px;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;transition:transform .1s}
-.btn-big:active{transform:scale(.97)}
-.btn-call{background:var(--green);color:#fff}
-.btn-mail{background:var(--blue);color:#fff}
+.empty-calendar{padding:60px 20px;text-align:center;color:var(--mute);font-size:14px}
+.empty-calendar .big{font-size:40px;margin-bottom:12px}
 
-.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;background:#fff;border-radius:12px;padding:14px;margin-bottom:14px}
-.dg-row{font-size:13px;padding:2px 0}
-.dg-row .lbl{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--mute);margin-bottom:1px}
-.dg-row .val{font-weight:600;color:var(--charcoal)}
-.dg-row a{color:var(--red)}
+/* ===== KANBAN ===== */
+.kanban-wrap{display:flex;gap:12px;padding:16px;min-height:100%;overflow-x:auto}
+.kb-col{flex:1;min-width:240px;background:#fff;border-radius:12px;border:1px solid var(--line);display:flex;flex-direction:column;max-height:calc(100vh - 120px)}
+.kb-head{padding:12px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#fff;border-radius:12px 12px 0 0;z-index:2}
+.kb-head-title{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;gap:6px}
+.kb-head-title .dot{width:8px;height:8px;border-radius:50%}
+.kb-head-meta{font-size:11px;color:var(--mute);font-weight:600}
+.kb-body{padding:10px;overflow-y:auto;flex:1;min-height:120px}
+.kb-body.drag-over{background:rgba(200,16,46,.05)}
+.kb-card{background:#fff;border:1px solid var(--line);border-radius:9px;padding:11px;margin-bottom:8px;cursor:grab;font-size:12px;transition:box-shadow .15s;border-left:3px solid var(--grey)}
+.kb-card:hover{box-shadow:0 4px 10px rgba(0,0,0,.08)}
+.kb-card.s-new{border-left-color:var(--s-new)}
+.kb-card.s-contacted{border-left-color:var(--s-contacted)}
+.kb-card.s-quoted{border-left-color:var(--s-quoted)}
+.kb-card.s-booked{border-left-color:var(--s-booked)}
+.kb-card.s-done{border-left-color:var(--s-done)}
+.kb-card.s-lost{border-left-color:var(--s-lost)}
+.kb-card-name{font-weight:700;color:var(--charcoal);margin-bottom:3px;display:flex;justify-content:space-between;align-items:start;gap:8px}
+.kb-card-total{color:var(--green);font-weight:700;font-size:11px;white-space:nowrap}
+.kb-card-meta{color:var(--mute);font-size:11px;display:flex;justify-content:space-between;gap:6px}
+.kb-card-route{color:var(--mute);font-size:11px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-.status-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px}
-.status-btn{padding:10px;background:#fff;border:1.5px solid var(--line);border-radius:10px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--charcoal);transition:all .1s}
-.status-btn:active{transform:scale(.96)}
-.status-btn.active{background:var(--red);color:#fff;border-color:var(--red)}
+/* ===== MAP ===== */
+.map-wrap{display:flex;height:100%}
+.map-sidebar{width:240px;background:#fff;border-right:1px solid var(--line);overflow-y:auto;flex-shrink:0}
+.map-wrap #map{flex:1;height:100%}
+.map-empty-list{padding:14px}
+.map-empty-list h4{font-size:11px;font-weight:800;color:var(--mute);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.map-empty-list .sb-lead{font-size:11px}
 
-.notes-wrap{background:#fff;border-radius:12px;padding:14px;margin-bottom:12px}
-.notes-title{font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--mute);margin-bottom:10px}
-.note{padding:8px 0;border-bottom:1px dashed var(--line);font-size:13px;color:var(--charcoal)}
-.note:last-of-type{border:none}
-.note-at{font-size:10px;color:var(--mute);margin-bottom:2px}
-.note-input{display:flex;gap:6px;margin-top:8px}
-.note-input input{flex:1;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;font-size:13px}
-.note-input button{padding:10px 16px;background:var(--charcoal);color:#fff;border-radius:10px;font-weight:700;font-size:12px}
+/* ===== DETAIL PANEL ===== */
+.panel{position:fixed;top:0;right:0;height:100vh;width:460px;max-width:100vw;background:#fff;box-shadow:-12px 0 40px rgba(0,0,0,.15);z-index:50;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .2s cubic-bezier(.4,0,.2,1)}
+.panel.open{transform:translateX(0)}
+.panel-head{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-shrink:0}
+.panel-head h3{font-size:19px;font-weight:800;margin-bottom:4px}
+.panel-head .status-chip{font-size:10px;font-weight:800;padding:3px 8px;border-radius:999px;color:#fff;text-transform:uppercase;letter-spacing:.5px;display:inline-block}
+.panel-close{width:32px;height:32px;border-radius:8px;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;font-weight:700;color:var(--charcoal)}
+.panel-body{overflow-y:auto;flex:1;padding:0 18px 100px}
+.panel-section{padding:16px 0;border-bottom:1px solid var(--line)}
+.panel-section h4{font-size:11px;font-weight:800;color:var(--mute);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+.panel-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;font-size:13px}
+.panel-row .icon{color:var(--mute);flex-shrink:0;margin-top:1px;width:16px;text-align:center}
+.panel-row a{color:var(--blue);text-decoration:none}
+.panel-row a:hover{text-decoration:underline}
+.panel-row .editable{flex:1;cursor:pointer;border-radius:6px;padding:3px 6px;margin:-3px -6px;transition:background .1s}
+.panel-row .editable:hover{background:var(--bg)}
+.money-box{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:12px 14px;margin:8px 0 0}
+.money-row{display:flex;justify-content:space-between;font-size:13px;margin-bottom:3px}
+.money-row.total{border-top:1px solid #bbf7d0;padding-top:7px;margin-top:5px;font-weight:800}
+.money-row.deposit{color:var(--green)}
+.status-chips{display:flex;flex-wrap:wrap;gap:6px}
+.s-chip{padding:6px 11px;border-radius:999px;font-size:11px;font-weight:700;background:var(--bg);color:var(--charcoal);cursor:pointer;border:1px solid var(--line);text-transform:uppercase;letter-spacing:.3px}
+.s-chip.active{color:#fff;border-color:transparent}
+.s-chip.active.new{background:var(--s-new)}
+.s-chip.active.contacted{background:var(--s-contacted)}
+.s-chip.active.quoted{background:var(--s-quoted)}
+.s-chip.active.booked{background:var(--s-booked)}
+.s-chip.active.done{background:var(--s-done)}
+.s-chip.active.lost{background:var(--s-lost)}
+.crew-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.crew-pill{padding:5px 10px;background:var(--bg);border-radius:999px;font-size:11px;font-weight:700;color:var(--charcoal);display:flex;align-items:center;gap:5px}
+.crew-pill .rm{color:var(--s-lost);cursor:pointer;font-weight:800}
+.crew-pill.empty{color:var(--mute);font-style:italic;font-weight:500}
+.timeline-item{padding:6px 0;font-size:12px;color:var(--mute)}
+.timeline-item .at{color:var(--charcoal);font-weight:600}
+.panel-actions{position:absolute;bottom:0;left:0;right:0;padding:12px 18px;background:#fff;border-top:1px solid var(--line);display:flex;gap:8px;flex-wrap:wrap}
+.pa-btn{padding:9px 13px;border-radius:8px;font-size:12px;font-weight:700;background:var(--bg);color:var(--charcoal)}
+.pa-btn:hover{background:#e7e7eb}
+.pa-btn.primary{background:var(--red);color:#fff}
+.pa-btn.primary:hover{background:var(--red-dark)}
+.panel-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:49;opacity:0;pointer-events:none;transition:opacity .2s}
+.panel-backdrop.open{opacity:1;pointer-events:auto}
 
-.timeline-wrap{background:#fff;border-radius:12px;padding:14px;margin-bottom:12px;max-height:240px;overflow-y:auto}
-.tl-item{padding:5px 0;border-bottom:1px dashed var(--line);font-size:12px}
-.tl-item:last-child{border:none}
-.tl-item .at{font-size:10px;color:var(--mute);margin-bottom:1px}
+/* ===== CREW MODAL ===== */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-backdrop.open{display:flex}
+.modal{background:#fff;border-radius:14px;width:100%;max-width:440px;max-height:85vh;overflow:hidden;display:flex;flex-direction:column}
+.modal-head{padding:16px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+.modal-head h3{font-size:17px;font-weight:800}
+.modal-body{padding:16px 20px;overflow-y:auto}
+.crew-row{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--line);border-radius:9px;margin-bottom:8px}
+.crew-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.crew-info{flex:1}
+.crew-info .nm{font-weight:700;font-size:13px}
+.crew-info .rl{font-size:11px;color:var(--mute)}
+.crew-rm-btn{color:var(--s-lost);font-size:12px;font-weight:700}
+.modal-add{display:flex;gap:6px;margin-top:10px}
+.modal-add input{flex:1;font-size:13px}
+.modal-add button{padding:8px 14px;background:var(--red);color:#fff;border-radius:8px;font-weight:700;font-size:12px}
 
-/* Empty */
-.empty{text-align:center;padding:60px 24px;color:var(--mute)}
-.empty .ico{font-size:42px;margin-bottom:10px}
-.empty .t{font-size:17px;font-weight:700;color:var(--charcoal);margin-bottom:4px}
-.empty .s{font-size:13px}
-
-.loading{text-align:center;padding:40px;color:var(--mute);font-size:13px}
+/* ===== MOBILE ===== */
+@media (max-width:800px){
+  .sidebar{display:none}
+  .topbar{flex-wrap:wrap;padding:8px 10px;gap:8px}
+  .sub-switcher{order:10;width:100%}
+  .panel{width:100%}
+  .stat-strip{order:20;width:100%;font-size:11px}
+  .kb-col{min-width:85vw}
+  .map-sidebar{display:none}
+  .view-switcher button{padding:6px 10px;font-size:12px}
+}
 </style>
 </head>
 <body>
@@ -144,50 +238,89 @@ a{color:inherit;text-decoration:none}
 <!-- LOGIN -->
 <div class="login" id="login">
   <div class="login-box">
-    <div class="login-logo">Toro <span>Movers</span></div>
-    <div class="login-sub">Leads</div>
+    <div class="login-logo">TORO <span>MOVERS</span></div>
+    <div class="login-sub">CRM — Enter password</div>
     <input type="password" id="pw-input" placeholder="Password" autocomplete="current-password" autofocus>
-    <button id="pw-btn">Open</button>
-    <div class="err" id="pw-err">Wrong password.</div>
+    <button id="pw-btn">Sign in</button>
+    <div class="pw-err" id="pw-err">Wrong password.</div>
   </div>
 </div>
 
 <!-- APP -->
-<div class="app" id="app" style="display:none">
-  <header class="hdr">
-    <div>
-      <div class="hdr-title">Toro <span>Movers</span></div>
-      <div class="hdr-meta" id="hdr-meta"></div>
+<div class="app" id="app">
+  <header class="topbar">
+    <div class="logo">TORO <span>MOVERS</span></div>
+    <div class="stat-strip" id="stat-strip"></div>
+    <div class="spacer"></div>
+    <div class="view-switcher" id="view-switcher">
+      <button class="active" data-view="calendar">📅 Calendar</button>
+      <button data-view="kanban">📋 Kanban</button>
+      <button data-view="map">🗺️ Map</button>
     </div>
-    <button class="refresh" id="refresh" aria-label="Refresh">↻</button>
+    <div class="sub-switcher" id="cal-sub">
+      <button class="active" data-sub="week">Week</button>
+      <button data-sub="day">Day</button>
+      <button data-sub="month">Month</button>
+    </div>
+    <button class="icon-btn" id="crew-btn" title="Crew">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    </button>
+    <button class="icon-btn" id="refresh-btn" title="Refresh">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+    </button>
+    <button class="btn-primary" id="logout-btn" title="Logout" style="padding:9px 12px">Exit</button>
   </header>
 
-  <div class="filters" id="filters">
-    <button class="filter active" data-filter="attention">Attention <span class="n" id="n-attn">0</span></button>
-    <button class="filter" data-filter="all">All <span class="n" id="n-all">0</span></button>
-    <button class="filter" data-filter="new">New <span class="n" id="n-new">0</span></button>
-    <button class="filter" data-filter="contacted">Contacted <span class="n" id="n-contacted">0</span></button>
-    <button class="filter" data-filter="quoted">Quoted <span class="n" id="n-quoted">0</span></button>
-    <button class="filter" data-filter="booked">Booked <span class="n" id="n-booked">0</span></button>
-    <button class="filter" data-filter="lost">Lost <span class="n" id="n-lost">0</span></button>
-  </div>
-
-  <div class="feed" id="feed">
-    <div class="loading">Loading…</div>
+  <div class="workspace">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main" id="main"></main>
   </div>
 </div>
 
+<!-- DETAIL PANEL -->
+<div class="panel-backdrop" id="panel-backdrop"></div>
+<div class="panel" id="panel"></div>
+
+<!-- CREW MODAL -->
+<div class="modal-backdrop" id="crew-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Crew Roster</h3>
+      <button class="panel-close" onclick="closeCrewModal()">×</button>
+    </div>
+    <div class="modal-body" id="crew-modal-body"></div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
+// ===== STATE =====
 var PW = localStorage.getItem('crm_pw') || '';
 var leads = [];
-var currentFilter = 'attention';
-var expandedId = null;
+var crew = [];
+var currentView = 'calendar';   // calendar | kanban | map
+var currentSub = 'week';        // week | day | month (for calendar)
+var focusDate = new Date();     // anchor for the calendar
+var openLeadId = null;
+var mapInstance = null;
+var mapMarkers = [];
+var geocache = JSON.parse(localStorage.getItem('geocache') || '{}');
+var geoQueue = [];
+var geoRunning = false;
+
+// ===== CONSTANTS =====
+var STATUS_COLORS = {
+  new:'#2563eb', contacted:'#8b5cf6', quoted:'#f59e0b',
+  booked:'#16a34a', done:'#9ca3af', lost:'#ef4444',
+  partial:'#fbbf24', abandoned:'#f97316'
+};
+var STATUS_ORDER = ['new','contacted','quoted','booked','done','lost'];
 
 // ===== LOGIN =====
 function showApp(){
   document.getElementById('login').style.display = 'none';
   document.getElementById('app').style.display = 'flex';
-  loadLeads();
+  loadAll();
 }
 async function tryLogin(pw){
   try {
@@ -203,273 +336,716 @@ document.getElementById('pw-btn').addEventListener('click', function(){
 document.getElementById('pw-input').addEventListener('keydown', function(e){
   if (e.key === 'Enter') document.getElementById('pw-btn').click();
 });
+document.getElementById('logout-btn').addEventListener('click', function(){
+  localStorage.removeItem('crm_pw'); location.reload();
+});
 if (PW) tryLogin(PW);
 
 // ===== LOAD =====
+async function loadAll(){
+  await Promise.all([loadLeads(), loadCrew()]);
+  renderAll();
+}
 async function loadLeads(){
   try {
     var r = await fetch('/.netlify/functions/crm?action=list', { headers: { 'x-crm-password': PW } });
-    if (!r.ok) { if (r.status === 401){ localStorage.removeItem('crm_pw'); location.reload(); } return; }
+    if (!r.ok) {
+      if (r.status === 401){ localStorage.removeItem('crm_pw'); location.reload(); }
+      return;
+    }
     var j = await r.json();
     leads = j.leads || [];
-    updateFilters();
-    render();
+  } catch(e){ console.error(e); }
+}
+async function loadCrew(){
+  try {
+    var r = await fetch('/.netlify/functions/crm?action=crew', { headers: { 'x-crm-password': PW } });
+    if (!r.ok) return;
+    var j = await r.json();
+    crew = j.crew || [];
   } catch(e){ console.error(e); }
 }
 
-// ===== FILTERS =====
-function updateFilters(){
-  var now = Date.now();
-  var lastSeen = parseInt(localStorage.getItem('crm_last_seen') || '0', 10);
+// ===== UTILITIES =====
+function fmtMoney(n){ return '$' + (n||0).toLocaleString('en-US'); }
+function firstName(l){ return (l.name || '').split(' ')[0] || '?'; }
+function parseMoveDate(l){
+  if (!l.move_date) return null;
+  // accepts 'YYYY-MM-DD', 'Saturday, May 30', etc.
+  var iso = /^\d{4}-\d{2}-\d{2}$/.test(l.move_date) ? l.move_date : null;
+  if (iso) return new Date(iso + 'T00:00:00');
+  // try parsing free-text
+  var d = new Date(l.move_date);
+  return isNaN(d.getTime()) ? null : d;
+}
+function parseMoveTime(l){
+  // returns {hour, minute} or null
+  var t = l.move_time || '';
+  var m = t.match(/(\d{1,2}):?(\d{2})?\s*(AM|PM|am|pm)?/);
+  if (!m) return null;
+  var h = parseInt(m[1], 10);
+  var min = parseInt(m[2] || '0', 10);
+  var ap = (m[3] || '').toUpperCase();
+  if (ap === 'PM' && h < 12) h += 12;
+  if (ap === 'AM' && h === 12) h = 0;
+  return { hour: h, minute: min };
+}
+function sameDay(a, b){ return a && b && a.toDateString() === b.toDateString(); }
+function startOfWeek(d){
+  var x = new Date(d); x.setHours(0,0,0,0);
+  x.setDate(x.getDate() - x.getDay());
+  return x;
+}
+function addDays(d, n){ var x = new Date(d); x.setDate(x.getDate()+n); return x; }
+function fmtDow(d){ return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()]; }
+function fmtMonthName(d){ return d.toLocaleString('en-US',{month:'long',year:'numeric'}); }
+function fmtDateLabel(d){ return d.toLocaleString('en-US',{month:'short',day:'numeric'}); }
 
-  function isStale(l){
-    var ageH = (now - new Date(l.updatedAt || l.createdAt).getTime()) / 3600000;
-    return ageH > 4 && (l.status === 'new' || l.status === 'contacted');
-  }
-  function isUnseen(l){ return new Date(l.createdAt).getTime() > lastSeen && l.status === 'new'; }
-  function isAttention(l){ return isUnseen(l) || isStale(l); }
-
-  document.getElementById('n-attn').textContent = leads.filter(isAttention).length;
-  document.getElementById('n-all').textContent = leads.length;
-  ['new','contacted','quoted','booked','lost'].forEach(function(s){
-    document.getElementById('n-'+s).textContent = leads.filter(l => l.status === s).length;
-  });
-
-  var attnCount = leads.filter(isAttention).length;
-  var attnFilter = document.querySelector('.filter[data-filter="attention"]');
-  attnFilter.classList.toggle('alert', attnCount > 0);
-
-  var today = new Date(); today.setHours(0,0,0,0);
-  var newToday = leads.filter(l => new Date(l.createdAt) >= today).length;
-  var booked = leads.filter(l => l.status === 'booked').length;
-  document.getElementById('hdr-meta').innerHTML =
-    '<span class="hdr-stat red">'+newToday+'</span> today · <span class="hdr-stat">'+booked+'</span> booked';
-
-  document.title = (attnCount > 0 ? '('+attnCount+') ' : '') + 'Toro Movers — Leads';
+function routeShort(l){
+  var from = l.pickup_address || l.zip_from || '';
+  var to   = l.dropoff_address || l.zip_to || '';
+  var fromCity = from.split(',').slice(-2,-1)[0] || from.slice(0,20);
+  var toCity   = to.split(',').slice(-2,-1)[0]   || to.slice(0,20);
+  if (!from && !to) return '';
+  return (fromCity||'?').trim() + ' → ' + (toCity||'?').trim();
 }
 
-document.querySelectorAll('.filter').forEach(function(f){
-  f.addEventListener('click', function(){
-    document.querySelectorAll('.filter').forEach(x => x.classList.remove('active'));
-    f.classList.add('active');
-    currentFilter = f.getAttribute('data-filter');
-    render();
+// ===== RENDER =====
+function renderAll(){
+  renderStats();
+  renderSidebar();
+  renderMain();
+}
+
+function renderStats(){
+  var now = new Date();
+  var weekStart = startOfWeek(now);
+  var weekEnd = addDays(weekStart, 7);
+  var weekJobs = leads.filter(function(l){
+    var d = parseMoveDate(l);
+    return d && d >= weekStart && d < weekEnd && l.status === 'booked';
   });
-});
-document.getElementById('refresh').addEventListener('click', loadLeads);
+  var weekRevenue = weekJobs.reduce(function(s,l){ return s + (l.estimate_total || 0); }, 0);
+  var pipelineQuoted = leads.filter(l => l.status === 'quoted').reduce((s,l) => s + (l.estimate_total||0), 0);
+  var newToday = leads.filter(function(l){
+    return new Date(l.createdAt).toDateString() === now.toDateString();
+  }).length;
 
-// ===== RENDER FEED =====
-function render(){
-  var feed = document.getElementById('feed');
-  var now = Date.now();
-  var lastSeen = parseInt(localStorage.getItem('crm_last_seen') || '0', 10);
+  document.getElementById('stat-strip').innerHTML =
+    '<span><b>'+now.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})+'</b></span>' +
+    ' · <span><b>'+weekJobs.length+'</b> booked this week</span>' +
+    ' · <span class="money"><b>'+fmtMoney(weekRevenue)+'</b> week</span>' +
+    ' · <span class="money"><b>'+fmtMoney(pipelineQuoted)+'</b> in quotes</span>' +
+    ' · <span><b>'+newToday+'</b> new today</span>';
+  document.title = 'Toro Movers — CRM ('+weekJobs.length+' this week)';
+}
 
-  function isStale(l){
-    var ageH = (now - new Date(l.updatedAt || l.createdAt).getTime()) / 3600000;
-    return ageH > 4 && (l.status === 'new' || l.status === 'contacted');
-  }
-  function isUnseen(l){ return new Date(l.createdAt).getTime() > lastSeen && l.status === 'new'; }
+function renderSidebar(){
+  var sb = document.getElementById('sidebar');
+  var now = new Date();
+  var weekStart = startOfWeek(now);
+  var weekEnd = addDays(weekStart, 7);
 
-  var list = leads.slice();
-  if (currentFilter === 'attention') {
-    list = list.filter(l => isUnseen(l) || isStale(l));
-  } else if (currentFilter !== 'all') {
-    list = list.filter(l => l.status === currentFilter);
-  }
+  var unscheduled = leads.filter(function(l){
+    return (l.status === 'quoted' || l.status === 'contacted') && !parseMoveDate(l);
+  });
+  var newLeads = leads.filter(l => l.status === 'new');
+  var todayJobs = leads.filter(function(l){
+    var d = parseMoveDate(l);
+    return d && sameDay(d, now) && l.status !== 'lost';
+  });
+  var weekJobsAll = leads.filter(function(l){
+    var d = parseMoveDate(l);
+    return d && d >= weekStart && d < weekEnd && l.status !== 'lost';
+  });
 
-  if (!list.length) {
-    var msg = currentFilter === 'attention'
-      ? { ico:'✨', t:'All caught up!', s:'No leads need attention right now.' }
-      : { ico:'📭', t:'No leads here', s:'Check back when new quotes come in.' };
-    feed.innerHTML = '<div class="empty"><div class="ico">'+msg.ico+'</div><div class="t">'+msg.t+'</div><div class="s">'+msg.s+'</div></div>';
-    return;
+  function leadCard(l){
+    var d = parseMoveDate(l);
+    var when = d ? fmtDateLabel(d) + (l.move_time ? ' · '+l.move_time : '') : 'unscheduled';
+    return '<div class="sb-lead '+l.status+'" onclick="openLead(\''+l.id+'\')">' +
+      '<div class="sb-lead-name">'+escapeHtml(l.name || '(no name)')+'</div>' +
+      '<div class="sb-lead-meta">'+when+' · '+fmtMoney(l.estimate_total)+'</div>' +
+      '</div>';
   }
 
   var html = '';
-  list.forEach(function(l){
-    var initials = (l.name || 'NN').split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
-    var price = l.estimate_total ? '$'+l.estimate_total : '';
-    var preview = [
-      l.phone,
-      l.furniture_size,
-      l.zip_from && l.zip_to ? l.zip_from+'→'+l.zip_to : l.zip_from,
-    ].filter(Boolean).join(' · ');
+  html += '<div class="sb-section"><div class="sb-title">New leads <span class="count '+(newLeads.length?'':'zero')+'">'+newLeads.length+'</span></div>';
+  html += newLeads.length ? newLeads.map(leadCard).join('') : '<div class="sb-empty">Nothing new</div>';
+  html += '</div>';
 
-    var classes = 'row';
-    if (isUnseen(l)) classes += ' unseen';
-    if (isStale(l)) classes += ' stale';
-    if (expandedId === l.id) classes += ' expanded';
+  html += '<div class="sb-section"><div class="sb-title">Needs scheduling <span class="count '+(unscheduled.length?'':'zero')+'">'+unscheduled.length+'</span></div>';
+  html += unscheduled.length ? unscheduled.map(leadCard).join('') : '<div class="sb-empty">All scheduled</div>';
+  html += '</div>';
 
-    var avatarClass = l.status === 'booked' ? 'booked' : (l.status === 'lost' ? 'lost' : '');
+  html += '<div class="sb-section"><div class="sb-title">Today <span class="count '+(todayJobs.length?'':'zero')+'">'+todayJobs.length+'</span></div>';
+  html += todayJobs.length ? todayJobs.map(leadCard).join('') : '<div class="sb-empty">No jobs today</div>';
+  html += '</div>';
 
-    html += '<div class="'+classes+'" data-id="'+l.id+'">'+
-      '<div class="row-avatar '+avatarClass+'">'+initials+'</div>'+
-      '<div class="row-body">'+
-        '<div class="row-top">'+
-          '<div class="row-name">'+esc(l.name||'(no name)')+'</div>'+
-          '<div class="row-time">'+timeAgo(l.createdAt)+'</div>'+
-        '</div>'+
-        '<div class="row-preview">'+esc(preview)+'</div>'+
-        '<div class="row-meta">'+
-          (price ? '<span class="row-price">'+price+'</span>' : '')+
-          '<span class="chip '+l.status+'">'+esc(l.status)+'</span>'+
-          (l.depositPaid ? '<span class="chip paid">💳 paid</span>' : '')+
-          ((l.utm_content||'').startsWith('es-') ? '<span class="chip es">🇪🇸</span>' : '')+
-          (l.utm_content ? '<span class="chip source">'+esc(l.utm_content)+'</span>' : '')+
-        '</div>'+
-      '</div>'+
+  html += '<div class="sb-section"><div class="sb-title">This week <span class="count '+(weekJobsAll.length?'':'zero')+'">'+weekJobsAll.length+'</span></div>';
+  html += weekJobsAll.length ? weekJobsAll.map(leadCard).join('') : '<div class="sb-empty">Week is empty</div>';
+  html += '</div>';
+
+  sb.innerHTML = html;
+}
+
+function renderMain(){
+  var main = document.getElementById('main');
+  main.className = 'main ' + currentView + 'view';
+  if (currentView === 'calendar') renderCalendar(main);
+  else if (currentView === 'kanban') renderKanban(main);
+  else if (currentView === 'map') renderMap(main);
+
+  document.getElementById('cal-sub').style.display = currentView === 'calendar' ? 'flex' : 'none';
+}
+
+// ===== CALENDAR =====
+function renderCalendar(main){
+  if (currentSub === 'week') renderWeek(main);
+  else if (currentSub === 'day') renderDay(main);
+  else renderMonth(main);
+}
+
+function calNavBar(label){
+  return '<div class="cal-nav">' +
+    '<div class="cal-nav-label">'+label+'</div>' +
+    '<div class="cal-nav-btns">' +
+      '<button onclick="navCal(-1)">‹</button>' +
+      '<button onclick="navCalToday()">Today</button>' +
+      '<button onclick="navCal(1)">›</button>' +
+    '</div></div>';
+}
+function navCal(dir){
+  if (currentSub === 'week') focusDate = addDays(focusDate, 7*dir);
+  else if (currentSub === 'day') focusDate = addDays(focusDate, dir);
+  else { focusDate = new Date(focusDate.getFullYear(), focusDate.getMonth()+dir, 1); }
+  renderAll();
+}
+function navCalToday(){ focusDate = new Date(); renderAll(); }
+
+function jobBlock(l, hourStart, hourEnd){
+  var t = parseMoveTime(l);
+  var hrs = l.estimate && l.estimate.hours ? parseFloat(l.estimate.hours) : 2;
+  var startH = t ? t.hour + t.minute/60 : 9;
+  var endH = Math.min(hourEnd, startH + hrs);
+  if (startH < hourStart) startH = hourStart;
+  if (endH <= startH) endH = startH + 0.5;
+  var top = (startH - hourStart) * 54;
+  var h = (endH - startH) * 54;
+  var timeLabel = l.move_time || (t ? (t.hour%12||12) + (t.minute?':'+String(t.minute).padStart(2,'0'):'') + (t.hour>=12?'pm':'am') : '—');
+  return '<div class="job-block s-'+l.status+'" style="top:'+top+'px;height:'+Math.max(32,h)+'px" onclick="openLead(\''+l.id+'\')">' +
+    '<div class="jb-time">'+timeLabel+'</div>' +
+    '<div class="jb-name">'+escapeHtml(firstName(l))+'</div>' +
+    '<div class="jb-route">'+escapeHtml(routeShort(l) || 'no route')+'</div>' +
     '</div>';
+}
 
-    if (expandedId === l.id) {
-      html += renderDetail(l);
-    }
+function renderWeek(main){
+  var weekStart = startOfWeek(focusDate);
+  var days = [0,1,2,3,4,5,6].map(function(i){ return addDays(weekStart, i); });
+  var today = new Date();
+  var startH = 7, endH = 20;
+
+  var weekLabel = fmtDateLabel(days[0]) + ' – ' + fmtDateLabel(days[6]) + ', ' + days[0].getFullYear();
+
+  var html = calNavBar(weekLabel);
+  html += '<div class="cal-wrap">';
+  html += '<div class="cal-header"><div></div>';
+  days.forEach(function(d){
+    var isToday = sameDay(d, today);
+    html += '<div class="cal-day-header '+(isToday?'today':'')+'"><div class="dow">'+fmtDow(d)+'</div><div class="dom">'+d.getDate()+'</div></div>';
   });
+  html += '</div>';
 
-  feed.innerHTML = html;
-
-  feed.querySelectorAll('.row').forEach(function(r){
-    r.addEventListener('click', function(){
-      var id = r.dataset.id;
-      expandedId = (expandedId === id) ? null : id;
-      if (expandedId) {
-        // Mark as seen
-        localStorage.setItem('crm_last_seen', String(Date.now()));
-      }
-      render();
-      if (expandedId) {
-        var el = document.querySelector('.row[data-id="'+expandedId+'"]');
-        if (el) el.scrollIntoView({ behavior:'smooth', block:'start' });
-        loadDetail(expandedId);
-      }
+  html += '<div class="cal-body">';
+  for (var h = startH; h < endH; h++){
+    var label = (h%12||12) + (h>=12?'pm':'am');
+    html += '<div class="cal-hour">'+label+'</div>';
+    days.forEach(function(d){
+      var isToday = sameDay(d, today);
+      var isWeekend = d.getDay() === 0 || d.getDay() === 6;
+      var cellJobs = h === startH ? leads.filter(function(l){
+        var ld = parseMoveDate(l);
+        if (!sameDay(ld, d)) return false;
+        if (l.status === 'lost' || l.status === 'abandoned') return false;
+        return true;
+      }) : [];
+      var content = cellJobs.map(function(l){ return jobBlock(l, startH, endH); }).join('');
+      html += '<div class="cal-slot '+(isToday?'today':'')+' '+(isWeekend?'weekend':'')+'">' + content + '</div>';
     });
-  });
+  }
+  html += '</div></div>';
+
+  main.innerHTML = html;
 }
 
-// ===== DETAIL =====
-function renderDetail(l, full){
-  // `l` is the summary from list; `full` is the full-detail object (async loaded)
-  var lead = full || l;
-  var est = lead.estimate || (l.estimate_total ? { total: l.estimate_total } : null);
-  var phone = (lead.phone || '').replace(/\D/g,'');
+function renderDay(main){
+  var d = new Date(focusDate); d.setHours(0,0,0,0);
+  var today = new Date();
+  var startH = 7, endH = 20;
 
-  var heroHtml = est && est.total ? (
-    '<div class="detail-hero">'+
-      '<div><div class="lbl">Quote</div><div class="big">$'+est.total+'</div></div>'+
-      '<div class="meta">'+(est.movers?est.movers+' movers':'')+'<br>'+(est.hours?est.hours+' hours':'')+'</div>'+
-    '</div>'
-  ) : '';
+  var html = calNavBar(d.toLocaleString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}));
+  html += '<div class="cal-wrap dayview">';
+  html += '<div class="cal-header"><div></div><div class="cal-day-header '+(sameDay(d,today)?'today':'')+'"><div class="dow">'+fmtDow(d)+'</div><div class="dom">'+d.getDate()+'</div></div></div>';
+  html += '<div class="cal-body">';
+  var dayJobs = leads.filter(function(l){
+    var ld = parseMoveDate(l);
+    return sameDay(ld, d) && l.status !== 'lost' && l.status !== 'abandoned';
+  });
+  for (var h = startH; h < endH; h++){
+    var label = (h%12||12) + (h>=12?'pm':'am');
+    html += '<div class="cal-hour">'+label+'</div>';
+    var content = h === startH ? dayJobs.map(function(l){ return jobBlock(l, startH, endH); }).join('') : '';
+    html += '<div class="cal-slot">'+content+'</div>';
+  }
+  html += '</div></div>';
+  main.innerHTML = html;
+}
 
-  var actionsHtml =
-    '<div class="detail-actions">'+
-      (phone ? '<a class="btn-big btn-call" href="tel:'+phone+'">📞 Call</a>' : '')+
-      (lead.email ? '<a class="btn-big btn-mail" href="mailto:'+esc(lead.email)+'">✉️ Email</a>' : '')+
+function renderMonth(main){
+  var d = new Date(focusDate.getFullYear(), focusDate.getMonth(), 1);
+  var today = new Date();
+  var startDay = d.getDay();
+  var monthStart = new Date(d); monthStart.setDate(1 - startDay);
+  var days = [];
+  for (var i = 0; i < 42; i++){ days.push(addDays(monthStart, i)); }
+
+  var html = calNavBar(fmtMonthName(d));
+  html += '<div class="cal-wrap monthview"><div class="mo-grid">';
+  ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(function(name){ html += '<div class="mo-dow">'+name+'</div>'; });
+  days.forEach(function(dd){
+    var out = dd.getMonth() !== d.getMonth();
+    var isToday = sameDay(dd, today);
+    var dayJobs = leads.filter(function(l){
+      var ld = parseMoveDate(l);
+      return sameDay(ld, dd) && l.status !== 'lost' && l.status !== 'abandoned';
+    });
+    html += '<div class="mo-cell '+(out?'out':'')+' '+(isToday?'today':'')+'">';
+    html += '<span class="mo-num">'+dd.getDate()+'</span>';
+    var shown = dayJobs.slice(0,3);
+    shown.forEach(function(l){
+      html += '<span class="mo-job" onclick="openLead(\''+l.id+'\')" style="background:'+STATUS_COLORS[l.status]+'">' +
+        (l.move_time || '') + ' ' + escapeHtml(firstName(l)) +
+        '</span>';
+    });
+    if (dayJobs.length > 3) html += '<span class="mo-more">+'+(dayJobs.length-3)+' more</span>';
+    html += '</div>';
+  });
+  html += '</div></div>';
+  main.innerHTML = html;
+}
+
+// ===== KANBAN =====
+function renderKanban(main){
+  var cols = STATUS_ORDER;
+  var html = '<div class="kanban-wrap">';
+  cols.forEach(function(s){
+    var colLeads = leads.filter(l => l.status === s).sort(function(a,b){
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    });
+    var subtotal = colLeads.reduce((x,l) => x + (l.estimate_total||0), 0);
+    html += '<div class="kb-col"><div class="kb-head">' +
+      '<div class="kb-head-title"><span class="dot" style="background:'+STATUS_COLORS[s]+'"></span>'+s+'</div>' +
+      '<div class="kb-head-meta">'+colLeads.length+(subtotal?' · '+fmtMoney(subtotal):'')+'</div>' +
+      '</div><div class="kb-body" data-col="'+s+'" ondragover="kbDragOver(event)" ondragleave="kbDragLeave(event)" ondrop="kbDrop(event,\''+s+'\')">';
+    colLeads.forEach(function(l){
+      var d = parseMoveDate(l);
+      var when = d ? fmtDateLabel(d) + (l.move_time?' '+l.move_time:'') : 'unscheduled';
+      var crewDots = (l.crew_assigned||[]).map(function(cid){
+        var c = crew.find(x => x.id === cid);
+        return c ? '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+(c.color||'#C8102E')+';margin-right:3px" title="'+escapeHtml(c.name)+'"></span>' : '';
+      }).join('');
+      html += '<div class="kb-card s-'+l.status+'" draggable="true" ondragstart="kbDragStart(event,\''+l.id+'\')" onclick="openLead(\''+l.id+'\')">' +
+        '<div class="kb-card-name">'+escapeHtml(l.name || '(no name)')+'<span class="kb-card-total">'+fmtMoney(l.estimate_total)+'</span></div>' +
+        '<div class="kb-card-meta"><span>'+when+'</span><span>'+crewDots+'</span></div>' +
+        (routeShort(l) ? '<div class="kb-card-route">'+escapeHtml(routeShort(l))+'</div>' : '') +
+        '</div>';
+    });
+    html += '</div></div>';
+  });
+  html += '</div>';
+  main.innerHTML = html;
+}
+
+var dragLeadId = null;
+function kbDragStart(e, id){ dragLeadId = id; e.dataTransfer.effectAllowed = 'move'; }
+function kbDragOver(e){ e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
+function kbDragLeave(e){ e.currentTarget.classList.remove('drag-over'); }
+async function kbDrop(e, newStatus){
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  if (!dragLeadId) return;
+  var id = dragLeadId; dragLeadId = null;
+  // optimistic
+  var l = leads.find(x => x.id === id);
+  if (l) { l.status = newStatus; renderAll(); }
+  try {
+    await fetch('/.netlify/functions/crm', {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', 'x-crm-password': PW },
+      body: JSON.stringify({ action:'status', id: id, status: newStatus }),
+    });
+  } catch(e){ alert('Failed to update status — refreshing'); }
+  await loadLeads(); renderAll();
+}
+
+// ===== MAP =====
+function renderMap(main){
+  main.innerHTML = '<div class="map-wrap"><aside class="map-sidebar" id="map-sidebar"></aside><div id="map"></div></div>';
+
+  setTimeout(function(){
+    if (mapInstance) { mapInstance.remove(); mapInstance = null; }
+    mapInstance = L.map('map').setView([28.5383, -81.3792], 10);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap',
+      maxZoom: 19,
+    }).addTo(mapInstance);
+
+    var mappable = leads.filter(function(l){
+      return l.pickup_address && l.pickup_address !== 'TBD' && !l.pickup_address.startsWith('TBD') &&
+             l.status !== 'lost' && l.status !== 'abandoned';
+    });
+    var noAddr = leads.filter(function(l){
+      var a = l.pickup_address || '';
+      return (!a || a.startsWith('TBD')) && l.status === 'booked';
+    });
+
+    mapMarkers.forEach(m => mapInstance.removeLayer(m));
+    mapMarkers = [];
+
+    mappable.forEach(function(l){
+      queueGeocode(l.pickup_address, function(coords){
+        if (!coords || !mapInstance) return;
+        var color = STATUS_COLORS[l.status] || '#C8102E';
+        var icon = L.divIcon({
+          className:'',
+          html:'<div style="width:24px;height:24px;border-radius:50% 50% 50% 0;background:'+color+';transform:rotate(-45deg);border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3)"></div>',
+          iconSize:[24,24], iconAnchor:[12,24],
+        });
+        var marker = L.marker([coords.lat, coords.lon], { icon: icon }).addTo(mapInstance);
+        var d = parseMoveDate(l);
+        marker.bindPopup(
+          '<div style="font-family:-apple-system,sans-serif;min-width:180px"><div style="font-weight:800;font-size:14px">'+escapeHtml(l.name)+'</div>' +
+          '<div style="font-size:12px;color:#666;margin:3px 0">'+(d?fmtDateLabel(d):'')+' '+(l.move_time||'')+'</div>' +
+          '<div style="font-size:11px;color:#666">'+escapeHtml(l.pickup_address)+'</div>' +
+          '<button onclick="openLead(\''+l.id+'\')" style="margin-top:8px;padding:5px 10px;background:#C8102E;color:#fff;border:none;border-radius:6px;font-weight:700;cursor:pointer;font-size:11px">View details →</button></div>'
+        );
+        mapMarkers.push(marker);
+      });
+    });
+
+    // Sidebar: jobs with no pin
+    var sb = document.getElementById('map-sidebar');
+    var html = '<div class="map-empty-list"><h4>On the map</h4>';
+    html += '<div class="sb-empty" style="margin-bottom:10px">'+mappable.length+' job'+(mappable.length===1?'':'s')+' plotted</div>';
+    if (noAddr.length) {
+      html += '<h4 style="margin-top:18px">No address yet</h4>';
+      noAddr.forEach(function(l){
+        var d = parseMoveDate(l);
+        html += '<div class="sb-lead '+l.status+'" onclick="openLead(\''+l.id+'\')">' +
+          '<div class="sb-lead-name">'+escapeHtml(l.name)+'</div>' +
+          '<div class="sb-lead-meta">'+(d?fmtDateLabel(d):'')+' '+(l.move_time||'')+'</div>' +
+          '</div>';
+      });
+    }
+    html += '</div>';
+    sb.innerHTML = html;
+  }, 50);
+}
+
+function queueGeocode(addr, cb){
+  if (!addr) return cb(null);
+  if (geocache[addr]) return cb(geocache[addr]);
+  geoQueue.push({ addr: addr, cb: cb });
+  if (!geoRunning) runGeoQueue();
+}
+async function runGeoQueue(){
+  geoRunning = true;
+  while (geoQueue.length) {
+    var job = geoQueue.shift();
+    try {
+      var r = await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + encodeURIComponent(job.addr));
+      var arr = await r.json();
+      if (arr && arr[0]) {
+        var coords = { lat: parseFloat(arr[0].lat), lon: parseFloat(arr[0].lon) };
+        geocache[job.addr] = coords;
+        localStorage.setItem('geocache', JSON.stringify(geocache));
+        job.cb(coords);
+      } else {
+        job.cb(null);
+      }
+    } catch(e){ job.cb(null); }
+    await new Promise(r => setTimeout(r, 1100)); // rate limit
+  }
+  geoRunning = false;
+}
+
+// ===== DETAIL PANEL =====
+function openLead(id){ openLeadId = id; renderPanel(); }
+function closePanel(){ openLeadId = null; renderPanel(); }
+document.getElementById('panel-backdrop').addEventListener('click', closePanel);
+
+async function renderPanel(){
+  var panel = document.getElementById('panel');
+  var backdrop = document.getElementById('panel-backdrop');
+
+  if (!openLeadId) {
+    panel.classList.remove('open');
+    backdrop.classList.remove('open');
+    panel.innerHTML = '';
+    return;
+  }
+
+  // fetch full lead
+  var lead;
+  try {
+    var r = await fetch('/.netlify/functions/crm?action=get&id='+openLeadId, { headers: { 'x-crm-password': PW } });
+    var j = await r.json();
+    lead = j.lead;
+  } catch(e){ return; }
+  if (!lead) return;
+
+  var est = lead.estimate || {};
+  var deposit = 0;
+  (lead.timeline||[]).forEach(function(t){
+    var m = (t.text||'').match(/\$(\d+)\s*deposit/i);
+    if (m && t.type === 'payment') deposit = Math.max(deposit, parseInt(m[1],10));
+  });
+  if (lead.depositPaid && !deposit) {
+    // try payload stored on lead (older records)
+    deposit = lead.deposit || 0;
+  }
+  var balance = Math.max(0, (est.total||0) - deposit);
+  var crewChips = (lead.crew_assigned||[]).map(function(cid){
+    var c = crew.find(x => x.id === cid);
+    if (!c) return '';
+    return '<span class="crew-pill"><span style="width:8px;height:8px;border-radius:50%;background:'+c.color+';display:inline-block"></span>'+escapeHtml(c.name)+' <span class="rm" onclick="removeCrewAssign(\''+lead.id+'\',\''+c.id+'\')">×</span></span>';
+  }).join('');
+  var crewOptions = crew.map(function(c){
+    var assigned = (lead.crew_assigned||[]).includes(c.id);
+    return '<option value="'+c.id+'" '+(assigned?'disabled':'')+'>'+escapeHtml(c.name)+' · '+escapeHtml(c.role)+'</option>';
+  }).join('');
+
+  var statusChips = STATUS_ORDER.map(function(s){
+    return '<button class="s-chip '+s+' '+(lead.status===s?'active':'')+'" onclick="setLeadStatus(\''+lead.id+'\',\''+s+'\')">'+s+'</button>';
+  }).join('');
+
+  var pickup = lead.pickup_address || '';
+  var dropoff = lead.dropoff_address || '';
+  var pickupLink = pickup && !pickup.startsWith('TBD') ? '<a href="https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(pickup)+'" target="_blank">'+escapeHtml(pickup)+'</a>' : '<span class="editable" onclick="editField(\''+lead.id+'\',\'pickup_address\',\'Pickup address\')">'+escapeHtml(pickup||'Add pickup address')+'</span>';
+  var dropoffLink = dropoff && !dropoff.startsWith('TBD') ? '<a href="https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(dropoff)+'" target="_blank">'+escapeHtml(dropoff)+'</a>' : '<span class="editable" onclick="editField(\''+lead.id+'\',\'dropoff_address\',\'Dropoff address\')">'+escapeHtml(dropoff||'Add dropoff address')+'</span>';
+
+  var d = parseMoveDate(lead);
+  var dateStr = d ? d.toLocaleString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}) : 'Not scheduled';
+
+  panel.innerHTML =
+    '<div class="panel-head">' +
+      '<div><h3>'+escapeHtml(lead.name || '(no name)')+'</h3>' +
+      '<span class="status-chip" style="background:'+STATUS_COLORS[lead.status]+'">'+lead.status+'</span></div>' +
+      '<button class="panel-close" onclick="closePanel()">×</button>' +
+    '</div>' +
+    '<div class="panel-body">' +
+      // Customer
+      '<div class="panel-section"><h4>Customer</h4>' +
+        (lead.phone ? '<div class="panel-row"><span class="icon">📱</span><a href="tel:'+lead.phone.replace(/\D/g,'')+'">'+escapeHtml(lead.phone)+'</a></div>' : '') +
+        (lead.email ? '<div class="panel-row"><span class="icon">✉️</span><a href="mailto:'+escapeHtml(lead.email)+'">'+escapeHtml(lead.email)+'</a></div>' : '') +
+      '</div>' +
+      // Schedule
+      '<div class="panel-section"><h4>Schedule</h4>' +
+        '<div class="panel-row"><span class="icon">📅</span><span class="editable" onclick="editField(\''+lead.id+'\',\'move_date\',\'Move date (YYYY-MM-DD)\')">'+dateStr+'</span></div>' +
+        '<div class="panel-row"><span class="icon">⏰</span><span class="editable" onclick="editField(\''+lead.id+'\',\'move_time\',\'Move time (e.g. 11:00 AM)\')">'+(lead.move_time || 'Add time')+'</span></div>' +
+      '</div>' +
+      // Route
+      '<div class="panel-section"><h4>Route</h4>' +
+        '<div class="panel-row"><span class="icon">📍</span>'+pickupLink+'</div>' +
+        '<div class="panel-row"><span class="icon">🏁</span>'+dropoffLink+'</div>' +
+      '</div>' +
+      // Service
+      '<div class="panel-section"><h4>Service</h4>' +
+        '<div class="panel-row"><span class="icon">👷</span>'+(est.movers||'?')+' movers'+(est.truck?' + moving truck':'')+'</div>' +
+        '<div class="panel-row"><span class="icon">⏱️</span>'+(est.hours||'?')+' hrs estimated</div>' +
+        (lead.furniture_size ? '<div class="panel-row"><span class="icon">🏠</span>'+escapeHtml(lead.furniture_size)+'</div>' : '') +
+      '</div>' +
+      // Money
+      '<div class="panel-section"><h4>Payment</h4>' +
+        '<div class="money-box">' +
+          '<div class="money-row"><span>Estimated total</span><span>'+fmtMoney(est.total)+'</span></div>' +
+          '<div class="money-row deposit"><span>Deposit paid</span><span>−'+fmtMoney(deposit)+'</span></div>' +
+          '<div class="money-row total"><span>Balance due</span><span>'+fmtMoney(balance)+'</span></div>' +
+        '</div>' +
+      '</div>' +
+      // Crew
+      '<div class="panel-section"><h4>Crew</h4>' +
+        '<div class="crew-list">' + (crewChips || '<span class="crew-pill empty">No crew assigned</span>') + '</div>' +
+        '<select onchange="assignCrew(\''+lead.id+'\',this.value);this.value=\'\'" style="margin-top:8px;width:100%"><option value="">+ Assign crew…</option>' + crewOptions + '</select>' +
+      '</div>' +
+      // Status
+      '<div class="panel-section"><h4>Status</h4>' +
+        '<div class="status-chips">'+statusChips+'</div>' +
+      '</div>' +
+      // Timeline
+      '<div class="panel-section"><h4>Timeline</h4>' +
+        (lead.timeline||[]).slice().reverse().map(function(t){
+          return '<div class="timeline-item"><span class="at">'+new Date(t.at).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})+'</span> — '+escapeHtml(t.text)+'</div>';
+        }).join('') +
+      '</div>' +
+    '</div>' +
+    '<div class="panel-actions">' +
+      '<button class="pa-btn primary" onclick="sendConfirmation(\''+lead.id+'\')">📧 Send confirmation</button>' +
+      '<button class="pa-btn" onclick="addNote(\''+lead.id+'\')">📝 Add note</button>' +
+      (lead.stripeSessionId ? '<button class="pa-btn" onclick="window.open(\'https://dashboard.stripe.com/payments/\')">💳 Stripe</button>' : '') +
     '</div>';
 
-  var STATUSES = ['new','contacted','quoted','booked','done','lost'];
-  var statusHtml = '<div class="status-grid">' + STATUSES.map(function(s){
-    return '<button class="status-btn '+(lead.status===s?'active':'')+'" data-status="'+s+'" data-id="'+lead.id+'">'+s+'</button>';
-  }).join('') + '</div>';
-
-  var gridHtml = '<div class="detail-grid">'+
-    dgRow('Phone', phone ? '<a href="tel:'+phone+'">'+esc(lead.phone)+'</a>' : '—') +
-    dgRow('Email', lead.email ? '<a href="mailto:'+esc(lead.email)+'">'+esc(lead.email)+'</a>' : '—') +
-    dgRow('From', lead.zip_from || '—') +
-    dgRow('To', lead.zip_to || '—') +
-    dgRow('Size', lead.furniture_size || '—') +
-    dgRow('Floor', lead.floor || '—') +
-    dgRow('Access', lead.stairs_elevator || '—') +
-    dgRow('Move date', lead.move_date || '—') +
-    dgRow('Ad', lead.utm_content || '—') +
-  '</div>';
-
-  var notes = lead.notes || [];
-  var notesHtml = '<div class="notes-wrap">'+
-    '<div class="notes-title">Notes</div>'+
-    (notes.length
-      ? notes.map(function(n){
-          return '<div class="note"><div class="note-at">'+fmtDate(n.at)+'</div>'+esc(n.text)+'</div>';
-        }).join('')
-      : '<div style="font-size:12px;color:#94a3b8;text-align:center;padding:4px">No notes yet</div>'
-    )+
-    '<div class="note-input"><input class="note-text" placeholder="Add a note…"><button class="note-save" data-id="'+lead.id+'">Save</button></div>'+
-  '</div>';
-
-  var timeline = (lead.timeline || []).slice().reverse();
-  var tlHtml = timeline.length ? '<div class="timeline-wrap">' +
-    '<div class="notes-title">Timeline</div>' +
-    timeline.map(function(t){ return '<div class="tl-item"><div class="at">'+fmtDate(t.at)+'</div>'+esc(t.text)+'</div>'; }).join('') +
-  '</div>' : '';
-
-  return '<div class="detail" data-detail="'+lead.id+'">' +
-    heroHtml + actionsHtml + statusHtml + gridHtml + notesHtml + tlHtml +
-  '</div>';
+  panel.classList.add('open');
+  document.getElementById('panel-backdrop').classList.add('open');
 }
-function dgRow(lbl, val){ return '<div class="dg-row"><div class="lbl">'+lbl+'</div><div class="val">'+val+'</div></div>'; }
 
-async function loadDetail(id){
+async function setLeadStatus(id, status){
   try {
-    var r = await fetch('/.netlify/functions/crm?action=get&id='+id, { headers: { 'x-crm-password': PW } });
-    var j = await r.json();
-    if (!j.lead) return;
-    var el = document.querySelector('.detail[data-detail="'+id+'"]');
-    if (el) el.outerHTML = renderDetail(leads.find(l => l.id === id) || j.lead, j.lead);
-    wireDetail(id, j.lead);
+    await fetch('/.netlify/functions/crm', {
+      method:'POST', headers:{ 'Content-Type':'application/json', 'x-crm-password': PW },
+      body: JSON.stringify({ action:'status', id: id, status: status }),
+    });
+    await loadLeads(); renderAll(); renderPanel();
+  } catch(e){ alert('Status update failed'); }
+}
+
+async function editField(id, field, label){
+  var current = '';
+  var lead = leads.find(l => l.id === id);
+  if (lead) current = lead[field] || '';
+  var val = prompt(label, current);
+  if (val === null) return;
+  try {
+    var patch = {}; patch[field] = val;
+    await fetch('/.netlify/functions/crm', {
+      method:'POST', headers:{ 'Content-Type':'application/json', 'x-crm-password': PW },
+      body: JSON.stringify({ action:'update', id: id, patch: patch }),
+    });
+    await loadLeads(); renderAll(); renderPanel();
+  } catch(e){ alert('Update failed'); }
+}
+
+async function assignCrew(leadId, crewId){
+  if (!crewId) return;
+  var lead = leads.find(l => l.id === leadId);
+  var next = Array.isArray(lead.crew_assigned) ? lead.crew_assigned.slice() : [];
+  if (!next.includes(crewId)) next.push(crewId);
+  try {
+    await fetch('/.netlify/functions/crm', {
+      method:'POST', headers:{ 'Content-Type':'application/json', 'x-crm-password': PW },
+      body: JSON.stringify({ action:'update', id: leadId, patch: { crew_assigned: next } }),
+    });
+    await loadLeads(); renderAll(); renderPanel();
+  } catch(e){ alert('Crew assign failed'); }
+}
+async function removeCrewAssign(leadId, crewId){
+  var lead = leads.find(l => l.id === leadId);
+  var next = (lead.crew_assigned || []).filter(c => c !== crewId);
+  try {
+    await fetch('/.netlify/functions/crm', {
+      method:'POST', headers:{ 'Content-Type':'application/json', 'x-crm-password': PW },
+      body: JSON.stringify({ action:'update', id: leadId, patch: { crew_assigned: next } }),
+    });
+    await loadLeads(); renderAll(); renderPanel();
   } catch(e){}
 }
 
-function wireDetail(id, lead){
-  document.querySelectorAll('.detail[data-detail="'+id+'"] .status-btn').forEach(function(b){
-    b.addEventListener('click', async function(e){
-      e.stopPropagation();
-      var s = b.dataset.status;
-      var r = await fetch('/.netlify/functions/crm', {
-        method:'POST', headers: { 'Content-Type':'application/json', 'x-crm-password': PW },
-        body: JSON.stringify({ action:'status', id: id, status: s })
-      });
-      var j = await r.json();
-      if (j.lead) { loadLeads(); }
+async function addNote(id){
+  var text = prompt('Add a note:');
+  if (!text) return;
+  try {
+    await fetch('/.netlify/functions/crm', {
+      method:'POST', headers:{ 'Content-Type':'application/json', 'x-crm-password': PW },
+      body: JSON.stringify({ action:'note', id: id, text: text }),
     });
+    await loadLeads(); renderPanel();
+  } catch(e){}
+}
+
+async function sendConfirmation(id){
+  if (!confirm('Send booking confirmation email to this customer?')) return;
+  try {
+    var r = await fetch('/.netlify/functions/resend-confirmation?pw='+encodeURIComponent(PW)+'&leadId='+encodeURIComponent(id));
+    var j = await r.json();
+    if (j.ok) alert('Confirmation sent ✓');
+    else alert('Failed: ' + (j.error || 'unknown'));
+  } catch(e){ alert('Send failed'); }
+}
+
+// ===== CREW MODAL =====
+document.getElementById('crew-btn').addEventListener('click', openCrewModal);
+function openCrewModal(){
+  renderCrewModal();
+  document.getElementById('crew-modal').classList.add('open');
+}
+function closeCrewModal(){ document.getElementById('crew-modal').classList.remove('open'); }
+
+function renderCrewModal(){
+  var body = document.getElementById('crew-modal-body');
+  var html = '';
+  crew.forEach(function(c){
+    html += '<div class="crew-row">' +
+      '<span class="crew-dot" style="background:'+c.color+'"></span>' +
+      '<div class="crew-info"><div class="nm">'+escapeHtml(c.name)+'</div><div class="rl">'+escapeHtml(c.role)+'</div></div>' +
+      '<button class="crew-rm-btn" onclick="removeCrew(\''+c.id+'\')">Remove</button>' +
+      '</div>';
   });
-  var saveBtn = document.querySelector('.detail[data-detail="'+id+'"] .note-save');
-  if (saveBtn) {
-    saveBtn.addEventListener('click', async function(e){
-      e.stopPropagation();
-      var input = document.querySelector('.detail[data-detail="'+id+'"] .note-text');
-      var txt = input.value.trim();
-      if (!txt) return;
-      var r = await fetch('/.netlify/functions/crm', {
-        method:'POST', headers: { 'Content-Type':'application/json', 'x-crm-password': PW },
-        body: JSON.stringify({ action:'note', id: id, text: txt })
-      });
-      var j = await r.json();
-      if (j.lead) { input.value=''; loadDetail(id); }
+  if (!crew.length) html += '<div class="sb-empty">No crew yet.</div>';
+  html += '<div class="modal-add"><input id="new-crew-name" placeholder="Name"><input id="new-crew-role" placeholder="Role (e.g. Mover)" style="flex:1"><button onclick="addCrew()">Add</button></div>';
+  body.innerHTML = html;
+}
+async function addCrew(){
+  var name = document.getElementById('new-crew-name').value.trim();
+  var role = document.getElementById('new-crew-role').value.trim() || 'Mover';
+  if (!name) return;
+  var colors = ['#C8102E','#2563eb','#16a34a','#8b5cf6','#f59e0b','#0ea5e9','#ec4899'];
+  var color = colors[crew.length % colors.length];
+  try {
+    await fetch('/.netlify/functions/crm', {
+      method:'POST', headers:{ 'Content-Type':'application/json', 'x-crm-password': PW },
+      body: JSON.stringify({ action:'crew_add', member: { name: name, role: role, color: color } }),
     });
-  }
+    await loadCrew(); renderCrewModal(); renderAll();
+  } catch(e){ alert('Add failed'); }
+}
+async function removeCrew(id){
+  if (!confirm('Remove this crew member?')) return;
+  try {
+    await fetch('/.netlify/functions/crm', {
+      method:'POST', headers:{ 'Content-Type':'application/json', 'x-crm-password': PW },
+      body: JSON.stringify({ action:'crew_remove', crew_id: id }),
+    });
+    await loadCrew(); renderCrewModal(); renderAll();
+  } catch(e){}
 }
 
-// Hash deep-link from Telegram (#lead/xxx)
-window.addEventListener('hashchange', handleHash);
-function handleHash(){
-  var m = location.hash.match(/#lead\/(.+)/);
-  if (m && PW) { expandedId = m[1]; loadLeads().then(function(){ loadDetail(m[1]); }); }
-}
-if (location.hash.startsWith('#lead/')) setTimeout(handleHash, 400);
+// ===== SWITCHERS =====
+document.getElementById('view-switcher').querySelectorAll('button').forEach(function(b){
+  b.addEventListener('click', function(){
+    document.querySelectorAll('#view-switcher button').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    currentView = b.getAttribute('data-view');
+    renderMain();
+  });
+});
+document.getElementById('cal-sub').querySelectorAll('button').forEach(function(b){
+  b.addEventListener('click', function(){
+    document.querySelectorAll('#cal-sub button').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    currentSub = b.getAttribute('data-sub');
+    renderMain();
+  });
+});
+document.getElementById('refresh-btn').addEventListener('click', loadAll);
 
-// ===== HELPERS =====
-function esc(s){ return String(s==null?'':s).replace(/[<>"']/g,function(c){return {'<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
-function timeAgo(iso){
-  if (!iso) return '';
-  var s = Math.floor((Date.now() - new Date(iso).getTime())/1000);
-  if (s < 60) return 'now';
-  if (s < 3600) return Math.floor(s/60)+'m';
-  if (s < 86400) return Math.floor(s/3600)+'h';
-  if (s < 604800) return Math.floor(s/86400)+'d';
-  return new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric'});
+// ===== ESCAPE =====
+function escapeHtml(s){
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
-function fmtDate(iso){ return new Date(iso).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}); }
-
-// Auto-refresh every 30s
-setInterval(function(){ if (PW && document.getElementById('app').style.display !== 'none') loadLeads(); }, 30000);
+document.addEventListener('keydown', function(e){
+  if (e.key === 'Escape') { closePanel(); closeCrewModal(); }
+});
 </script>
 
 </body>
