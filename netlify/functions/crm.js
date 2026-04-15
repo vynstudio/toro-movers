@@ -7,7 +7,7 @@
 //   POST body { action, id, ... } → update, note, status
 
 const { getStore } = require('@netlify/blobs'); // surfaced here so Netlify's scanner detects it and injects Blobs runtime context
-const { getLead, listLeads, addNote, setStatus, updateLead } = require('./_lib/leads');
+const { getLead, listLeads, addNote, setStatus, updateLead, deleteLead } = require('./_lib/leads');
 const { listCrew, addCrew, removeCrew } = require('./_lib/crew');
 
 const json = (status, data) => ({
@@ -79,6 +79,10 @@ exports.handler = async (event) => {
       if (a === 'update') {
         const lead = await updateLead(aid, body.patch || {});
         return json(200, { lead });
+      }
+      if (a === 'delete') {
+        const result = await deleteLead(aid);
+        return json(200, result);
       }
       return json(400, { error: 'Unknown POST action' });
     }

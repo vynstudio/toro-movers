@@ -289,6 +289,19 @@ function esc(s){
     .replace(/`/g,'\\`');
 }
 
+async function deleteLead(id){
+  const s = store();
+  const raw = await s.get(id);
+  if (!raw) return { deleted: false };
+  await s.delete(id);
+  // Remove from index
+  let idx = [];
+  try { const r = await s.get('_index'); if (r) idx = JSON.parse(r); } catch(e){}
+  const next = idx.filter(i => i.id !== id);
+  await s.set('_index', JSON.stringify(next));
+  return { deleted: true, id };
+}
+
 module.exports = {
-  createLead, updateLead, getLead, listLeads, addNote, setStatus, notifyTelegram,
+  createLead, updateLead, getLead, listLeads, addNote, setStatus, notifyTelegram, deleteLead,
 };

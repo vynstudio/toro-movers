@@ -893,6 +893,7 @@ async function renderPanel(){
       '<button class="pa-btn primary" onclick="sendConfirmation(\''+lead.id+'\')">📧 Send confirmation</button>' +
       '<button class="pa-btn" onclick="addNote(\''+lead.id+'\')">📝 Add note</button>' +
       (lead.stripeSessionId ? '<button class="pa-btn" onclick="window.open(\'https://dashboard.stripe.com/payments/\')">💳 Stripe</button>' : '') +
+      '<button class="pa-btn" style="margin-left:auto;color:#ef4444" onclick="deleteLead(\''+lead.id+'\',\''+escapeHtml(lead.name||'').replace(/\'/g,'\\\'')+'\')">🗑️ Delete</button>' +
     '</div>';
 
   panel.classList.add('open');
@@ -960,6 +961,21 @@ async function addNote(id){
     });
     await loadLeads(); renderPanel();
   } catch(e){}
+}
+
+async function deleteLead(id, name){
+  var confirmed = confirm('Delete "'+(name||'this lead')+'" permanently?\n\nThis cannot be undone.');
+  if (!confirmed) return;
+  var double = prompt('Type DELETE to confirm:');
+  if (double !== 'DELETE') return;
+  try {
+    await fetch('/.netlify/functions/crm', {
+      method:'POST', headers:{ 'Content-Type':'application/json', 'x-crm-password': PW },
+      body: JSON.stringify({ action:'delete', id: id }),
+    });
+    closePanel();
+    await loadLeads(); renderAll();
+  } catch(e){ alert('Delete failed'); }
 }
 
 async function sendConfirmation(id){
