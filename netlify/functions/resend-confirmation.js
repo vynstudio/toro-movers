@@ -95,6 +95,7 @@ exports.handler = async (event) => {
         hours: Number(q.hours) || 0,
         movers: Number(q.movers) || 0,
         total: Number(q.total) || 0,
+        truck: q.truck === '1' || q.truck === 'true',
       },
     };
   }
