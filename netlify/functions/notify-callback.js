@@ -336,13 +336,23 @@ exports.handler = async (event) => {
     },
   ] : [];
 
-  // Save lead to CRM + ping Telegram (fire-and-forget for Telegram)
+  // Save lead to CRM + ping Telegram
   let savedLead = null;
   try {
     savedLead = await createLead({ ...payload, estimate });
-  } catch(e) { console.error('CRM save failed:', e.message); }
+    console.log('[notify] lead saved:', savedLead?.id);
+  } catch(e) {
+    console.error('[notify] CRM save FAILED:', e.message, e.stack);
+  }
   if (savedLead) {
-    notifyTelegram(savedLead).catch(e => console.error('Telegram failed:', e.message));
+    try {
+      const tgResult = await notifyTelegram(savedLead);
+      console.log('[notify] telegram result:', JSON.stringify(tgResult));
+    } catch(e) {
+      console.error('[notify] Telegram FAILED:', e.message, e.stack);
+    }
+  } else {
+    console.warn('[notify] no savedLead, skipping Telegram');
   }
 
   try {
