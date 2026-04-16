@@ -1,1068 +1,1233 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Toro Movers — CRM</title>
-<meta name="theme-color" content="#C8102E">
-<meta name="robots" content="noindex,nofollow">
-<link rel="icon" href="assets/img/icon.png">
-<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<style>
-:root{
-  --red:#C8102E; --red-dark:#A00C24; --charcoal:#0a0a0a;
-  --white:#fff; --bg:#f5f5f7; --card:#fff; --line:#e7e7eb; --mute:#6b7280;
-  --green:#16a34a; --amber:#f59e0b; --blue:#2563eb; --purple:#8b5cf6; --grey:#9ca3af;
-  --s-new:#2563eb; --s-contacted:#8b5cf6; --s-quoted:#f59e0b; --s-booked:#16a34a;
-  --s-done:#9ca3af; --s-lost:#ef4444; --s-partial:#fbbf24; --s-abandoned:#f97316;
-}
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{height:100%}
-body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--charcoal);line-height:1.4;-webkit-font-smoothing:antialiased;overflow:hidden}
-button,input,select,textarea{font-family:inherit;font-size:inherit}
-button{cursor:pointer;border:none;background:none;padding:0}
-a{color:inherit;text-decoration:none}
-input,select,textarea{border:1px solid var(--line);border-radius:8px;padding:9px 12px;background:#fff;outline:none;transition:border-color .15s}
-input:focus,select:focus,textarea:focus{border-color:var(--red)}
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Toro Movers — CRM</title>
+    <meta name="robots" content="noindex,nofollow">
+    <meta name="theme-color" content="#C8102E">
+    <link rel="icon" href="assets/img/icon.png">
+    <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
 
-/* ===== LOGIN ===== */
-.login{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#0a0a0a;z-index:1000}
-.login-box{background:#fff;border-radius:16px;padding:36px 32px;max-width:360px;width:88%;box-shadow:0 20px 60px rgba(0,0,0,.3)}
-.login-logo{text-align:center;font-weight:900;font-size:24px;letter-spacing:-.3px;margin-bottom:4px}
-.login-logo span{color:var(--red)}
-.login-sub{text-align:center;font-size:13px;color:var(--mute);margin-bottom:22px}
-.login input{width:100%;padding:12px 14px;font-size:15px;margin-bottom:12px}
-.login button{width:100%;padding:12px;background:var(--red);color:#fff;border-radius:10px;font-weight:700;font-size:15px}
-.login button:hover{background:var(--red-dark)}
-.pw-err{color:var(--s-lost);font-size:13px;text-align:center;margin-top:6px;display:none}
+    <!-- Simplebar -->
+    <link type="text/css" href="crm-assets/vendor/simplebar.min.css" rel="stylesheet">
+    <!-- App CSS -->
+    <link type="text/css" href="crm-assets/css/app.css" rel="stylesheet">
+    <!-- Material Design Icons -->
+    <link type="text/css" href="crm-assets/css/vendor-material-icons.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link type="text/css" href="crm-assets/css/vendor-fontawesome-free.css" rel="stylesheet">
+    <!-- FullCalendar -->
+    <link type="text/css" href="crm-assets/vendor/fullcalendar/fullcalendar.min.css" rel="stylesheet">
+    <!-- Dragula -->
+    <link type="text/css" href="crm-assets/vendor/dragula/dragula.min.css" rel="stylesheet">
 
-/* ===== APP ===== */
-.app{display:none;height:100vh;flex-direction:column}
-.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:#fff;border-bottom:1px solid var(--line);flex-shrink:0;overflow-x:auto}
-.logo{font-weight:900;font-size:16px;letter-spacing:-.2px;white-space:nowrap}
-.logo span{color:var(--red)}
-.stat-strip{display:flex;gap:12px;font-size:12px;color:var(--mute);white-space:nowrap;overflow-x:auto}
-.stat-strip b{color:var(--charcoal);font-weight:700}
-.stat-strip .money{color:var(--green)}
-.spacer{flex:1}
-.view-switcher{display:flex;background:var(--bg);border-radius:9px;padding:3px;gap:2px}
-.view-switcher button{padding:7px 14px;border-radius:7px;font-size:13px;font-weight:600;color:var(--mute);white-space:nowrap}
-.view-switcher button.active{background:#fff;color:var(--charcoal);box-shadow:0 1px 3px rgba(0,0,0,.08)}
-.sub-switcher{display:flex;gap:6px}
-.sub-switcher button{padding:6px 11px;border-radius:7px;font-size:12px;font-weight:600;color:var(--mute);border:1px solid var(--line);background:#fff}
-.sub-switcher button.active{background:var(--charcoal);color:#fff;border-color:var(--charcoal)}
-.icon-btn{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;color:var(--charcoal);background:var(--bg)}
-.icon-btn:hover{background:#e7e7eb}
-.icon-btn svg{width:18px;height:18px}
-.btn-primary{background:var(--red);color:#fff;padding:9px 16px;border-radius:9px;font-weight:700;font-size:13px;white-space:nowrap}
-.btn-primary:hover{background:var(--red-dark)}
+    <style>
+    /* ===== Toro Movers Branding ===== */
+    :root {
+        --toro-red: #C8102E;
+        --toro-red-dark: #A00C24;
+        --toro-charcoal: #0a0a0a;
+        --s-new: #2563eb;
+        --s-contacted: #8b5cf6;
+        --s-quoted: #f59e0b;
+        --s-booked: #16a34a;
+        --s-done: #9ca3af;
+        --s-lost: #ef4444;
+    }
 
-/* ===== MAIN LAYOUT ===== */
-.workspace{display:flex;flex:1;overflow:hidden;min-height:0}
-.sidebar{width:260px;background:#fff;border-right:1px solid var(--line);overflow-y:auto;flex-shrink:0}
-.sb-section{padding:14px 16px;border-bottom:1px solid var(--line)}
-.sb-title{font-size:11px;font-weight:700;color:var(--mute);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
-.sb-title .count{background:var(--red);color:#fff;padding:1px 7px;border-radius:10px;font-size:10px;font-weight:800}
-.sb-title .count.zero{background:var(--line);color:var(--mute)}
-.sb-lead{display:block;padding:9px 11px;border-radius:8px;background:var(--bg);margin-bottom:6px;font-size:12px;cursor:pointer;border-left:3px solid transparent;transition:background .15s}
-.sb-lead:hover{background:#e7e7eb}
-.sb-lead.new{border-left-color:var(--s-new)}
-.sb-lead.contacted{border-left-color:var(--s-contacted)}
-.sb-lead.quoted{border-left-color:var(--s-quoted)}
-.sb-lead-name{font-weight:700;color:var(--charcoal);margin-bottom:2px}
-.sb-lead-meta{color:var(--mute);font-size:11px}
-.sb-empty{font-size:12px;color:var(--mute);font-style:italic;padding:4px}
+    /* Primary color overrides */
+    .btn-primary, .bg-primary { background-color: var(--toro-red) !important; border-color: var(--toro-red) !important; }
+    .btn-primary:hover, .btn-primary:focus { background-color: var(--toro-red-dark) !important; border-color: var(--toro-red-dark) !important; }
+    .text-primary { color: var(--toro-red) !important; }
+    a.text-primary:hover { color: var(--toro-red-dark) !important; }
+    .badge-primary { background-color: var(--toro-red) !important; }
+    .progress-bar.bg-primary { background-color: var(--toro-red) !important; }
+    .nav-link.active { color: var(--toro-red) !important; }
+    .page-item.active .page-link { background-color: var(--toro-red); border-color: var(--toro-red); }
 
-.main{flex:1;overflow:auto;position:relative;background:var(--bg)}
+    /* Sidebar dark with Toro branding */
+    .sidebar-dark { background: var(--toro-charcoal) !important; }
+    .sidebar-dark .sidebar-menu-button:hover,
+    .sidebar-dark .sidebar-menu-item.active > .sidebar-menu-button {
+        background: rgba(200,16,46,.15) !important;
+        color: #fff !important;
+    }
+    .sidebar-dark .sidebar-menu-item.active > .sidebar-menu-button .sidebar-menu-icon {
+        color: var(--toro-red) !important;
+    }
+    .sidebar-brand-text { font-weight: 900; font-size: 1.125rem; letter-spacing: -0.3px; }
+    .sidebar-brand-text .red { color: var(--toro-red); }
 
-/* ===== CALENDAR — WEEK ===== */
-.cal-wrap{min-width:800px}
-.cal-header{display:grid;grid-template-columns:60px repeat(7,1fr);background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
-.cal-nav{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:6}
-.cal-nav-label{font-weight:700;font-size:15px}
-.cal-nav-btns{display:flex;gap:4px}
-.cal-nav-btns button{width:32px;height:32px;border-radius:8px;background:var(--bg);color:var(--charcoal);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
-.cal-nav-btns button:hover{background:#e7e7eb}
-.cal-day-header{padding:10px 6px;text-align:center;border-right:1px solid var(--line);font-size:11px}
-.cal-day-header:first-child{border-right:1px solid var(--line)}
-.cal-day-header .dow{color:var(--mute);font-weight:600;text-transform:uppercase;letter-spacing:.5px;font-size:10px}
-.cal-day-header .dom{font-weight:800;font-size:16px;color:var(--charcoal);margin-top:2px}
-.cal-day-header.today .dom{color:var(--red)}
-.cal-day-header.today{background:rgba(200,16,46,.04)}
-.cal-body{display:grid;grid-template-columns:60px repeat(7,1fr);position:relative}
-.cal-hour{border-right:1px solid var(--line);border-bottom:1px solid #f0f0f0;padding:4px 6px;font-size:10px;color:var(--mute);text-align:right;min-height:54px;font-weight:600}
-.cal-slot{border-right:1px solid var(--line);border-bottom:1px solid #f0f0f0;min-height:54px;position:relative;background:#fff}
-.cal-slot.today{background:rgba(200,16,46,.02)}
-.cal-slot.weekend{background:rgba(0,0,0,.01)}
+    /* Login screen */
+    .layout-login-centered-boxed { background: var(--toro-charcoal) !important; }
+    .login-brand { font-weight: 900; font-size: 28px; letter-spacing: -0.3px; color: #fff; }
+    .login-brand .red { color: var(--toro-red); }
+    #login-error { display: none; }
 
-/* ===== CALENDAR — DAY ===== */
-.dayview .cal-wrap{min-width:unset}
-.dayview .cal-header,.dayview .cal-body{grid-template-columns:60px 1fr}
-.dayview .cal-hour{min-height:60px}
-.dayview .cal-slot{min-height:60px}
+    /* Status badges */
+    .badge-new { background-color: var(--s-new); color: #fff; }
+    .badge-contacted { background-color: var(--s-contacted); color: #fff; }
+    .badge-quoted { background-color: var(--s-quoted); color: #fff; }
+    .badge-booked { background-color: var(--s-booked); color: #fff; }
+    .badge-done { background-color: var(--s-done); color: #fff; }
+    .badge-lost { background-color: var(--s-lost); color: #fff; }
 
-/* ===== CALENDAR — MONTH ===== */
-.monthview .mo-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:var(--line);border-bottom:1px solid var(--line)}
-.mo-dow{background:#fff;padding:10px 6px;text-align:center;font-size:11px;font-weight:700;color:var(--mute);text-transform:uppercase;letter-spacing:.5px}
-.mo-cell{background:#fff;min-height:110px;padding:8px;position:relative;overflow:hidden}
-.mo-cell.out{background:#fafafa;color:var(--mute)}
-.mo-cell.today .mo-num{background:var(--red);color:#fff;width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center}
-.mo-num{font-weight:700;font-size:13px;margin-bottom:4px;display:inline-block}
-.mo-job{display:block;padding:3px 6px;margin-bottom:2px;font-size:11px;border-radius:4px;background:var(--s-booked);color:#fff;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
-.mo-more{font-size:10px;color:var(--mute);cursor:pointer;font-weight:700}
+    /* Stats cards */
+    .stat-card-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+    .stat-card-icon .material-icons { font-size: 24px; color: #fff; }
 
-/* ===== JOB BLOCK ===== */
-.job-block{position:absolute;left:3px;right:3px;border-radius:7px;padding:5px 8px;cursor:pointer;color:#fff;font-size:11px;box-shadow:0 1px 3px rgba(0,0,0,.12);border-left:3px solid rgba(0,0,0,.3);overflow:hidden;z-index:2;transition:transform .1s}
-.job-block:hover{transform:translateX(-1px);box-shadow:0 3px 8px rgba(0,0,0,.2);z-index:3}
-.job-block.s-new{background:var(--s-new)}
-.job-block.s-contacted{background:var(--s-contacted)}
-.job-block.s-quoted{background:var(--s-quoted)}
-.job-block.s-booked{background:var(--s-booked)}
-.job-block.s-done{background:var(--s-done)}
-.job-block.s-lost{background:var(--s-lost)}
-.job-block.s-partial{background:var(--s-partial)}
-.job-block.s-abandoned{background:var(--s-abandoned)}
-.job-block .jb-time{font-weight:800;font-size:10px;opacity:.95}
-.job-block .jb-name{font-weight:700;font-size:12px;margin:2px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.job-block .jb-route{font-size:10px;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    /* Kanban */
+    .kanban-board { display: flex; gap: 16px; overflow-x: auto; padding: 16px; min-height: calc(100vh - 200px); }
+    .kanban-col { flex: 0 0 280px; min-width: 280px; background: #f8f9fa; border-radius: 8px; display: flex; flex-direction: column; max-height: calc(100vh - 220px); }
+    .kanban-col-header { padding: 12px 16px; border-bottom: 1px solid #e9ecef; display: flex; justify-content: space-between; align-items: center; }
+    .kanban-col-header .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 8px; }
+    .kanban-col-header h6 { margin: 0; text-transform: uppercase; font-size: 12px; font-weight: 800; letter-spacing: 0.5px; }
+    .kanban-col-body { padding: 8px; overflow-y: auto; flex: 1; min-height: 80px; }
+    .kanban-card { background: #fff; border: 1px solid #e9ecef; border-radius: 8px; padding: 12px; margin-bottom: 8px; cursor: grab; transition: box-shadow 0.15s; border-left: 3px solid #ccc; }
+    .kanban-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,.1); }
+    .kanban-card.s-new { border-left-color: var(--s-new); }
+    .kanban-card.s-contacted { border-left-color: var(--s-contacted); }
+    .kanban-card.s-quoted { border-left-color: var(--s-quoted); }
+    .kanban-card.s-booked { border-left-color: var(--s-booked); }
+    .kanban-card.s-done { border-left-color: var(--s-done); }
+    .kanban-card.s-lost { border-left-color: var(--s-lost); }
+    .kanban-card-name { font-weight: 700; font-size: 13px; margin-bottom: 4px; }
+    .kanban-card-meta { font-size: 11px; color: #6c757d; }
+    .kanban-card-total { color: #16a34a; font-weight: 700; font-size: 12px; }
+    .kanban-col-body.gu-transit { background: rgba(200,16,46,.05) !important; }
 
-.empty-calendar{padding:60px 20px;text-align:center;color:var(--mute);font-size:14px}
-.empty-calendar .big{font-size:40px;margin-bottom:12px}
+    /* Lead detail modal */
+    #leadModal .modal-header { border-bottom: 1px solid #e9ecef; }
+    .detail-section { padding: 16px 0; border-bottom: 1px solid #f0f0f0; }
+    .detail-section:last-child { border-bottom: none; }
+    .detail-section h6 { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: #6c757d; margin-bottom: 10px; }
+    .detail-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 6px; font-size: 13px; }
+    .detail-row .material-icons { font-size: 16px; color: #6c757d; flex-shrink: 0; margin-top: 2px; }
+    .detail-row a { color: #2563eb; }
+    .detail-row .editable { cursor: pointer; border-radius: 4px; padding: 2px 6px; margin: -2px -6px; }
+    .detail-row .editable:hover { background: #f0f0f0; }
+    .money-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 12px; margin-top: 8px; }
+    .money-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 3px; }
+    .money-row.total { border-top: 1px solid #bbf7d0; padding-top: 7px; margin-top: 5px; font-weight: 800; }
+    .money-row.deposit { color: #16a34a; }
+    .status-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .s-chip { padding: 5px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; background: #f0f0f0; color: #333; cursor: pointer; border: 1px solid #e0e0e0; text-transform: uppercase; letter-spacing: 0.3px; }
+    .s-chip.active { color: #fff !important; border-color: transparent !important; }
+    .s-chip.active.new { background: var(--s-new); }
+    .s-chip.active.contacted { background: var(--s-contacted); }
+    .s-chip.active.quoted { background: var(--s-quoted); }
+    .s-chip.active.booked { background: var(--s-booked); }
+    .s-chip.active.done { background: var(--s-done); }
+    .s-chip.active.lost { background: var(--s-lost); }
+    .crew-pill { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; background: #f0f0f0; border-radius: 999px; font-size: 11px; font-weight: 700; margin: 2px; }
+    .crew-pill .rm { color: #ef4444; cursor: pointer; font-weight: 800; margin-left: 4px; }
+    .timeline-item { padding: 4px 0; font-size: 12px; color: #6c757d; }
+    .timeline-item .at { color: #333; font-weight: 600; }
 
-/* ===== KANBAN ===== */
-.kanban-wrap{display:flex;gap:12px;padding:16px;min-height:100%;overflow-x:auto}
-.kb-col{flex:1;min-width:240px;background:#fff;border-radius:12px;border:1px solid var(--line);display:flex;flex-direction:column;max-height:calc(100vh - 120px)}
-.kb-head{padding:12px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#fff;border-radius:12px 12px 0 0;z-index:2}
-.kb-head-title{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;gap:6px}
-.kb-head-title .dot{width:8px;height:8px;border-radius:50%}
-.kb-head-meta{font-size:11px;color:var(--mute);font-weight:600}
-.kb-body{padding:10px;overflow-y:auto;flex:1;min-height:120px}
-.kb-body.drag-over{background:rgba(200,16,46,.05)}
-.kb-card{background:#fff;border:1px solid var(--line);border-radius:9px;padding:11px;margin-bottom:8px;cursor:grab;font-size:12px;transition:box-shadow .15s;border-left:3px solid var(--grey)}
-.kb-card:hover{box-shadow:0 4px 10px rgba(0,0,0,.08)}
-.kb-card.s-new{border-left-color:var(--s-new)}
-.kb-card.s-contacted{border-left-color:var(--s-contacted)}
-.kb-card.s-quoted{border-left-color:var(--s-quoted)}
-.kb-card.s-booked{border-left-color:var(--s-booked)}
-.kb-card.s-done{border-left-color:var(--s-done)}
-.kb-card.s-lost{border-left-color:var(--s-lost)}
-.kb-card-name{font-weight:700;color:var(--charcoal);margin-bottom:3px;display:flex;justify-content:space-between;align-items:start;gap:8px}
-.kb-card-total{color:var(--green);font-weight:700;font-size:11px;white-space:nowrap}
-.kb-card-meta{color:var(--mute);font-size:11px;display:flex;justify-content:space-between;gap:6px}
-.kb-card-route{color:var(--mute);font-size:11px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    /* Crew dots */
+    .crew-dot-sm { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 2px; }
 
-/* ===== MAP ===== */
-.map-wrap{display:flex;height:100%}
-.map-sidebar{width:240px;background:#fff;border-right:1px solid var(--line);overflow-y:auto;flex-shrink:0}
-.map-wrap #map{flex:1;height:100%}
-.map-empty-list{padding:14px}
-.map-empty-list h4{font-size:11px;font-weight:800;color:var(--mute);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
-.map-empty-list .sb-lead{font-size:11px}
+    /* Table row clickable */
+    .table-leads tbody tr { cursor: pointer; }
+    .table-leads tbody tr:hover { background: #f8f9fa; }
 
-/* ===== DETAIL PANEL ===== */
-.panel{position:fixed;top:0;right:0;height:100vh;width:460px;max-width:100vw;background:#fff;box-shadow:-12px 0 40px rgba(0,0,0,.15);z-index:50;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .2s cubic-bezier(.4,0,.2,1)}
-.panel.open{transform:translateX(0)}
-.panel-head{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-shrink:0}
-.panel-head h3{font-size:19px;font-weight:800;margin-bottom:4px}
-.panel-head .status-chip{font-size:10px;font-weight:800;padding:3px 8px;border-radius:999px;color:#fff;text-transform:uppercase;letter-spacing:.5px;display:inline-block}
-.panel-close{width:32px;height:32px;border-radius:8px;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;font-weight:700;color:var(--charcoal)}
-.panel-body{overflow-y:auto;flex:1;padding:0 18px 100px}
-.panel-section{padding:16px 0;border-bottom:1px solid var(--line)}
-.panel-section h4{font-size:11px;font-weight:800;color:var(--mute);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
-.panel-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;font-size:13px}
-.panel-row .icon{color:var(--mute);flex-shrink:0;margin-top:1px;width:16px;text-align:center}
-.panel-row a{color:var(--blue);text-decoration:none}
-.panel-row a:hover{text-decoration:underline}
-.panel-row .editable{flex:1;cursor:pointer;border-radius:6px;padding:3px 6px;margin:-3px -6px;transition:background .1s}
-.panel-row .editable:hover{background:var(--bg)}
-.money-box{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:12px 14px;margin:8px 0 0}
-.money-row{display:flex;justify-content:space-between;font-size:13px;margin-bottom:3px}
-.money-row.total{border-top:1px solid #bbf7d0;padding-top:7px;margin-top:5px;font-weight:800}
-.money-row.deposit{color:var(--green)}
-.status-chips{display:flex;flex-wrap:wrap;gap:6px}
-.s-chip{padding:6px 11px;border-radius:999px;font-size:11px;font-weight:700;background:var(--bg);color:var(--charcoal);cursor:pointer;border:1px solid var(--line);text-transform:uppercase;letter-spacing:.3px}
-.s-chip.active{color:#fff;border-color:transparent}
-.s-chip.active.new{background:var(--s-new)}
-.s-chip.active.contacted{background:var(--s-contacted)}
-.s-chip.active.quoted{background:var(--s-quoted)}
-.s-chip.active.booked{background:var(--s-booked)}
-.s-chip.active.done{background:var(--s-done)}
-.s-chip.active.lost{background:var(--s-lost)}
-.crew-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
-.crew-pill{padding:5px 10px;background:var(--bg);border-radius:999px;font-size:11px;font-weight:700;color:var(--charcoal);display:flex;align-items:center;gap:5px}
-.crew-pill .rm{color:var(--s-lost);cursor:pointer;font-weight:800}
-.crew-pill.empty{color:var(--mute);font-style:italic;font-weight:500}
-.timeline-item{padding:6px 0;font-size:12px;color:var(--mute)}
-.timeline-item .at{color:var(--charcoal);font-weight:600}
-.panel-actions{position:absolute;bottom:0;left:0;right:0;padding:12px 18px;background:#fff;border-top:1px solid var(--line);display:flex;gap:8px;flex-wrap:wrap}
-.pa-btn{padding:9px 13px;border-radius:8px;font-size:12px;font-weight:700;background:var(--bg);color:var(--charcoal)}
-.pa-btn:hover{background:#e7e7eb}
-.pa-btn.primary{background:var(--red);color:#fff}
-.pa-btn.primary:hover{background:var(--red-dark)}
-.panel-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:49;opacity:0;pointer-events:none;transition:opacity .2s}
-.panel-backdrop.open{opacity:1;pointer-events:auto}
+    /* View containers */
+    .view-container { display: none; }
+    .view-container.active { display: block; }
 
-/* ===== CREW MODAL ===== */
-.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;display:none;align-items:center;justify-content:center;padding:20px}
-.modal-backdrop.open{display:flex}
-.modal{background:#fff;border-radius:14px;width:100%;max-width:440px;max-height:85vh;overflow:hidden;display:flex;flex-direction:column}
-.modal-head{padding:16px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
-.modal-head h3{font-size:17px;font-weight:800}
-.modal-body{padding:16px 20px;overflow-y:auto}
-.crew-row{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--line);border-radius:9px;margin-bottom:8px}
-.crew-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
-.crew-info{flex:1}
-.crew-info .nm{font-weight:700;font-size:13px}
-.crew-info .rl{font-size:11px;color:var(--mute)}
-.crew-rm-btn{color:var(--s-lost);font-size:12px;font-weight:700}
-.modal-add{display:flex;gap:6px;margin-top:10px}
-.modal-add input{flex:1;font-size:13px}
-.modal-add button{padding:8px 14px;background:var(--red);color:#fff;border-radius:8px;font-weight:700;font-size:12px}
+    /* Calendar events status colors */
+    .fc-event { cursor: pointer !important; border: none !important; }
 
-/* ===== MOBILE ===== */
-@media (max-width:800px){
-  .sidebar{display:none}
-  .topbar{flex-wrap:wrap;padding:8px 10px;gap:8px}
-  .sub-switcher{order:10;width:100%}
-  .panel{width:100%}
-  .stat-strip{order:20;width:100%;font-size:11px}
-  .kb-col{min-width:85vw}
-  .map-sidebar{display:none}
-  .view-switcher button{padding:6px 10px;font-size:12px}
-}
-</style>
+    /* Sidebar bottom links */
+    .sidebar-bottom-links { border-top: 1px solid rgba(255,255,255,.1); }
+
+    /* Preloader override */
+    .preloader { display: none !important; }
+    </style>
 </head>
-<body>
 
-<!-- LOGIN -->
-<div class="login" id="login">
-  <div class="login-box">
-    <div class="login-logo">TORO <span>MOVERS</span></div>
-    <div class="login-sub">CRM — Enter password</div>
-    <input type="password" id="pw-input" placeholder="Password" autocomplete="current-password" autofocus>
-    <button id="pw-btn">Sign in</button>
-    <div class="pw-err" id="pw-err">Wrong password.</div>
-  </div>
-</div>
+<!-- LOGIN BODY (shown first, swapped to app body) -->
+<body class="layout-login-centered-boxed" id="body-el">
 
-<!-- APP -->
-<div class="app" id="app">
-  <header class="topbar">
-    <div class="logo">TORO <span>MOVERS</span></div>
-    <div class="stat-strip" id="stat-strip"></div>
-    <div class="spacer"></div>
-    <div class="view-switcher" id="view-switcher">
-      <button class="active" data-view="calendar">📅 Calendar</button>
-      <button data-view="kanban">📋 Kanban</button>
-      <button data-view="map">🗺️ Map</button>
+    <!-- ========== LOGIN SCREEN ========== -->
+    <div id="login-screen">
+        <div class="layout-login-centered-boxed__form">
+            <div class="d-flex flex-column justify-content-center align-items-center mt-2 mb-3">
+                <div class="login-brand">TORO <span class="red">MOVERS</span></div>
+                <small class="text-muted mt-1">CRM Dashboard</small>
+            </div>
+            <div class="card card-body">
+                <form id="login-form" novalidate>
+                    <div class="form-group">
+                        <label class="text-label" for="pw-input">Password:</label>
+                        <div class="input-group input-group-merge">
+                            <input id="pw-input" type="password" required class="form-control form-control-prepended" placeholder="Enter CRM password" autocomplete="current-password" autofocus>
+                            <div class="input-group-prepend">
+                                <div class="input-group-text">
+                                    <span class="fa fa-key"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="alert alert-danger" id="login-error" role="alert">
+                        <i class="material-icons mr-2" style="font-size:16px">error</i> Wrong password.
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+                </form>
+            </div>
+        </div>
     </div>
-    <div class="sub-switcher" id="cal-sub">
-      <button class="active" data-sub="week">Week</button>
-      <button data-sub="day">Day</button>
-      <button data-sub="month">Month</button>
+
+    <!-- ========== APP (hidden until login) ========== -->
+    <div id="app-screen" style="display:none">
+        <div class="mdk-drawer-layout js-mdk-drawer-layout" data-push data-responsive-width="992px" data-fullbleed>
+            <div class="mdk-drawer-layout__content">
+
+                <!-- Header Layout -->
+                <div class="mdk-header-layout js-mdk-header-layout" data-has-scrolling-region>
+
+                    <!-- Header / Navbar -->
+                    <div id="header" class="mdk-header js-mdk-header m-0" data-fixed data-effects="waterfall" data-retarget-mouse-scroll="false">
+                        <div class="mdk-header__content">
+                            <div class="navbar navbar-expand-sm navbar-main navbar-light bg-white pr-0" id="navbar" data-primary>
+                                <div class="container-fluid p-0">
+                                    <button class="navbar-toggler navbar-toggler-custom d-lg-none d-flex mr-navbar" type="button" data-toggle="sidebar">
+                                        <span class="material-icons">short_text</span>
+                                    </button>
+                                    <a href="#" class="navbar-brand flex" id="navbar-title">
+                                        <span>Dashboard</span>
+                                    </a>
+                                    <div class="d-none d-md-flex align-items-center text-muted" id="stat-strip" style="font-size:13px;gap:16px;"></div>
+                                    <div class="ml-auto"></div>
+                                    <button class="btn btn-sm btn-outline-secondary mr-2" onclick="loadAll()" title="Refresh">
+                                        <i class="material-icons" style="font-size:18px">refresh</i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- // END Header -->
+
+                    <!-- Main Content Area -->
+                    <div class="mdk-header-layout__content mdk-header-layout__content--fullbleed mdk-header-layout__content--scrollable page">
+
+                        <!-- ===== DASHBOARD VIEW ===== -->
+                        <div class="view-container active" id="view-dashboard">
+                            <div class="container-fluid page__container">
+                                <!-- Stats Row -->
+                                <div class="row mt-3" id="stats-row"></div>
+
+                                <!-- Upcoming Jobs -->
+                                <div class="row mt-3">
+                                    <div class="col-lg-8">
+                                        <div class="card">
+                                            <div class="card-header bg-light d-flex align-items-center">
+                                                <h4 class="card-header__title flex m-0">Upcoming Jobs (Next 7 Days)</h4>
+                                            </div>
+                                            <div class="table-responsive">
+                                                <table class="table table-hover mb-0" id="upcoming-table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Date</th>
+                                                            <th>Time</th>
+                                                            <th>Customer</th>
+                                                            <th>Route</th>
+                                                            <th>Crew</th>
+                                                            <th>Status</th>
+                                                            <th>Est. Total</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody></tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="card">
+                                            <div class="card-header bg-light d-flex align-items-center">
+                                                <h4 class="card-header__title flex m-0">Recent Leads</h4>
+                                            </div>
+                                            <div class="list-group list-group-flush" id="recent-leads-list"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ===== CALENDAR VIEW ===== -->
+                        <div class="view-container" id="view-calendar">
+                            <div class="container-fluid page__container">
+                                <div class="card card-body mt-3">
+                                    <div id="calendar" data-toggle="fullcalendar"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ===== KANBAN VIEW ===== -->
+                        <div class="view-container" id="view-kanban">
+                            <div id="kanban-board" class="kanban-board"></div>
+                        </div>
+
+                        <!-- ===== LEADS LIST VIEW ===== -->
+                        <div class="view-container" id="view-leads">
+                            <div class="container-fluid page__container">
+                                <div class="card mt-3">
+                                    <div class="card-header bg-light d-flex align-items-center">
+                                        <h4 class="card-header__title flex m-0">All Leads</h4>
+                                        <div class="ml-auto">
+                                            <input type="text" class="form-control form-control-sm" id="leads-search" placeholder="Search leads..." style="width:220px">
+                                        </div>
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table class="table table-hover table-leads mb-0" id="leads-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <th>Phone</th>
+                                                    <th>Email</th>
+                                                    <th>Move Date</th>
+                                                    <th>Status</th>
+                                                    <th>Estimate</th>
+                                                    <th>Source</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- // END Main Content -->
+
+                </div>
+                <!-- // END header-layout -->
+            </div>
+            <!-- // END drawer-layout__content -->
+
+            <!-- ===== SIDEBAR ===== -->
+            <div class="mdk-drawer js-mdk-drawer" id="default-drawer" data-align="start">
+                <div class="mdk-drawer__content">
+                    <div class="sidebar sidebar-dark sidebar-left simplebar" data-simplebar>
+                        <!-- Brand -->
+                        <div class="d-flex align-items-center sidebar-p-a border-bottom sidebar-account flex-shrink-0" style="border-color: rgba(255,255,255,.1) !important;">
+                            <a href="#" class="flex d-flex align-items-center text-underline-0 text-body" onclick="switchView('dashboard');return false;">
+                                <span class="flex d-flex flex-column">
+                                    <span class="sidebar-brand-text">TORO <span class="red">MOVERS</span></span>
+                                    <small style="color: rgba(255,255,255,.4)">CRM Dashboard</small>
+                                </span>
+                            </a>
+                        </div>
+
+                        <!-- Nav Menu -->
+                        <ul class="sidebar-menu flex" id="sidebar-nav">
+                            <li class="sidebar-menu-item active" data-view="dashboard">
+                                <a class="sidebar-menu-button" href="#" onclick="switchView('dashboard');return false;">
+                                    <i class="sidebar-menu-icon sidebar-menu-icon--left material-icons">dashboard</i>
+                                    <span class="sidebar-menu-text">Dashboard</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-menu-item" data-view="calendar">
+                                <a class="sidebar-menu-button" href="#" onclick="switchView('calendar');return false;">
+                                    <i class="sidebar-menu-icon sidebar-menu-icon--left material-icons">calendar_today</i>
+                                    <span class="sidebar-menu-text">Calendar</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-menu-item" data-view="kanban">
+                                <a class="sidebar-menu-button" href="#" onclick="switchView('kanban');return false;">
+                                    <i class="sidebar-menu-icon sidebar-menu-icon--left material-icons">view_column</i>
+                                    <span class="sidebar-menu-text">Kanban</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-menu-item" data-view="leads">
+                                <a class="sidebar-menu-button" href="#" onclick="switchView('leads');return false;">
+                                    <i class="sidebar-menu-icon sidebar-menu-icon--left material-icons">people</i>
+                                    <span class="sidebar-menu-text">Leads</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button" href="#" onclick="openCrewModal();return false;">
+                                    <i class="sidebar-menu-icon sidebar-menu-icon--left material-icons">group</i>
+                                    <span class="sidebar-menu-text">Crew</span>
+                                </a>
+                            </li>
+                        </ul>
+
+                        <!-- Bottom Links -->
+                        <div class="mt-auto sidebar-p-a sidebar-bottom-links d-flex flex-column flex-shrink-0">
+                            <a class="sidebar-link mb-2" href="/" target="_blank" style="color: rgba(255,255,255,.6)">
+                                <i class="material-icons mr-2" style="font-size:16px">open_in_new</i> Open Website
+                            </a>
+                            <a class="sidebar-link" href="#" onclick="doLogout();return false;" style="color: rgba(255,255,255,.6)">
+                                <i class="material-icons mr-2" style="font-size:16px">exit_to_app</i> Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- // END drawer-layout -->
     </div>
-    <button class="icon-btn" id="crew-btn" title="Crew">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-    </button>
-    <button class="icon-btn" id="refresh-btn" title="Refresh">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-    </button>
-    <button class="btn-primary" id="logout-btn" title="Logout" style="padding:9px 12px">Exit</button>
-  </header>
 
-  <div class="workspace">
-    <aside class="sidebar" id="sidebar"></aside>
-    <main class="main" id="main"></main>
-  </div>
-</div>
-
-<!-- DETAIL PANEL -->
-<div class="panel-backdrop" id="panel-backdrop"></div>
-<div class="panel" id="panel"></div>
-
-<!-- CREW MODAL -->
-<div class="modal-backdrop" id="crew-modal">
-  <div class="modal">
-    <div class="modal-head">
-      <h3>Crew Roster</h3>
-      <button class="panel-close" onclick="closeCrewModal()">×</button>
+    <!-- ========== LEAD DETAIL MODAL ========== -->
+    <div class="modal fade" id="leadModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="leadModal-title">Lead Detail</h5>
+                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                </div>
+                <div class="modal-body" id="leadModal-body"></div>
+                <div class="modal-footer" id="leadModal-footer"></div>
+            </div>
+        </div>
     </div>
-    <div class="modal-body" id="crew-modal-body"></div>
-  </div>
-</div>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script>
-// ===== STATE =====
-var PW = localStorage.getItem('crm_pw') || '';
-var leads = [];
-var crew = [];
-var currentView = 'calendar';   // calendar | kanban | map
-var currentSub = 'week';        // week | day | month (for calendar)
-var focusDate = new Date();     // anchor for the calendar
-var openLeadId = null;
-var mapInstance = null;
-var mapMarkers = [];
-var geocache = JSON.parse(localStorage.getItem('geocache') || '{}');
-var geoQueue = [];
-var geoRunning = false;
+    <!-- ========== CREW MODAL ========== -->
+    <div class="modal fade" id="crewModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Crew Roster</h5>
+                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                </div>
+                <div class="modal-body" id="crewModal-body"></div>
+            </div>
+        </div>
+    </div>
 
-// ===== CONSTANTS =====
-var STATUS_COLORS = {
-  new:'#2563eb', contacted:'#8b5cf6', quoted:'#f59e0b',
-  booked:'#16a34a', done:'#9ca3af', lost:'#ef4444',
-  partial:'#fbbf24', abandoned:'#f97316'
-};
-var STATUS_ORDER = ['new','contacted','quoted','booked','done','lost'];
+    <!-- ========== SCRIPTS ========== -->
+    <!-- jQuery -->
+    <script src="crm-assets/vendor/jquery.min.js"></script>
+    <!-- Popper / Bootstrap -->
+    <script src="crm-assets/vendor/popper.min.js"></script>
+    <script src="crm-assets/vendor/bootstrap.min.js"></script>
+    <!-- Simplebar -->
+    <script src="crm-assets/vendor/simplebar.min.js"></script>
+    <!-- DOM Factory -->
+    <script src="crm-assets/vendor/dom-factory.js"></script>
+    <!-- MDK -->
+    <script src="crm-assets/vendor/material-design-kit.js"></script>
+    <!-- App JS (sidebar, header, drawer) -->
+    <script src="crm-assets/js/toggle-check-all.js"></script>
+    <script src="crm-assets/js/check-selected-row.js"></script>
+    <script src="crm-assets/js/dropdown.js"></script>
+    <script src="crm-assets/js/sidebar-mini.js"></script>
+    <script src="crm-assets/js/app.js"></script>
+    <!-- Moment -->
+    <script src="crm-assets/vendor/moment.min.js"></script>
+    <!-- jQuery UI (for FullCalendar drag) -->
+    <script src="crm-assets/vendor/jquery-ui.min.js"></script>
+    <!-- FullCalendar -->
+    <script src="crm-assets/vendor/fullcalendar/fullcalendar.min.js"></script>
+    <!-- Dragula -->
+    <script src="crm-assets/vendor/dragula/dragula.min.js"></script>
 
-// ===== LOGIN =====
-function showApp(){
-  document.getElementById('login').style.display = 'none';
-  document.getElementById('app').style.display = 'flex';
-  loadAll();
-}
-async function tryLogin(pw){
-  try {
-    var r = await fetch('/.netlify/functions/crm?action=list', { headers: { 'x-crm-password': pw } });
-    if (r.ok) { PW = pw; localStorage.setItem('crm_pw', pw); showApp(); }
-    else { document.getElementById('pw-err').style.display = 'block'; }
-  } catch(e){ alert('Network error'); }
-}
-document.getElementById('pw-btn').addEventListener('click', function(){
-  var pw = document.getElementById('pw-input').value.trim();
-  if (pw) tryLogin(pw);
-});
-document.getElementById('pw-input').addEventListener('keydown', function(e){
-  if (e.key === 'Enter') document.getElementById('pw-btn').click();
-});
-document.getElementById('logout-btn').addEventListener('click', function(){
-  localStorage.removeItem('crm_pw'); location.reload();
-});
-if (PW) tryLogin(PW);
+    <script>
+    // =====================================================
+    // TORO MOVERS CRM — FlatAdmin Edition
+    // =====================================================
 
-// ===== LOAD =====
-async function loadAll(){
-  await Promise.all([loadLeads(), loadCrew()]);
-  renderAll();
-}
-async function loadLeads(){
-  try {
-    var r = await fetch('/.netlify/functions/crm?action=list', { headers: { 'x-crm-password': PW } });
-    if (!r.ok) {
-      if (r.status === 401){ localStorage.removeItem('crm_pw'); location.reload(); }
-      return;
+    // ===== STATE =====
+    var PW = localStorage.getItem('crm_pw') || '';
+    var leads = [];
+    var crewList = [];
+    var currentView = 'dashboard';
+    var calendarInitialized = false;
+    var dragulaInstance = null;
+
+    // ===== CONSTANTS =====
+    var STATUS_COLORS = {
+        new: '#2563eb', contacted: '#8b5cf6', quoted: '#f59e0b',
+        booked: '#16a34a', done: '#9ca3af', lost: '#ef4444'
+    };
+    var STATUS_ORDER = ['new', 'contacted', 'quoted', 'booked', 'done', 'lost'];
+
+    // ===== UTILITIES =====
+    function escapeHtml(s) {
+        return String(s == null ? '' : s)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     }
-    var j = await r.json();
-    leads = j.leads || [];
-  } catch(e){ console.error(e); }
-}
-async function loadCrew(){
-  try {
-    var r = await fetch('/.netlify/functions/crm?action=crew', { headers: { 'x-crm-password': PW } });
-    if (!r.ok) return;
-    var j = await r.json();
-    crew = j.crew || [];
-  } catch(e){ console.error(e); }
-}
+    function fmtMoney(n) { return '$' + (n || 0).toLocaleString('en-US'); }
+    function firstName(l) { return (l.name || '').split(' ')[0] || '?'; }
 
-// ===== UTILITIES =====
-function fmtMoney(n){ return '$' + (n||0).toLocaleString('en-US'); }
-function firstName(l){ return (l.name || '').split(' ')[0] || '?'; }
-function parseMoveDate(l){
-  if (!l.move_date) return null;
-  // accepts 'YYYY-MM-DD', 'Saturday, May 30', etc.
-  var iso = /^\d{4}-\d{2}-\d{2}$/.test(l.move_date) ? l.move_date : null;
-  if (iso) return new Date(iso + 'T00:00:00');
-  // try parsing free-text
-  var d = new Date(l.move_date);
-  return isNaN(d.getTime()) ? null : d;
-}
-function parseMoveTime(l){
-  // returns {hour, minute} or null
-  var t = l.move_time || '';
-  var m = t.match(/(\d{1,2}):?(\d{2})?\s*(AM|PM|am|pm)?/);
-  if (!m) return null;
-  var h = parseInt(m[1], 10);
-  var min = parseInt(m[2] || '0', 10);
-  var ap = (m[3] || '').toUpperCase();
-  if (ap === 'PM' && h < 12) h += 12;
-  if (ap === 'AM' && h === 12) h = 0;
-  return { hour: h, minute: min };
-}
-function sameDay(a, b){ return a && b && a.toDateString() === b.toDateString(); }
-function startOfWeek(d){
-  var x = new Date(d); x.setHours(0,0,0,0);
-  x.setDate(x.getDate() - x.getDay());
-  return x;
-}
-function addDays(d, n){ var x = new Date(d); x.setDate(x.getDate()+n); return x; }
-function fmtDow(d){ return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()]; }
-function fmtMonthName(d){ return d.toLocaleString('en-US',{month:'long',year:'numeric'}); }
-function fmtDateLabel(d){ return d.toLocaleString('en-US',{month:'short',day:'numeric'}); }
+    function parseMoveDate(l) {
+        if (!l.move_date) return null;
+        var iso = /^\d{4}-\d{2}-\d{2}$/.test(l.move_date) ? l.move_date : null;
+        if (iso) return new Date(iso + 'T00:00:00');
+        var d = new Date(l.move_date);
+        return isNaN(d.getTime()) ? null : d;
+    }
+    function parseMoveTime(l) {
+        var t = l.move_time || '';
+        var m = t.match(/(\d{1,2}):?(\d{2})?\s*(AM|PM|am|pm)?/);
+        if (!m) return null;
+        var h = parseInt(m[1], 10);
+        var min = parseInt(m[2] || '0', 10);
+        var ap = (m[3] || '').toUpperCase();
+        if (ap === 'PM' && h < 12) h += 12;
+        if (ap === 'AM' && h === 12) h = 0;
+        return { hour: h, minute: min };
+    }
+    function sameDay(a, b) { return a && b && a.toDateString() === b.toDateString(); }
+    function startOfWeek(d) {
+        var x = new Date(d); x.setHours(0, 0, 0, 0);
+        x.setDate(x.getDate() - x.getDay());
+        return x;
+    }
+    function addDays(d, n) { var x = new Date(d); x.setDate(x.getDate() + n); return x; }
+    function fmtDateLabel(d) { return d.toLocaleString('en-US', { month: 'short', day: 'numeric' }); }
+    function fmtDateShort(d) { return d.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); }
 
-function routeShort(l){
-  var from = l.pickup_address || l.zip_from || '';
-  var to   = l.dropoff_address || l.zip_to || '';
-  var fromCity = from.split(',').slice(-2,-1)[0] || from.slice(0,20);
-  var toCity   = to.split(',').slice(-2,-1)[0]   || to.slice(0,20);
-  if (!from && !to) return '';
-  return (fromCity||'?').trim() + ' → ' + (toCity||'?').trim();
-}
+    function routeShort(l) {
+        var from = l.pickup_address || l.zip_from || '';
+        var to = l.dropoff_address || l.zip_to || '';
+        var fromCity = from.split(',').slice(-2, -1)[0] || from.slice(0, 20);
+        var toCity = to.split(',').slice(-2, -1)[0] || to.slice(0, 20);
+        if (!from && !to) return '';
+        return (fromCity || '?').trim() + ' > ' + (toCity || '?').trim();
+    }
 
-// ===== RENDER =====
-function renderAll(){
-  renderStats();
-  renderSidebar();
-  renderMain();
-}
+    function statusBadge(status) {
+        return '<span class="badge badge-' + escapeHtml(status) + '">' + escapeHtml(status) + '</span>';
+    }
 
-function renderStats(){
-  var now = new Date();
-  var weekStart = startOfWeek(now);
-  var weekEnd = addDays(weekStart, 7);
-  var weekJobs = leads.filter(function(l){
-    var d = parseMoveDate(l);
-    return d && d >= weekStart && d < weekEnd && l.status === 'booked';
-  });
-  var weekRevenue = weekJobs.reduce(function(s,l){ return s + (l.estimate_total || 0); }, 0);
-  var pipelineQuoted = leads.filter(l => l.status === 'quoted').reduce((s,l) => s + (l.estimate_total||0), 0);
-  var newToday = leads.filter(function(l){
-    return new Date(l.createdAt).toDateString() === now.toDateString();
-  }).length;
+    function apiHeaders() {
+        return { 'Content-Type': 'application/json', 'x-crm-password': PW };
+    }
 
-  document.getElementById('stat-strip').innerHTML =
-    '<span><b>'+now.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})+'</b></span>' +
-    ' · <span><b>'+weekJobs.length+'</b> booked this week</span>' +
-    ' · <span class="money"><b>'+fmtMoney(weekRevenue)+'</b> week</span>' +
-    ' · <span class="money"><b>'+fmtMoney(pipelineQuoted)+'</b> in quotes</span>' +
-    ' · <span><b>'+newToday+'</b> new today</span>';
-  document.title = 'Toro Movers — CRM ('+weekJobs.length+' this week)';
-}
-
-function renderSidebar(){
-  var sb = document.getElementById('sidebar');
-  var now = new Date();
-  var weekStart = startOfWeek(now);
-  var weekEnd = addDays(weekStart, 7);
-
-  var unscheduled = leads.filter(function(l){
-    return (l.status === 'quoted' || l.status === 'contacted') && !parseMoveDate(l);
-  });
-  var newLeads = leads.filter(l => l.status === 'new');
-  var todayJobs = leads.filter(function(l){
-    var d = parseMoveDate(l);
-    return d && sameDay(d, now) && l.status !== 'lost';
-  });
-  var weekJobsAll = leads.filter(function(l){
-    var d = parseMoveDate(l);
-    return d && d >= weekStart && d < weekEnd && l.status !== 'lost';
-  });
-
-  function leadCard(l){
-    var d = parseMoveDate(l);
-    var when = d ? fmtDateLabel(d) + (l.move_time ? ' · '+l.move_time : '') : 'unscheduled';
-    return '<div class="sb-lead '+l.status+'" onclick="openLead(\''+l.id+'\')">' +
-      '<div class="sb-lead-name">'+escapeHtml(l.name || '(no name)')+'</div>' +
-      '<div class="sb-lead-meta">'+when+' · '+fmtMoney(l.estimate_total)+'</div>' +
-      '</div>';
-  }
-
-  var html = '';
-  html += '<div class="sb-section"><div class="sb-title">New leads <span class="count '+(newLeads.length?'':'zero')+'">'+newLeads.length+'</span></div>';
-  html += newLeads.length ? newLeads.map(leadCard).join('') : '<div class="sb-empty">Nothing new</div>';
-  html += '</div>';
-
-  html += '<div class="sb-section"><div class="sb-title">Needs scheduling <span class="count '+(unscheduled.length?'':'zero')+'">'+unscheduled.length+'</span></div>';
-  html += unscheduled.length ? unscheduled.map(leadCard).join('') : '<div class="sb-empty">All scheduled</div>';
-  html += '</div>';
-
-  html += '<div class="sb-section"><div class="sb-title">Today <span class="count '+(todayJobs.length?'':'zero')+'">'+todayJobs.length+'</span></div>';
-  html += todayJobs.length ? todayJobs.map(leadCard).join('') : '<div class="sb-empty">No jobs today</div>';
-  html += '</div>';
-
-  html += '<div class="sb-section"><div class="sb-title">This week <span class="count '+(weekJobsAll.length?'':'zero')+'">'+weekJobsAll.length+'</span></div>';
-  html += weekJobsAll.length ? weekJobsAll.map(leadCard).join('') : '<div class="sb-empty">Week is empty</div>';
-  html += '</div>';
-
-  sb.innerHTML = html;
-}
-
-function renderMain(){
-  var main = document.getElementById('main');
-  main.className = 'main ' + currentView + 'view';
-  if (currentView === 'calendar') renderCalendar(main);
-  else if (currentView === 'kanban') renderKanban(main);
-  else if (currentView === 'map') renderMap(main);
-
-  document.getElementById('cal-sub').style.display = currentView === 'calendar' ? 'flex' : 'none';
-}
-
-// ===== CALENDAR =====
-function renderCalendar(main){
-  if (currentSub === 'week') renderWeek(main);
-  else if (currentSub === 'day') renderDay(main);
-  else renderMonth(main);
-}
-
-function calNavBar(label){
-  return '<div class="cal-nav">' +
-    '<div class="cal-nav-label">'+label+'</div>' +
-    '<div class="cal-nav-btns">' +
-      '<button onclick="navCal(-1)">‹</button>' +
-      '<button onclick="navCalToday()">Today</button>' +
-      '<button onclick="navCal(1)">›</button>' +
-    '</div></div>';
-}
-function navCal(dir){
-  if (currentSub === 'week') focusDate = addDays(focusDate, 7*dir);
-  else if (currentSub === 'day') focusDate = addDays(focusDate, dir);
-  else { focusDate = new Date(focusDate.getFullYear(), focusDate.getMonth()+dir, 1); }
-  renderAll();
-}
-function navCalToday(){ focusDate = new Date(); renderAll(); }
-
-function jobBlock(l, hourStart, hourEnd){
-  var t = parseMoveTime(l);
-  var hrs = l.estimate && l.estimate.hours ? parseFloat(l.estimate.hours) : 2;
-  var startH = t ? t.hour + t.minute/60 : 9;
-  var endH = Math.min(hourEnd, startH + hrs);
-  if (startH < hourStart) startH = hourStart;
-  if (endH <= startH) endH = startH + 0.5;
-  var top = (startH - hourStart) * 54;
-  var h = (endH - startH) * 54;
-  var timeLabel = l.move_time || (t ? (t.hour%12||12) + (t.minute?':'+String(t.minute).padStart(2,'0'):'') + (t.hour>=12?'pm':'am') : '—');
-  return '<div class="job-block s-'+l.status+'" style="top:'+top+'px;height:'+Math.max(32,h)+'px" onclick="openLead(\''+l.id+'\')">' +
-    '<div class="jb-time">'+timeLabel+'</div>' +
-    '<div class="jb-name">'+escapeHtml(firstName(l))+'</div>' +
-    '<div class="jb-route">'+escapeHtml(routeShort(l) || 'no route')+'</div>' +
-    '</div>';
-}
-
-function renderWeek(main){
-  var weekStart = startOfWeek(focusDate);
-  var days = [0,1,2,3,4,5,6].map(function(i){ return addDays(weekStart, i); });
-  var today = new Date();
-  var startH = 7, endH = 20;
-
-  var weekLabel = fmtDateLabel(days[0]) + ' – ' + fmtDateLabel(days[6]) + ', ' + days[0].getFullYear();
-
-  var html = calNavBar(weekLabel);
-  html += '<div class="cal-wrap">';
-  html += '<div class="cal-header"><div></div>';
-  days.forEach(function(d){
-    var isToday = sameDay(d, today);
-    html += '<div class="cal-day-header '+(isToday?'today':'')+'"><div class="dow">'+fmtDow(d)+'</div><div class="dom">'+d.getDate()+'</div></div>';
-  });
-  html += '</div>';
-
-  html += '<div class="cal-body">';
-  for (var h = startH; h < endH; h++){
-    var label = (h%12||12) + (h>=12?'pm':'am');
-    html += '<div class="cal-hour">'+label+'</div>';
-    days.forEach(function(d){
-      var isToday = sameDay(d, today);
-      var isWeekend = d.getDay() === 0 || d.getDay() === 6;
-      var cellJobs = h === startH ? leads.filter(function(l){
-        var ld = parseMoveDate(l);
-        if (!sameDay(ld, d)) return false;
-        if (l.status === 'lost' || l.status === 'abandoned') return false;
-        return true;
-      }) : [];
-      var content = cellJobs.map(function(l){ return jobBlock(l, startH, endH); }).join('');
-      html += '<div class="cal-slot '+(isToday?'today':'')+' '+(isWeekend?'weekend':'')+'">' + content + '</div>';
-    });
-  }
-  html += '</div></div>';
-
-  main.innerHTML = html;
-}
-
-function renderDay(main){
-  var d = new Date(focusDate); d.setHours(0,0,0,0);
-  var today = new Date();
-  var startH = 7, endH = 20;
-
-  var html = calNavBar(d.toLocaleString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}));
-  html += '<div class="cal-wrap dayview">';
-  html += '<div class="cal-header"><div></div><div class="cal-day-header '+(sameDay(d,today)?'today':'')+'"><div class="dow">'+fmtDow(d)+'</div><div class="dom">'+d.getDate()+'</div></div></div>';
-  html += '<div class="cal-body">';
-  var dayJobs = leads.filter(function(l){
-    var ld = parseMoveDate(l);
-    return sameDay(ld, d) && l.status !== 'lost' && l.status !== 'abandoned';
-  });
-  for (var h = startH; h < endH; h++){
-    var label = (h%12||12) + (h>=12?'pm':'am');
-    html += '<div class="cal-hour">'+label+'</div>';
-    var content = h === startH ? dayJobs.map(function(l){ return jobBlock(l, startH, endH); }).join('') : '';
-    html += '<div class="cal-slot">'+content+'</div>';
-  }
-  html += '</div></div>';
-  main.innerHTML = html;
-}
-
-function renderMonth(main){
-  var d = new Date(focusDate.getFullYear(), focusDate.getMonth(), 1);
-  var today = new Date();
-  var startDay = d.getDay();
-  var monthStart = new Date(d); monthStart.setDate(1 - startDay);
-  var days = [];
-  for (var i = 0; i < 42; i++){ days.push(addDays(monthStart, i)); }
-
-  var html = calNavBar(fmtMonthName(d));
-  html += '<div class="cal-wrap monthview"><div class="mo-grid">';
-  ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(function(name){ html += '<div class="mo-dow">'+name+'</div>'; });
-  days.forEach(function(dd){
-    var out = dd.getMonth() !== d.getMonth();
-    var isToday = sameDay(dd, today);
-    var dayJobs = leads.filter(function(l){
-      var ld = parseMoveDate(l);
-      return sameDay(ld, dd) && l.status !== 'lost' && l.status !== 'abandoned';
-    });
-    html += '<div class="mo-cell '+(out?'out':'')+' '+(isToday?'today':'')+'">';
-    html += '<span class="mo-num">'+dd.getDate()+'</span>';
-    var shown = dayJobs.slice(0,3);
-    shown.forEach(function(l){
-      html += '<span class="mo-job" onclick="openLead(\''+l.id+'\')" style="background:'+STATUS_COLORS[l.status]+'">' +
-        (l.move_time || '') + ' ' + escapeHtml(firstName(l)) +
-        '</span>';
-    });
-    if (dayJobs.length > 3) html += '<span class="mo-more">+'+(dayJobs.length-3)+' more</span>';
-    html += '</div>';
-  });
-  html += '</div></div>';
-  main.innerHTML = html;
-}
-
-// ===== KANBAN =====
-function renderKanban(main){
-  var cols = STATUS_ORDER;
-  var html = '<div class="kanban-wrap">';
-  cols.forEach(function(s){
-    var colLeads = leads.filter(l => l.status === s).sort(function(a,b){
-      return new Date(b.createdAt) - new Date(a.createdAt);
-    });
-    var subtotal = colLeads.reduce((x,l) => x + (l.estimate_total||0), 0);
-    html += '<div class="kb-col"><div class="kb-head">' +
-      '<div class="kb-head-title"><span class="dot" style="background:'+STATUS_COLORS[s]+'"></span>'+s+'</div>' +
-      '<div class="kb-head-meta">'+colLeads.length+(subtotal?' · '+fmtMoney(subtotal):'')+'</div>' +
-      '</div><div class="kb-body" data-col="'+s+'" ondragover="kbDragOver(event)" ondragleave="kbDragLeave(event)" ondrop="kbDrop(event,\''+s+'\')">';
-    colLeads.forEach(function(l){
-      var d = parseMoveDate(l);
-      var when = d ? fmtDateLabel(d) + (l.move_time?' '+l.move_time:'') : 'unscheduled';
-      var crewDots = (l.crew_assigned||[]).map(function(cid){
-        var c = crew.find(x => x.id === cid);
-        return c ? '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+(c.color||'#C8102E')+';margin-right:3px" title="'+escapeHtml(c.name)+'"></span>' : '';
-      }).join('');
-      html += '<div class="kb-card s-'+l.status+'" draggable="true" ondragstart="kbDragStart(event,\''+l.id+'\')" onclick="openLead(\''+l.id+'\')">' +
-        '<div class="kb-card-name">'+escapeHtml(l.name || '(no name)')+'<span class="kb-card-total">'+fmtMoney(l.estimate_total)+'</span></div>' +
-        '<div class="kb-card-meta"><span>'+when+'</span><span>'+crewDots+'</span></div>' +
-        (routeShort(l) ? '<div class="kb-card-route">'+escapeHtml(routeShort(l))+'</div>' : '') +
-        '</div>';
-    });
-    html += '</div></div>';
-  });
-  html += '</div>';
-  main.innerHTML = html;
-}
-
-var dragLeadId = null;
-function kbDragStart(e, id){ dragLeadId = id; e.dataTransfer.effectAllowed = 'move'; }
-function kbDragOver(e){ e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
-function kbDragLeave(e){ e.currentTarget.classList.remove('drag-over'); }
-async function kbDrop(e, newStatus){
-  e.preventDefault();
-  e.currentTarget.classList.remove('drag-over');
-  if (!dragLeadId) return;
-  var id = dragLeadId; dragLeadId = null;
-  // optimistic
-  var l = leads.find(x => x.id === id);
-  if (l) { l.status = newStatus; renderAll(); }
-  try {
-    await fetch('/.netlify/functions/crm', {
-      method: 'POST',
-      headers: { 'Content-Type':'application/json', 'x-crm-password': PW },
-      body: JSON.stringify({ action:'status', id: id, status: newStatus }),
-    });
-  } catch(e){ alert('Failed to update status — refreshing'); }
-  await loadLeads(); renderAll();
-}
-
-// ===== MAP =====
-function renderMap(main){
-  main.innerHTML = '<div class="map-wrap"><aside class="map-sidebar" id="map-sidebar"></aside><div id="map"></div></div>';
-
-  setTimeout(function(){
-    if (mapInstance) { mapInstance.remove(); mapInstance = null; }
-    mapInstance = L.map('map').setView([28.5383, -81.3792], 10);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap',
-      maxZoom: 19,
-    }).addTo(mapInstance);
-
-    var mappable = leads.filter(function(l){
-      return l.pickup_address && l.pickup_address !== 'TBD' && !l.pickup_address.startsWith('TBD') &&
-             l.status !== 'lost' && l.status !== 'abandoned';
-    });
-    var noAddr = leads.filter(function(l){
-      var a = l.pickup_address || '';
-      return (!a || a.startsWith('TBD')) && l.status === 'booked';
+    // ===== LOGIN =====
+    $('#login-form').on('submit', function(e) {
+        e.preventDefault();
+        var pw = $('#pw-input').val().trim();
+        if (!pw) return;
+        tryLogin(pw);
     });
 
-    mapMarkers.forEach(m => mapInstance.removeLayer(m));
-    mapMarkers = [];
-
-    mappable.forEach(function(l){
-      queueGeocode(l.pickup_address, function(coords){
-        if (!coords || !mapInstance) return;
-        var color = STATUS_COLORS[l.status] || '#C8102E';
-        var icon = L.divIcon({
-          className:'',
-          html:'<div style="width:24px;height:24px;border-radius:50% 50% 50% 0;background:'+color+';transform:rotate(-45deg);border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3)"></div>',
-          iconSize:[24,24], iconAnchor:[12,24],
+    function tryLogin(pw) {
+        $.ajax({
+            url: '/.netlify/functions/crm?action=list',
+            headers: { 'x-crm-password': pw },
+            success: function() {
+                PW = pw;
+                localStorage.setItem('crm_pw', pw);
+                showApp();
+            },
+            error: function() {
+                $('#login-error').show();
+            }
         });
-        var marker = L.marker([coords.lat, coords.lon], { icon: icon }).addTo(mapInstance);
-        var d = parseMoveDate(l);
-        marker.bindPopup(
-          '<div style="font-family:-apple-system,sans-serif;min-width:180px"><div style="font-weight:800;font-size:14px">'+escapeHtml(l.name)+'</div>' +
-          '<div style="font-size:12px;color:#666;margin:3px 0">'+(d?fmtDateLabel(d):'')+' '+(l.move_time||'')+'</div>' +
-          '<div style="font-size:11px;color:#666">'+escapeHtml(l.pickup_address)+'</div>' +
-          '<button onclick="openLead(\''+l.id+'\')" style="margin-top:8px;padding:5px 10px;background:#C8102E;color:#fff;border:none;border-radius:6px;font-weight:700;cursor:pointer;font-size:11px">View details →</button></div>'
-        );
-        mapMarkers.push(marker);
-      });
-    });
-
-    // Sidebar: jobs with no pin
-    var sb = document.getElementById('map-sidebar');
-    var html = '<div class="map-empty-list"><h4>On the map</h4>';
-    html += '<div class="sb-empty" style="margin-bottom:10px">'+mappable.length+' job'+(mappable.length===1?'':'s')+' plotted</div>';
-    if (noAddr.length) {
-      html += '<h4 style="margin-top:18px">No address yet</h4>';
-      noAddr.forEach(function(l){
-        var d = parseMoveDate(l);
-        html += '<div class="sb-lead '+l.status+'" onclick="openLead(\''+l.id+'\')">' +
-          '<div class="sb-lead-name">'+escapeHtml(l.name)+'</div>' +
-          '<div class="sb-lead-meta">'+(d?fmtDateLabel(d):'')+' '+(l.move_time||'')+'</div>' +
-          '</div>';
-      });
     }
-    html += '</div>';
-    sb.innerHTML = html;
-  }, 50);
-}
 
-function queueGeocode(addr, cb){
-  if (!addr) return cb(null);
-  if (geocache[addr]) return cb(geocache[addr]);
-  geoQueue.push({ addr: addr, cb: cb });
-  if (!geoRunning) runGeoQueue();
-}
-async function runGeoQueue(){
-  geoRunning = true;
-  while (geoQueue.length) {
-    var job = geoQueue.shift();
-    try {
-      var r = await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + encodeURIComponent(job.addr));
-      var arr = await r.json();
-      if (arr && arr[0]) {
-        var coords = { lat: parseFloat(arr[0].lat), lon: parseFloat(arr[0].lon) };
-        geocache[job.addr] = coords;
-        localStorage.setItem('geocache', JSON.stringify(geocache));
-        job.cb(coords);
-      } else {
-        job.cb(null);
-      }
-    } catch(e){ job.cb(null); }
-    await new Promise(r => setTimeout(r, 1100)); // rate limit
-  }
-  geoRunning = false;
-}
+    function showApp() {
+        $('#login-screen').hide();
+        $('#app-screen').show();
+        // Switch body class for layout
+        $('#body-el').removeClass('layout-login-centered-boxed').addClass('layout-default');
+        // Re-init MDK layout
+        if (typeof domFactory !== 'undefined') {
+            domFactory.handler.autoInit();
+        }
+        loadAll();
+    }
 
-// ===== DETAIL PANEL =====
-function openLead(id){ openLeadId = id; renderPanel(); }
-function closePanel(){ openLeadId = null; renderPanel(); }
-document.getElementById('panel-backdrop').addEventListener('click', closePanel);
+    function doLogout() {
+        localStorage.removeItem('crm_pw');
+        location.reload();
+    }
 
-async function renderPanel(){
-  var panel = document.getElementById('panel');
-  var backdrop = document.getElementById('panel-backdrop');
+    // Auto-login if password stored
+    if (PW) tryLogin(PW);
 
-  if (!openLeadId) {
-    panel.classList.remove('open');
-    backdrop.classList.remove('open');
-    panel.innerHTML = '';
-    return;
-  }
+    // ===== DATA LOADING =====
+    function loadAll() {
+        $.when(loadLeads(), loadCrew()).done(function() {
+            renderAll();
+        });
+    }
 
-  // fetch full lead
-  var lead;
-  try {
-    var r = await fetch('/.netlify/functions/crm?action=get&id='+openLeadId, { headers: { 'x-crm-password': PW } });
-    var j = await r.json();
-    lead = j.lead;
-  } catch(e){ return; }
-  if (!lead) return;
+    function loadLeads() {
+        return $.ajax({
+            url: '/.netlify/functions/crm?action=list',
+            headers: { 'x-crm-password': PW },
+            success: function(data) {
+                leads = data.leads || [];
+            },
+            error: function(xhr) {
+                if (xhr.status === 401) { localStorage.removeItem('crm_pw'); location.reload(); }
+            }
+        });
+    }
 
-  var est = lead.estimate || {};
-  var deposit = 0;
-  (lead.timeline||[]).forEach(function(t){
-    var m = (t.text||'').match(/\$(\d+)\s*deposit/i);
-    if (m && t.type === 'payment') deposit = Math.max(deposit, parseInt(m[1],10));
-  });
-  if (lead.depositPaid && !deposit) {
-    // try payload stored on lead (older records)
-    deposit = lead.deposit || 0;
-  }
-  var balance = Math.max(0, (est.total||0) - deposit);
-  var crewChips = (lead.crew_assigned||[]).map(function(cid){
-    var c = crew.find(x => x.id === cid);
-    if (!c) return '';
-    return '<span class="crew-pill"><span style="width:8px;height:8px;border-radius:50%;background:'+c.color+';display:inline-block"></span>'+escapeHtml(c.name)+' <span class="rm" onclick="removeCrewAssign(\''+lead.id+'\',\''+c.id+'\')">×</span></span>';
-  }).join('');
-  var crewOptions = crew.map(function(c){
-    var assigned = (lead.crew_assigned||[]).includes(c.id);
-    return '<option value="'+c.id+'" '+(assigned?'disabled':'')+'>'+escapeHtml(c.name)+' · '+escapeHtml(c.role)+'</option>';
-  }).join('');
+    function loadCrew() {
+        return $.ajax({
+            url: '/.netlify/functions/crm?action=crew',
+            headers: { 'x-crm-password': PW },
+            success: function(data) {
+                crewList = data.crew || [];
+            },
+            error: function() {}
+        });
+    }
 
-  var statusChips = STATUS_ORDER.map(function(s){
-    return '<button class="s-chip '+s+' '+(lead.status===s?'active':'')+'" onclick="setLeadStatus(\''+lead.id+'\',\''+s+'\')">'+s+'</button>';
-  }).join('');
+    // ===== VIEW SWITCHING =====
+    function switchView(view) {
+        currentView = view;
+        $('.view-container').removeClass('active');
+        $('#view-' + view).addClass('active');
+        // Update sidebar active state
+        $('#sidebar-nav .sidebar-menu-item').removeClass('active open');
+        $('#sidebar-nav .sidebar-menu-item[data-view="' + view + '"]').addClass('active');
+        // Update navbar title
+        var titles = { dashboard: 'Dashboard', calendar: 'Calendar', kanban: 'Kanban Board', leads: 'All Leads' };
+        $('#navbar-title span').text(titles[view] || 'Dashboard');
 
-  var pickup = lead.pickup_address || '';
-  var dropoff = lead.dropoff_address || '';
-  var pickupLink = pickup && !pickup.startsWith('TBD') ? '<a href="https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(pickup)+'" target="_blank">'+escapeHtml(pickup)+'</a>' : '<span class="editable" onclick="editField(\''+lead.id+'\',\'pickup_address\',\'Pickup address\')">'+escapeHtml(pickup||'Add pickup address')+'</span>';
-  var dropoffLink = dropoff && !dropoff.startsWith('TBD') ? '<a href="https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(dropoff)+'" target="_blank">'+escapeHtml(dropoff)+'</a>' : '<span class="editable" onclick="editField(\''+lead.id+'\',\'dropoff_address\',\'Dropoff address\')">'+escapeHtml(dropoff||'Add dropoff address')+'</span>';
+        // Initialize calendar on first visit
+        if (view === 'calendar' && !calendarInitialized) {
+            initCalendar();
+            calendarInitialized = true;
+        } else if (view === 'calendar') {
+            $('#calendar').fullCalendar('refetchEvents');
+        }
 
-  var d = parseMoveDate(lead);
-  var dateStr = d ? d.toLocaleString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}) : 'Not scheduled';
+        if (view === 'kanban') renderKanban();
+        if (view === 'leads') renderLeadsTable();
+        if (view === 'dashboard') renderDashboard();
+    }
 
-  panel.innerHTML =
-    '<div class="panel-head">' +
-      '<div><h3>'+escapeHtml(lead.name || '(no name)')+'</h3>' +
-      '<span class="status-chip" style="background:'+STATUS_COLORS[lead.status]+'">'+lead.status+'</span></div>' +
-      '<button class="panel-close" onclick="closePanel()">×</button>' +
-    '</div>' +
-    '<div class="panel-body">' +
-      // Customer
-      '<div class="panel-section"><h4>Customer</h4>' +
-        (lead.phone ? '<div class="panel-row"><span class="icon">📱</span><a href="tel:'+lead.phone.replace(/\D/g,'')+'">'+escapeHtml(lead.phone)+'</a></div>' : '') +
-        (lead.email ? '<div class="panel-row"><span class="icon">✉️</span><a href="mailto:'+escapeHtml(lead.email)+'">'+escapeHtml(lead.email)+'</a></div>' : '') +
-      '</div>' +
-      // Schedule
-      '<div class="panel-section"><h4>Schedule</h4>' +
-        '<div class="panel-row"><span class="icon">📅</span><span class="editable" onclick="editField(\''+lead.id+'\',\'move_date\',\'Move date (YYYY-MM-DD)\')">'+dateStr+'</span></div>' +
-        '<div class="panel-row"><span class="icon">⏰</span><span class="editable" onclick="editField(\''+lead.id+'\',\'move_time\',\'Move time (e.g. 11:00 AM)\')">'+(lead.move_time || 'Add time')+'</span></div>' +
-      '</div>' +
-      // Route
-      '<div class="panel-section"><h4>Route</h4>' +
-        '<div class="panel-row"><span class="icon">📍</span>'+pickupLink+'</div>' +
-        '<div class="panel-row"><span class="icon">🏁</span>'+dropoffLink+'</div>' +
-      '</div>' +
-      // Service
-      '<div class="panel-section"><h4>Service</h4>' +
-        '<div class="panel-row"><span class="icon">👷</span>'+(est.movers||'?')+' movers'+(est.truck?' + moving truck':'')+'</div>' +
-        '<div class="panel-row"><span class="icon">⏱️</span>'+(est.hours||'?')+' hrs estimated</div>' +
-        (lead.furniture_size ? '<div class="panel-row"><span class="icon">🏠</span>'+escapeHtml(lead.furniture_size)+'</div>' : '') +
-      '</div>' +
-      // Money
-      '<div class="panel-section"><h4>Payment</h4>' +
-        '<div class="money-box">' +
-          '<div class="money-row"><span>Estimated total</span><span>'+fmtMoney(est.total)+'</span></div>' +
-          '<div class="money-row deposit"><span>Deposit paid</span><span>−'+fmtMoney(deposit)+'</span></div>' +
-          '<div class="money-row total"><span>Balance due</span><span>'+fmtMoney(balance)+'</span></div>' +
-        '</div>' +
-      '</div>' +
-      // Crew
-      '<div class="panel-section"><h4>Crew</h4>' +
-        '<div class="crew-list">' + (crewChips || '<span class="crew-pill empty">No crew assigned</span>') + '</div>' +
-        '<select onchange="assignCrew(\''+lead.id+'\',this.value);this.value=\'\'" style="margin-top:8px;width:100%"><option value="">+ Assign crew…</option>' + crewOptions + '</select>' +
-      '</div>' +
-      // Status
-      '<div class="panel-section"><h4>Status</h4>' +
-        '<div class="status-chips">'+statusChips+'</div>' +
-      '</div>' +
-      // Timeline
-      '<div class="panel-section"><h4>Timeline</h4>' +
-        (lead.timeline||[]).slice().reverse().map(function(t){
-          return '<div class="timeline-item"><span class="at">'+new Date(t.at).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})+'</span> — '+escapeHtml(t.text)+'</div>';
-        }).join('') +
-      '</div>' +
-    '</div>' +
-    '<div class="panel-actions">' +
-      '<button class="pa-btn primary" onclick="sendConfirmation(\''+lead.id+'\')">📧 Send confirmation</button>' +
-      '<button class="pa-btn" onclick="addNote(\''+lead.id+'\')">📝 Add note</button>' +
-      (lead.stripeSessionId ? '<button class="pa-btn" onclick="window.open(\'https://dashboard.stripe.com/payments/\')">💳 Stripe</button>' : '') +
-      '<button class="pa-btn" style="margin-left:auto;color:#ef4444" onclick="deleteLead(\''+lead.id+'\',\''+escapeHtml(lead.name||'').replace(/\'/g,'\\\'')+'\')">🗑️ Delete</button>' +
-    '</div>';
+    // ===== RENDER ALL =====
+    function renderAll() {
+        renderStats();
+        renderDashboard();
+        if (currentView === 'calendar') {
+            if (!calendarInitialized) {
+                initCalendar();
+                calendarInitialized = true;
+            } else {
+                $('#calendar').fullCalendar('refetchEvents');
+            }
+        }
+        if (currentView === 'kanban') renderKanban();
+        if (currentView === 'leads') renderLeadsTable();
+    }
 
-  panel.classList.add('open');
-  document.getElementById('panel-backdrop').classList.add('open');
-}
+    // ===== STATS STRIP =====
+    function renderStats() {
+        var now = new Date();
+        var ws = startOfWeek(now);
+        var we = addDays(ws, 7);
+        var todayJobs = leads.filter(function(l) {
+            var d = parseMoveDate(l);
+            return d && sameDay(d, now) && l.status === 'booked';
+        });
+        var weekJobs = leads.filter(function(l) {
+            var d = parseMoveDate(l);
+            return d && d >= ws && d < we && l.status === 'booked';
+        });
+        var weekRevenue = weekJobs.reduce(function(s, l) { return s + (l.estimate_total || 0); }, 0);
 
-async function setLeadStatus(id, status){
-  try {
-    await fetch('/.netlify/functions/crm', {
-      method:'POST', headers:{ 'Content-Type':'application/json', 'x-crm-password': PW },
-      body: JSON.stringify({ action:'status', id: id, status: status }),
+        $('#stat-strip').html(
+            '<span><strong>' + todayJobs.length + '</strong> today</span>' +
+            '<span><strong>' + weekJobs.length + '</strong> this week</span>' +
+            '<span style="color:#16a34a"><strong>' + fmtMoney(weekRevenue) + '</strong> booked</span>'
+        );
+    }
+
+    // ===== DASHBOARD =====
+    function renderDashboard() {
+        var now = new Date();
+        var ws = startOfWeek(now);
+        var we = addDays(ws, 7);
+
+        // Stats cards
+        var todayJobs = leads.filter(function(l) {
+            var d = parseMoveDate(l);
+            return d && sameDay(d, now) && (l.status === 'booked' || l.status === 'done');
+        });
+        var weekBooked = leads.filter(function(l) {
+            var d = parseMoveDate(l);
+            return d && d >= ws && d < we && l.status === 'booked';
+        });
+        var weekRevenue = weekBooked.reduce(function(s, l) { return s + (l.estimate_total || 0); }, 0);
+        var newLeads = leads.filter(function(l) { return l.status === 'new'; });
+        var pipelineQuoted = leads.filter(function(l) { return l.status === 'quoted'; });
+        var pipelineTotal = pipelineQuoted.reduce(function(s, l) { return s + (l.estimate_total || 0); }, 0);
+
+        var statsHtml =
+            '<div class="col-md-3 col-sm-6">' +
+                '<div class="card card-body d-flex flex-row align-items-center">' +
+                    '<div class="stat-card-icon mr-3" style="background:var(--s-booked)">' +
+                        '<i class="material-icons">local_shipping</i>' +
+                    '</div>' +
+                    '<div><div class="text-muted" style="font-size:12px">Today\'s Jobs</div><h4 class="m-0">' + todayJobs.length + '</h4></div>' +
+                '</div>' +
+            '</div>' +
+            '<div class="col-md-3 col-sm-6">' +
+                '<div class="card card-body d-flex flex-row align-items-center">' +
+                    '<div class="stat-card-icon mr-3" style="background:#16a34a">' +
+                        '<i class="material-icons">attach_money</i>' +
+                    '</div>' +
+                    '<div><div class="text-muted" style="font-size:12px">This Week Revenue</div><h4 class="m-0">' + fmtMoney(weekRevenue) + '</h4></div>' +
+                '</div>' +
+            '</div>' +
+            '<div class="col-md-3 col-sm-6">' +
+                '<div class="card card-body d-flex flex-row align-items-center">' +
+                    '<div class="stat-card-icon mr-3" style="background:var(--s-new)">' +
+                        '<i class="material-icons">person_add</i>' +
+                    '</div>' +
+                    '<div><div class="text-muted" style="font-size:12px">New Leads</div><h4 class="m-0">' + newLeads.length + '</h4></div>' +
+                '</div>' +
+            '</div>' +
+            '<div class="col-md-3 col-sm-6">' +
+                '<div class="card card-body d-flex flex-row align-items-center">' +
+                    '<div class="stat-card-icon mr-3" style="background:var(--s-quoted)">' +
+                        '<i class="material-icons">request_quote</i>' +
+                    '</div>' +
+                    '<div><div class="text-muted" style="font-size:12px">Pipeline (Quoted)</div><h4 class="m-0">' + fmtMoney(pipelineTotal) + '</h4></div>' +
+                '</div>' +
+            '</div>';
+        $('#stats-row').html(statsHtml);
+
+        // Upcoming jobs table (next 7 days, booked)
+        var next7 = addDays(now, 7);
+        var upcoming = leads.filter(function(l) {
+            var d = parseMoveDate(l);
+            return d && d >= now && d <= next7 && (l.status === 'booked' || l.status === 'new' || l.status === 'quoted');
+        }).sort(function(a, b) {
+            return (parseMoveDate(a) || 0) - (parseMoveDate(b) || 0);
+        });
+
+        var upcomingHtml = '';
+        upcoming.forEach(function(l) {
+            var d = parseMoveDate(l);
+            var crewDots = (l.crew_assigned || []).map(function(cid) {
+                var c = crewList.find(function(x) { return x.id === cid; });
+                return c ? '<span class="crew-dot-sm" style="background:' + (c.color || '#C8102E') + '" title="' + escapeHtml(c.name) + '"></span>' : '';
+            }).join('');
+            upcomingHtml += '<tr onclick="openLead(\'' + l.id + '\')">' +
+                '<td>' + (d ? fmtDateShort(d) : '---') + '</td>' +
+                '<td>' + escapeHtml(l.move_time || '---') + '</td>' +
+                '<td>' + escapeHtml(l.name || '(no name)') + '</td>' +
+                '<td style="font-size:12px">' + escapeHtml(routeShort(l) || '---') + '</td>' +
+                '<td>' + (crewDots || '<span class="text-muted">---</span>') + '</td>' +
+                '<td>' + statusBadge(l.status) + '</td>' +
+                '<td><strong>' + fmtMoney(l.estimate_total) + '</strong></td>' +
+                '</tr>';
+        });
+        if (!upcoming.length) {
+            upcomingHtml = '<tr><td colspan="7" class="text-center text-muted py-4">No upcoming jobs in the next 7 days</td></tr>';
+        }
+        $('#upcoming-table tbody').html(upcomingHtml);
+
+        // Recent leads (last 10)
+        var recent = leads.slice().sort(function(a, b) {
+            return new Date(b.createdAt) - new Date(a.createdAt);
+        }).slice(0, 10);
+
+        var recentHtml = '';
+        recent.forEach(function(l) {
+            recentHtml += '<a href="#" class="list-group-item list-group-item-action d-flex align-items-center" onclick="openLead(\'' + l.id + '\');return false;">' +
+                '<div class="d-flex flex-column flex">' +
+                    '<div class="d-flex align-items-center">' +
+                        '<strong class="flex" style="font-size:13px">' + escapeHtml(l.name || '(no name)') + '</strong>' +
+                        statusBadge(l.status) +
+                    '</div>' +
+                    '<small class="text-muted">' + fmtMoney(l.estimate_total) + ' &middot; ' + (l.move_date || 'no date') + '</small>' +
+                '</div>' +
+                '<i class="material-icons icon-muted ml-3" style="font-size:16px">chevron_right</i>' +
+            '</a>';
+        });
+        if (!recent.length) {
+            recentHtml = '<div class="list-group-item text-center text-muted py-4">No leads yet</div>';
+        }
+        $('#recent-leads-list').html(recentHtml);
+    }
+
+    // ===== CALENDAR =====
+    function initCalendar() {
+        $('#calendar').fullCalendar({
+            themeSystem: 'bootstrap4',
+            slotDuration: '00:30:00',
+            minTime: '07:00:00',
+            maxTime: '20:00:00',
+            defaultView: 'month',
+            handleWindowResize: true,
+            height: $(window).height() - 200,
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'month,agendaWeek,agendaDay'
+            },
+            events: function(start, end, timezone, callback) {
+                var events = [];
+                leads.forEach(function(l) {
+                    var d = parseMoveDate(l);
+                    if (!d) return;
+                    var t = parseMoveTime(l);
+                    var startMoment = moment(d);
+                    if (t) {
+                        startMoment.hour(t.hour).minute(t.minute);
+                    }
+                    var hrs = 2;
+                    events.push({
+                        id: l.id,
+                        title: (l.name || '(no name)'),
+                        start: startMoment.format(),
+                        end: t ? startMoment.clone().add(hrs, 'hours').format() : null,
+                        allDay: !t,
+                        color: STATUS_COLORS[l.status] || '#6c757d',
+                        leadId: l.id
+                    });
+                });
+                callback(events);
+            },
+            eventClick: function(event) {
+                openLead(event.leadId || event.id);
+            },
+            editable: false,
+            eventLimit: true,
+            selectable: false
+        });
+    }
+
+    // ===== KANBAN =====
+    function renderKanban() {
+        var html = '';
+        STATUS_ORDER.forEach(function(s) {
+            var colLeads = leads.filter(function(l) { return l.status === s; }).sort(function(a, b) {
+                return new Date(b.createdAt) - new Date(a.createdAt);
+            });
+            var subtotal = colLeads.reduce(function(x, l) { return x + (l.estimate_total || 0); }, 0);
+
+            html += '<div class="kanban-col">' +
+                '<div class="kanban-col-header">' +
+                    '<h6><span class="dot" style="background:' + STATUS_COLORS[s] + '"></span>' + s + '</h6>' +
+                    '<small class="text-muted">' + colLeads.length + (subtotal ? ' &middot; ' + fmtMoney(subtotal) : '') + '</small>' +
+                '</div>' +
+                '<div class="kanban-col-body" data-status="' + s + '" id="kanban-col-' + s + '">';
+
+            colLeads.forEach(function(l) {
+                var d = parseMoveDate(l);
+                var when = d ? fmtDateLabel(d) + (l.move_time ? ' ' + l.move_time : '') : 'unscheduled';
+                var crewDots = (l.crew_assigned || []).map(function(cid) {
+                    var c = crewList.find(function(x) { return x.id === cid; });
+                    return c ? '<span class="crew-dot-sm" style="background:' + (c.color || '#C8102E') + '" title="' + escapeHtml(c.name) + '"></span>' : '';
+                }).join('');
+
+                html += '<div class="kanban-card s-' + s + '" data-lead-id="' + l.id + '" onclick="openLead(\'' + l.id + '\')">' +
+                    '<div class="d-flex justify-content-between align-items-start">' +
+                        '<div class="kanban-card-name">' + escapeHtml(l.name || '(no name)') + '</div>' +
+                        '<span class="kanban-card-total">' + fmtMoney(l.estimate_total) + '</span>' +
+                    '</div>' +
+                    '<div class="kanban-card-meta">' + when + '</div>' +
+                    (crewDots ? '<div class="mt-1">' + crewDots + '</div>' : '') +
+                    (routeShort(l) ? '<div class="kanban-card-meta mt-1" style="font-size:10px">' + escapeHtml(routeShort(l)) + '</div>' : '') +
+                '</div>';
+            });
+
+            html += '</div></div>';
+        });
+
+        $('#kanban-board').html(html);
+        initDragula();
+    }
+
+    function initDragula() {
+        if (dragulaInstance) dragulaInstance.destroy();
+        var containers = [];
+        STATUS_ORDER.forEach(function(s) {
+            var el = document.getElementById('kanban-col-' + s);
+            if (el) containers.push(el);
+        });
+        if (!containers.length) return;
+
+        dragulaInstance = dragula(containers, {
+            moves: function(el) { return el.classList.contains('kanban-card'); }
+        });
+
+        dragulaInstance.on('drop', function(el, target) {
+            if (!target) return;
+            var leadId = $(el).data('lead-id');
+            var newStatus = $(target).data('status');
+            if (!leadId || !newStatus) return;
+
+            // Optimistic update
+            var lead = leads.find(function(l) { return l.id === leadId; });
+            if (lead) lead.status = newStatus;
+
+            $.ajax({
+                url: '/.netlify/functions/crm',
+                method: 'POST',
+                headers: apiHeaders(),
+                data: JSON.stringify({ action: 'status', id: leadId, status: newStatus }),
+                success: function() {
+                    loadLeads().done(function() { renderStats(); });
+                },
+                error: function() {
+                    alert('Failed to update status');
+                    loadAll();
+                }
+            });
+        });
+    }
+
+    // ===== LEADS TABLE =====
+    function renderLeadsTable() {
+        var search = ($('#leads-search').val() || '').toLowerCase();
+        var filtered = leads.filter(function(l) {
+            if (!search) return true;
+            return (l.name || '').toLowerCase().includes(search) ||
+                   (l.phone || '').toLowerCase().includes(search) ||
+                   (l.email || '').toLowerCase().includes(search) ||
+                   (l.status || '').toLowerCase().includes(search);
+        }).sort(function(a, b) {
+            return new Date(b.createdAt) - new Date(a.createdAt);
+        });
+
+        var html = '';
+        filtered.forEach(function(l) {
+            html += '<tr onclick="openLead(\'' + l.id + '\')">' +
+                '<td><strong>' + escapeHtml(l.name || '(no name)') + '</strong></td>' +
+                '<td><a href="tel:' + (l.phone || '').replace(/\D/g, '') + '">' + escapeHtml(l.phone || '---') + '</a></td>' +
+                '<td>' + escapeHtml(l.email || '---') + '</td>' +
+                '<td>' + escapeHtml(l.move_date || '---') + '</td>' +
+                '<td>' + statusBadge(l.status) + '</td>' +
+                '<td>' + fmtMoney(l.estimate_total) + '</td>' +
+                '<td><small class="text-muted">' + escapeHtml(l.utm_source || '---') + '</small></td>' +
+                '</tr>';
+        });
+        if (!filtered.length) {
+            html = '<tr><td colspan="7" class="text-center text-muted py-4">No leads found</td></tr>';
+        }
+        $('#leads-table tbody').html(html);
+    }
+
+    // Search filter
+    $(document).on('input', '#leads-search', function() {
+        renderLeadsTable();
     });
-    await loadLeads(); renderAll(); renderPanel();
-  } catch(e){ alert('Status update failed'); }
-}
 
-async function editField(id, field, label){
-  var current = '';
-  var lead = leads.find(l => l.id === id);
-  if (lead) current = lead[field] || '';
-  var val = prompt(label, current);
-  if (val === null) return;
-  try {
-    var patch = {}; patch[field] = val;
-    await fetch('/.netlify/functions/crm', {
-      method:'POST', headers:{ 'Content-Type':'application/json', 'x-crm-password': PW },
-      body: JSON.stringify({ action:'update', id: id, patch: patch }),
+    // ===== LEAD DETAIL MODAL =====
+    function openLead(id) {
+        $.ajax({
+            url: '/.netlify/functions/crm?action=get&id=' + id,
+            headers: { 'x-crm-password': PW },
+            success: function(data) {
+                var lead = data.lead;
+                if (!lead) return;
+                renderLeadModal(lead);
+                $('#leadModal').modal('show');
+            },
+            error: function() { alert('Failed to load lead details'); }
+        });
+    }
+
+    function renderLeadModal(lead) {
+        var est = lead.estimate || {};
+        var deposit = 0;
+        (lead.timeline || []).forEach(function(t) {
+            var m = (t.text || '').match(/\$(\d+)\s*deposit/i);
+            if (m && t.type === 'payment') deposit = Math.max(deposit, parseInt(m[1], 10));
+        });
+        if (lead.depositPaid && !deposit) {
+            deposit = lead.deposit || 0;
+        }
+        var balance = Math.max(0, (est.total || 0) - deposit);
+
+        // Crew chips
+        var crewChips = (lead.crew_assigned || []).map(function(cid) {
+            var c = crewList.find(function(x) { return x.id === cid; });
+            if (!c) return '';
+            return '<span class="crew-pill"><span class="crew-dot-sm" style="background:' + c.color + '"></span>' +
+                escapeHtml(c.name) +
+                ' <span class="rm" onclick="removeCrewAssign(\'' + lead.id + '\',\'' + c.id + '\')">&times;</span></span>';
+        }).join('');
+
+        var crewOptions = crewList.map(function(c) {
+            var assigned = (lead.crew_assigned || []).indexOf(c.id) >= 0;
+            return '<option value="' + c.id + '" ' + (assigned ? 'disabled' : '') + '>' + escapeHtml(c.name) + ' - ' + escapeHtml(c.role) + '</option>';
+        }).join('');
+
+        // Status chips
+        var statusChips = STATUS_ORDER.map(function(s) {
+            return '<button class="s-chip ' + s + ' ' + (lead.status === s ? 'active' : '') + '" onclick="setLeadStatus(\'' + lead.id + '\',\'' + s + '\')">' + s + '</button>';
+        }).join('');
+
+        // Address links
+        var pickup = lead.pickup_address || '';
+        var dropoff = lead.dropoff_address || '';
+        var pickupHtml = pickup && !pickup.startsWith('TBD') ?
+            '<a href="https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(pickup) + '" target="_blank">' + escapeHtml(pickup) + '</a>' :
+            '<span class="editable" onclick="editField(\'' + lead.id + '\',\'pickup_address\',\'Pickup address\')">' + escapeHtml(pickup || 'Add pickup address') + '</span>';
+        var dropoffHtml = dropoff && !dropoff.startsWith('TBD') ?
+            '<a href="https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(dropoff) + '" target="_blank">' + escapeHtml(dropoff) + '</a>' :
+            '<span class="editable" onclick="editField(\'' + lead.id + '\',\'dropoff_address\',\'Dropoff address\')">' + escapeHtml(dropoff || 'Add dropoff address') + '</span>';
+
+        var d = parseMoveDate(lead);
+        var dateStr = d ? d.toLocaleString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }) : 'Not scheduled';
+
+        // Title
+        $('#leadModal-title').html(
+            escapeHtml(lead.name || '(no name)') + ' ' +
+            '<span class="badge badge-' + escapeHtml(lead.status) + ' ml-2">' + escapeHtml(lead.status) + '</span>'
+        );
+
+        // Body
+        var body = '';
+
+        // Customer
+        body += '<div class="detail-section"><h6>Customer</h6>';
+        if (lead.phone) body += '<div class="detail-row"><i class="material-icons">phone</i><a href="tel:' + lead.phone.replace(/\D/g, '') + '">' + escapeHtml(lead.phone) + '</a></div>';
+        if (lead.email) body += '<div class="detail-row"><i class="material-icons">email</i><a href="mailto:' + escapeHtml(lead.email) + '">' + escapeHtml(lead.email) + '</a></div>';
+        body += '</div>';
+
+        // Schedule
+        body += '<div class="detail-section"><h6>Schedule</h6>' +
+            '<div class="detail-row"><i class="material-icons">event</i><span class="editable" onclick="editField(\'' + lead.id + '\',\'move_date\',\'Move date (YYYY-MM-DD)\')">' + dateStr + '</span></div>' +
+            '<div class="detail-row"><i class="material-icons">schedule</i><span class="editable" onclick="editField(\'' + lead.id + '\',\'move_time\',\'Move time (e.g. 11:00 AM)\')">' + escapeHtml(lead.move_time || 'Add time') + '</span></div>' +
+            '</div>';
+
+        // Route
+        body += '<div class="detail-section"><h6>Route</h6>' +
+            '<div class="detail-row"><i class="material-icons">location_on</i>' + pickupHtml + '</div>' +
+            '<div class="detail-row"><i class="material-icons">flag</i>' + dropoffHtml + '</div>' +
+            '</div>';
+
+        // Service
+        body += '<div class="detail-section"><h6>Service</h6>' +
+            '<div class="detail-row"><i class="material-icons">engineering</i>' + (est.movers || '?') + ' movers' + (est.truck ? ' + moving truck' : '') + '</div>' +
+            '<div class="detail-row"><i class="material-icons">timer</i>' + (est.hours || '?') + ' hrs estimated</div>';
+        if (lead.furniture_size) body += '<div class="detail-row"><i class="material-icons">weekend</i>' + escapeHtml(lead.furniture_size) + '</div>';
+        body += '</div>';
+
+        // Payment
+        body += '<div class="detail-section"><h6>Payment</h6>' +
+            '<div class="money-box">' +
+                '<div class="money-row"><span>Estimated total</span><span>' + fmtMoney(est.total) + '</span></div>' +
+                '<div class="money-row deposit"><span>Deposit paid</span><span>-' + fmtMoney(deposit) + '</span></div>' +
+                '<div class="money-row total"><span>Balance due</span><span>' + fmtMoney(balance) + '</span></div>' +
+            '</div>' +
+            '</div>';
+
+        // Crew
+        body += '<div class="detail-section"><h6>Crew Assignment</h6>' +
+            '<div>' + (crewChips || '<span class="text-muted" style="font-size:12px">No crew assigned</span>') + '</div>' +
+            '<select class="form-control form-control-sm mt-2" onchange="assignCrew(\'' + lead.id + '\',this.value);this.value=\'\'"><option value="">+ Assign crew member...</option>' + crewOptions + '</select>' +
+            '</div>';
+
+        // Status
+        body += '<div class="detail-section"><h6>Status</h6>' +
+            '<div class="status-chips">' + statusChips + '</div>' +
+            '</div>';
+
+        // Timeline
+        body += '<div class="detail-section"><h6>Timeline</h6>';
+        var timeline = (lead.timeline || []).slice().reverse();
+        if (timeline.length) {
+            timeline.forEach(function(t) {
+                body += '<div class="timeline-item"><span class="at">' +
+                    new Date(t.at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) +
+                    '</span> -- ' + escapeHtml(t.text) + '</div>';
+            });
+        } else {
+            body += '<div class="text-muted" style="font-size:12px">No timeline entries</div>';
+        }
+        body += '</div>';
+
+        $('#leadModal-body').html(body);
+
+        // Footer actions
+        var footer = '<button class="btn btn-primary btn-sm" onclick="sendConfirmation(\'' + lead.id + '\')"><i class="material-icons mr-1" style="font-size:14px">email</i> Send Confirmation</button>' +
+            '<button class="btn btn-outline-secondary btn-sm" onclick="addNote(\'' + lead.id + '\')"><i class="material-icons mr-1" style="font-size:14px">note_add</i> Add Note</button>' +
+            '<button class="btn btn-outline-danger btn-sm ml-auto" onclick="deleteLead(\'' + lead.id + '\',\'' + escapeHtml(lead.name || '').replace(/'/g, "\\'") + '\')"><i class="material-icons mr-1" style="font-size:14px">delete</i> Delete</button>';
+        $('#leadModal-footer').html(footer);
+    }
+
+    // ===== LEAD ACTIONS =====
+    function setLeadStatus(id, status) {
+        $.ajax({
+            url: '/.netlify/functions/crm',
+            method: 'POST',
+            headers: apiHeaders(),
+            data: JSON.stringify({ action: 'status', id: id, status: status }),
+            success: function() {
+                loadLeads().done(function() {
+                    renderAll();
+                    openLead(id);
+                });
+            },
+            error: function() { alert('Status update failed'); }
+        });
+    }
+
+    function editField(id, field, label) {
+        var lead = leads.find(function(l) { return l.id === id; });
+        var current = lead ? (lead[field] || '') : '';
+        var val = prompt(label, current);
+        if (val === null) return;
+        var patch = {};
+        patch[field] = val;
+        $.ajax({
+            url: '/.netlify/functions/crm',
+            method: 'POST',
+            headers: apiHeaders(),
+            data: JSON.stringify({ action: 'update', id: id, patch: patch }),
+            success: function() {
+                loadLeads().done(function() {
+                    renderAll();
+                    openLead(id);
+                });
+            },
+            error: function() { alert('Update failed'); }
+        });
+    }
+
+    function assignCrew(leadId, crewId) {
+        if (!crewId) return;
+        var lead = leads.find(function(l) { return l.id === leadId; });
+        var next = Array.isArray(lead.crew_assigned) ? lead.crew_assigned.slice() : [];
+        if (next.indexOf(crewId) === -1) next.push(crewId);
+        $.ajax({
+            url: '/.netlify/functions/crm',
+            method: 'POST',
+            headers: apiHeaders(),
+            data: JSON.stringify({ action: 'update', id: leadId, patch: { crew_assigned: next } }),
+            success: function() {
+                loadLeads().done(function() { renderAll(); openLead(leadId); });
+            },
+            error: function() { alert('Crew assign failed'); }
+        });
+    }
+
+    function removeCrewAssign(leadId, crewId) {
+        var lead = leads.find(function(l) { return l.id === leadId; });
+        var next = (lead.crew_assigned || []).filter(function(c) { return c !== crewId; });
+        $.ajax({
+            url: '/.netlify/functions/crm',
+            method: 'POST',
+            headers: apiHeaders(),
+            data: JSON.stringify({ action: 'update', id: leadId, patch: { crew_assigned: next } }),
+            success: function() {
+                loadLeads().done(function() { renderAll(); openLead(leadId); });
+            },
+            error: function() {}
+        });
+    }
+
+    function addNote(id) {
+        var text = prompt('Add a note:');
+        if (!text) return;
+        $.ajax({
+            url: '/.netlify/functions/crm',
+            method: 'POST',
+            headers: apiHeaders(),
+            data: JSON.stringify({ action: 'note', id: id, text: text }),
+            success: function() {
+                loadLeads().done(function() { openLead(id); });
+            },
+            error: function() {}
+        });
+    }
+
+    function deleteLead(id, name) {
+        if (!confirm('Delete "' + (name || 'this lead') + '" permanently?\n\nThis cannot be undone.')) return;
+        var double = prompt('Type DELETE to confirm:');
+        if (double !== 'DELETE') return;
+        $.ajax({
+            url: '/.netlify/functions/crm',
+            method: 'POST',
+            headers: apiHeaders(),
+            data: JSON.stringify({ action: 'delete', id: id }),
+            success: function() {
+                $('#leadModal').modal('hide');
+                loadLeads().done(function() { renderAll(); });
+            },
+            error: function() { alert('Delete failed'); }
+        });
+    }
+
+    function sendConfirmation(id) {
+        if (!confirm('Send booking confirmation email to this customer?')) return;
+        $.ajax({
+            url: '/.netlify/functions/resend-confirmation?pw=' + encodeURIComponent(PW) + '&leadId=' + encodeURIComponent(id),
+            success: function(data) {
+                if (data.ok) alert('Confirmation sent!');
+                else alert('Failed: ' + (data.error || 'unknown'));
+            },
+            error: function() { alert('Send failed'); }
+        });
+    }
+
+    // ===== CREW MODAL =====
+    function openCrewModal() {
+        renderCrewModal();
+        $('#crewModal').modal('show');
+    }
+
+    function renderCrewModal() {
+        var html = '';
+        crewList.forEach(function(c) {
+            html += '<div class="d-flex align-items-center p-2 border rounded mb-2">' +
+                '<span class="crew-dot-sm mr-2" style="background:' + c.color + ';width:12px;height:12px"></span>' +
+                '<div class="flex"><strong style="font-size:13px">' + escapeHtml(c.name) + '</strong><br><small class="text-muted">' + escapeHtml(c.role) + '</small></div>' +
+                '<button class="btn btn-sm btn-outline-danger" onclick="removeCrew(\'' + c.id + '\')">Remove</button>' +
+                '</div>';
+        });
+        if (!crewList.length) {
+            html += '<div class="text-center text-muted py-3">No crew members yet.</div>';
+        }
+        html += '<hr><div class="form-row">' +
+            '<div class="col"><input class="form-control form-control-sm" id="new-crew-name" placeholder="Name"></div>' +
+            '<div class="col"><input class="form-control form-control-sm" id="new-crew-role" placeholder="Role (e.g. Mover)"></div>' +
+            '<div class="col-auto"><button class="btn btn-primary btn-sm" onclick="addCrewMember()">Add</button></div>' +
+            '</div>';
+        $('#crewModal-body').html(html);
+    }
+
+    function addCrewMember() {
+        var name = $('#new-crew-name').val().trim();
+        var role = $('#new-crew-role').val().trim() || 'Mover';
+        if (!name) return;
+        var colors = ['#C8102E', '#2563eb', '#16a34a', '#8b5cf6', '#f59e0b', '#0ea5e9', '#ec4899'];
+        var color = colors[crewList.length % colors.length];
+        $.ajax({
+            url: '/.netlify/functions/crm',
+            method: 'POST',
+            headers: apiHeaders(),
+            data: JSON.stringify({ action: 'crew_add', member: { name: name, role: role, color: color } }),
+            success: function() {
+                loadCrew().done(function() { renderCrewModal(); renderAll(); });
+            },
+            error: function() { alert('Add failed'); }
+        });
+    }
+
+    function removeCrew(id) {
+        if (!confirm('Remove this crew member?')) return;
+        $.ajax({
+            url: '/.netlify/functions/crm',
+            method: 'POST',
+            headers: apiHeaders(),
+            data: JSON.stringify({ action: 'crew_remove', crew_id: id }),
+            success: function() {
+                loadCrew().done(function() { renderCrewModal(); renderAll(); });
+            },
+            error: function() {}
+        });
+    }
+
+    // ===== KEYBOARD SHORTCUTS =====
+    $(document).on('keydown', function(e) {
+        if (e.key === 'Escape') {
+            $('#leadModal').modal('hide');
+            $('#crewModal').modal('hide');
+        }
     });
-    await loadLeads(); renderAll(); renderPanel();
-  } catch(e){ alert('Update failed'); }
-}
 
-async function assignCrew(leadId, crewId){
-  if (!crewId) return;
-  var lead = leads.find(l => l.id === leadId);
-  var next = Array.isArray(lead.crew_assigned) ? lead.crew_assigned.slice() : [];
-  if (!next.includes(crewId)) next.push(crewId);
-  try {
-    await fetch('/.netlify/functions/crm', {
-      method:'POST', headers:{ 'Content-Type':'application/json', 'x-crm-password': PW },
-      body: JSON.stringify({ action:'update', id: leadId, patch: { crew_assigned: next } }),
-    });
-    await loadLeads(); renderAll(); renderPanel();
-  } catch(e){ alert('Crew assign failed'); }
-}
-async function removeCrewAssign(leadId, crewId){
-  var lead = leads.find(l => l.id === leadId);
-  var next = (lead.crew_assigned || []).filter(c => c !== crewId);
-  try {
-    await fetch('/.netlify/functions/crm', {
-      method:'POST', headers:{ 'Content-Type':'application/json', 'x-crm-password': PW },
-      body: JSON.stringify({ action:'update', id: leadId, patch: { crew_assigned: next } }),
-    });
-    await loadLeads(); renderAll(); renderPanel();
-  } catch(e){}
-}
-
-async function addNote(id){
-  var text = prompt('Add a note:');
-  if (!text) return;
-  try {
-    await fetch('/.netlify/functions/crm', {
-      method:'POST', headers:{ 'Content-Type':'application/json', 'x-crm-password': PW },
-      body: JSON.stringify({ action:'note', id: id, text: text }),
-    });
-    await loadLeads(); renderPanel();
-  } catch(e){}
-}
-
-async function deleteLead(id, name){
-  var confirmed = confirm('Delete "'+(name||'this lead')+'" permanently?\n\nThis cannot be undone.');
-  if (!confirmed) return;
-  var double = prompt('Type DELETE to confirm:');
-  if (double !== 'DELETE') return;
-  try {
-    await fetch('/.netlify/functions/crm', {
-      method:'POST', headers:{ 'Content-Type':'application/json', 'x-crm-password': PW },
-      body: JSON.stringify({ action:'delete', id: id }),
-    });
-    closePanel();
-    await loadLeads(); renderAll();
-  } catch(e){ alert('Delete failed'); }
-}
-
-async function sendConfirmation(id){
-  if (!confirm('Send booking confirmation email to this customer?')) return;
-  try {
-    var r = await fetch('/.netlify/functions/resend-confirmation?pw='+encodeURIComponent(PW)+'&leadId='+encodeURIComponent(id));
-    var j = await r.json();
-    if (j.ok) alert('Confirmation sent ✓');
-    else alert('Failed: ' + (j.error || 'unknown'));
-  } catch(e){ alert('Send failed'); }
-}
-
-// ===== CREW MODAL =====
-document.getElementById('crew-btn').addEventListener('click', openCrewModal);
-function openCrewModal(){
-  renderCrewModal();
-  document.getElementById('crew-modal').classList.add('open');
-}
-function closeCrewModal(){ document.getElementById('crew-modal').classList.remove('open'); }
-
-function renderCrewModal(){
-  var body = document.getElementById('crew-modal-body');
-  var html = '';
-  crew.forEach(function(c){
-    html += '<div class="crew-row">' +
-      '<span class="crew-dot" style="background:'+c.color+'"></span>' +
-      '<div class="crew-info"><div class="nm">'+escapeHtml(c.name)+'</div><div class="rl">'+escapeHtml(c.role)+'</div></div>' +
-      '<button class="crew-rm-btn" onclick="removeCrew(\''+c.id+'\')">Remove</button>' +
-      '</div>';
-  });
-  if (!crew.length) html += '<div class="sb-empty">No crew yet.</div>';
-  html += '<div class="modal-add"><input id="new-crew-name" placeholder="Name"><input id="new-crew-role" placeholder="Role (e.g. Mover)" style="flex:1"><button onclick="addCrew()">Add</button></div>';
-  body.innerHTML = html;
-}
-async function addCrew(){
-  var name = document.getElementById('new-crew-name').value.trim();
-  var role = document.getElementById('new-crew-role').value.trim() || 'Mover';
-  if (!name) return;
-  var colors = ['#C8102E','#2563eb','#16a34a','#8b5cf6','#f59e0b','#0ea5e9','#ec4899'];
-  var color = colors[crew.length % colors.length];
-  try {
-    await fetch('/.netlify/functions/crm', {
-      method:'POST', headers:{ 'Content-Type':'application/json', 'x-crm-password': PW },
-      body: JSON.stringify({ action:'crew_add', member: { name: name, role: role, color: color } }),
-    });
-    await loadCrew(); renderCrewModal(); renderAll();
-  } catch(e){ alert('Add failed'); }
-}
-async function removeCrew(id){
-  if (!confirm('Remove this crew member?')) return;
-  try {
-    await fetch('/.netlify/functions/crm', {
-      method:'POST', headers:{ 'Content-Type':'application/json', 'x-crm-password': PW },
-      body: JSON.stringify({ action:'crew_remove', crew_id: id }),
-    });
-    await loadCrew(); renderCrewModal(); renderAll();
-  } catch(e){}
-}
-
-// ===== SWITCHERS =====
-document.getElementById('view-switcher').querySelectorAll('button').forEach(function(b){
-  b.addEventListener('click', function(){
-    document.querySelectorAll('#view-switcher button').forEach(x => x.classList.remove('active'));
-    b.classList.add('active');
-    currentView = b.getAttribute('data-view');
-    renderMain();
-  });
-});
-document.getElementById('cal-sub').querySelectorAll('button').forEach(function(b){
-  b.addEventListener('click', function(){
-    document.querySelectorAll('#cal-sub button').forEach(x => x.classList.remove('active'));
-    b.classList.add('active');
-    currentSub = b.getAttribute('data-sub');
-    renderMain();
-  });
-});
-document.getElementById('refresh-btn').addEventListener('click', loadAll);
-
-// ===== ESCAPE =====
-function escapeHtml(s){
-  return String(s == null ? '' : s)
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-}
-document.addEventListener('keydown', function(e){
-  if (e.key === 'Escape') { closePanel(); closeCrewModal(); }
-});
-</script>
-
+    </script>
 </body>
 </html>

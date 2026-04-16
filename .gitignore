@@ -22,3 +22,6 @@
 # Node
 node_modules/
 package-lock.json
+
+# CRM admin template demo images (not needed)
+crm-assets/images/
