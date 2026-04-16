@@ -38,6 +38,12 @@ exports.handler = async (event) => {
   const total = est.total || 0;
   const reviewUrl = process.env.GOOGLE_REVIEW_URL || 'https://g.page/r/CYAKurQHh5TvEAI/review';
 
+  // Deposit rules: truck+labor=$125, labor-only=$50, single-item=$50
+  const deposit = est.truck ? 125 : 50;
+  const depositLabel = est.truck ? '$125' : '$50';
+  const bookUrl = `https://toromovers.net/.netlify/functions/reserve-from-email?truck=${!!est.truck}&total=${total}&movers=${est.movers||2}&hours=${est.hours||2}&name=${encodeURIComponent(lead.name||'')}&email=${encodeURIComponent(lead.email||'')}&phone=${encodeURIComponent(lead.phone||'')}`;
+  const bookCta = `<div style="text-align:center;margin:24px 0"><a href="${bookUrl}" style="display:inline-block;background:#C8102E;color:#fff;padding:14px 32px;border-radius:999px;text-decoration:none;font-weight:800;font-size:15px">Book Now — ${depositLabel} deposit →</a><div style="font-size:12px;color:#6b7280;margin-top:8px">Secure your date. Balance paid after the move.</div></div>`;
+
   const esc = (s) => String(s == null ? '' : s)
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
@@ -53,6 +59,7 @@ exports.handler = async (event) => {
           <li><strong>You lock in your date</strong> with a small deposit — balance paid after the move</li>
         </ol>
         ${total ? '<p style="margin:16px 0;color:#3a3a3a;font-size:15px">Your estimated total: <strong>$'+total+'</strong> ($75/mover/hour, no hidden fees).</p>' : ''}
+        ${bookCta}
         <p style="margin:16px 0;color:#3a3a3a;font-size:15px">Questions? Just reply to this email or call <a href="tel:+13217580094" style="color:#C8102E;font-weight:700">(321) 758-0094</a>.</p>
       `,
     },
@@ -81,7 +88,8 @@ exports.handler = async (event) => {
           <li><strong>Licensed &amp; insured</strong> — your stuff is protected</li>
           <li><strong>Family-owned</strong> — we treat your home like ours</li>
         </ul>
-        <p style="margin:16px 0;color:#3a3a3a;font-size:15px">Ready to book? Reply here or call <a href="tel:+13217580094" style="color:#C8102E;font-weight:700">(321) 758-0094</a>.</p>
+        ${bookCta}
+        <p style="margin:16px 0;color:#3a3a3a;font-size:15px">Or reply here / call <a href="tel:+13217580094" style="color:#C8102E;font-weight:700">(321) 758-0094</a>.</p>
       `,
     },
     day4: {
@@ -90,9 +98,7 @@ exports.handler = async (event) => {
         <h2 style="margin:0 0 14px;font-size:22px">${esc(firstName)}, your estimate is ready</h2>
         ${total ? '<div style="background:#f0fdf4;border:1px solid #16a34a;border-radius:10px;padding:18px;text-align:center;margin:16px 0"><div style="font-size:14px;color:#15803d;margin-bottom:4px">Your estimated total</div><div style="font-size:32px;font-weight:900;color:#111">$'+total+'</div><div style="font-size:12px;color:#6b7280;margin-top:4px">$75/mover/hr · no hidden fees · balance after the job</div></div>' : ''}
         <p style="margin:16px 0;color:#3a3a3a;font-size:15px;line-height:1.6">Our calendar is filling up. Lock in your preferred date with a small deposit ($50 labor-only / $125 with truck) and we'll handle the rest.</p>
-        <div style="text-align:center;margin:24px 0">
-          <a href="https://toromovers.net/quote" style="display:inline-block;background:#C8102E;color:#fff;padding:14px 32px;border-radius:999px;text-decoration:none;font-weight:800;font-size:15px">Book My Move →</a>
-        </div>
+        ${bookCta}
       `,
     },
     day5: {
@@ -107,9 +113,7 @@ exports.handler = async (event) => {
           <li>One reply or call and you're booked in 2 minutes</li>
         </ul>
         <p style="margin:16px 0;color:#3a3a3a;font-size:15px">Either way, I wish you a smooth move. We're here if you need us.</p>
-        <div style="text-align:center;margin:24px 0">
-          <a href="tel:+13217580094" style="display:inline-block;background:#C8102E;color:#fff;padding:14px 32px;border-radius:999px;text-decoration:none;font-weight:800;font-size:15px">Call (321) 758-0094</a>
-        </div>
+        ${bookCta}
       `,
     },
     referral: {
