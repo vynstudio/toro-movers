@@ -26,7 +26,7 @@ exports.handler = async (event) => {
   const response = (q.response || '').trim().toLowerCase();
 
   if (!leadId || !crewId || !['accept', 'deny'].includes(response)) {
-    return { statusCode: 400, headers: { 'Content-Type': 'text/html' }, body: '<h2>Invalid link.</h2>' };
+    return { statusCode: 400, headers: { 'Content-Type': 'text/html; charset=utf-8' }, body: '<h2>Invalid link.</h2>' };
   }
 
   const lead = await getLead(leadId);
@@ -46,9 +46,9 @@ exports.handler = async (event) => {
 
     return {
       statusCode: 200,
-      headers: { 'Content-Type': 'text/html' },
+      headers: { 'Content-Type': 'text/html; charset=utf-8' },
       body: `
-        <html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>
+        <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>
           body{font-family:-apple-system,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#f0fdf4}
           .card{background:#fff;border-radius:16px;padding:40px;text-align:center;max-width:400px;box-shadow:0 4px 20px rgba(0,0,0,.1)}
           h1{color:#16a34a;margin:0 0 12px}
@@ -70,9 +70,9 @@ exports.handler = async (event) => {
 
     return {
       statusCode: 200,
-      headers: { 'Content-Type': 'text/html' },
+      headers: { 'Content-Type': 'text/html; charset=utf-8' },
       body: `
-        <html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>
+        <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>
           body{font-family:-apple-system,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#fef2f2}
           .card{background:#fff;border-radius:16px;padding:40px;text-align:center;max-width:400px;box-shadow:0 4px 20px rgba(0,0,0,.1)}
           h1{color:#ef4444;margin:0 0 12px}
