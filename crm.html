@@ -146,25 +146,95 @@
     /* Preloader override */
     .preloader { display: none !important; }
 
-    /* ===== OVERRIDE MDK LAYOUT WITH SIMPLE FLEXBOX ===== */
+    /* ===== LAYOUT ===== */
     #app-screen { display: none; height: 100vh; }
     #app-screen.show { display: flex !important; }
+
+    /* Sidebar */
     .crm-sidebar {
-        width: 250px; min-width: 250px; background: #0a0a0a;
+        width: 240px; min-width: 240px; background: #111827;
         display: flex; flex-direction: column; overflow-y: auto;
-        color: #fff; flex-shrink: 0;
+        color: #fff; flex-shrink: 0; box-shadow: 2px 0 8px rgba(0,0,0,.15);
     }
+    .crm-sidebar .sb-brand {
+        padding: 20px 20px 16px; border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+    .crm-sidebar .sb-brand .sidebar-brand-text { font-size: 20px; }
+    .crm-sidebar .sb-nav {
+        list-style: none; padding: 12px 8px; margin: 0; flex: 1;
+    }
+    .crm-sidebar .sb-nav li {
+        margin-bottom: 2px;
+    }
+    .crm-sidebar .sb-nav a {
+        display: flex; align-items: center; gap: 12px;
+        padding: 10px 14px; border-radius: 8px; color: rgba(255,255,255,.65);
+        text-decoration: none; font-size: 14px; font-weight: 500;
+        transition: all .15s;
+    }
+    .crm-sidebar .sb-nav a:hover {
+        background: rgba(255,255,255,.08); color: #fff;
+    }
+    .crm-sidebar .sb-nav li.active a {
+        background: rgba(200,16,46,.2); color: #fff; font-weight: 600;
+    }
+    .crm-sidebar .sb-nav li.active a .material-icons {
+        color: var(--toro-red);
+    }
+    .crm-sidebar .sb-nav a .material-icons {
+        font-size: 20px; color: rgba(255,255,255,.4); transition: color .15s;
+    }
+    .crm-sidebar .sb-nav a:hover .material-icons { color: rgba(255,255,255,.8); }
+    .crm-sidebar .sb-footer {
+        padding: 14px 20px; border-top: 1px solid rgba(255,255,255,.08);
+    }
+    .crm-sidebar .sb-footer a {
+        display: flex; align-items: center; gap: 8px;
+        color: rgba(255,255,255,.45); font-size: 12px; text-decoration: none;
+        margin-bottom: 8px; transition: color .15s;
+    }
+    .crm-sidebar .sb-footer a:hover { color: rgba(255,255,255,.8); }
+    .crm-sidebar .sb-footer a .material-icons { font-size: 15px; }
+
+    /* Main content */
     .crm-main {
         flex: 1; overflow-y: auto; background: #f5f6f7;
-        min-height: 0;
+        min-height: 0; display: flex; flex-direction: column;
     }
     .crm-header {
-        background: #fff; border-bottom: 1px solid #e7e7eb;
-        padding: 12px 20px; display: flex; align-items: center;
-        flex-shrink: 0;
+        background: #fff; border-bottom: 1px solid #e5e7eb;
+        padding: 14px 24px; display: flex; align-items: center;
+        flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,.04);
     }
-    .crm-header h4 { margin: 0; font-weight: 700; font-size: 16px; }
+    .crm-header h4 { margin: 0; font-weight: 800; font-size: 17px; color: #111; }
+    .crm-header .stat-strip { gap: 18px; }
     .crm-header .ml-auto { margin-left: auto; }
+
+    /* Better stat cards */
+    .stat-card-icon {
+        width: 52px; height: 52px; border-radius: 14px;
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,.12);
+    }
+    .stat-card-icon .material-icons { font-size: 26px; color: #fff; }
+    .card { border: none; box-shadow: 0 1px 3px rgba(0,0,0,.06); border-radius: 10px; }
+    .card-header { background: #fff !important; border-bottom: 1px solid #f0f0f0; border-radius: 10px 10px 0 0 !important; }
+    .card-header__title { font-size: 14px !important; font-weight: 700 !important; }
+
+    /* Better table */
+    .table th { font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: #6b7280; font-weight: 700; border-top: none; }
+    .table td { vertical-align: middle; font-size: 13px; }
+
+    /* Better badges */
+    .badge { font-size: 10px; font-weight: 700; padding: 4px 8px; border-radius: 6px; letter-spacing: .3px; text-transform: uppercase; }
+
+    /* Recent leads list */
+    .list-group-item { border: none; border-bottom: 1px solid #f3f4f6; padding: 10px 16px; }
+    .list-group-item:last-child { border-bottom: none; }
+
+    /* Section label */
+    .section-label { font-size: 11px; font-weight: 800; color: #9ca3af; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
+
     @media (max-width: 768px) {
         .crm-sidebar { display: none; }
         #app-screen.show { flex-direction: column; }
@@ -208,51 +278,42 @@
     <div id="app-screen">
         <!-- SIDEBAR -->
         <div class="crm-sidebar">
-            <div class="p-3 border-bottom" style="border-color:rgba(255,255,255,.1)!important">
-                <a href="#" onclick="switchView('dashboard');return false;" style="text-decoration:none">
+            <div class="sb-brand">
+                <a href="#" onclick="switchView('dashboard');return false;" style="text-decoration:none;color:#fff">
                     <div class="sidebar-brand-text">TORO <span class="red">MOVERS</span></div>
-                    <small style="color:rgba(255,255,255,.4)">CRM Dashboard</small>
+                    <small style="color:rgba(255,255,255,.35);font-size:11px;letter-spacing:.5px">CRM DASHBOARD</small>
                 </a>
             </div>
-            <ul class="sidebar-menu flex" id="sidebar-nav" style="list-style:none;padding:10px 0;margin:0;flex:1">
-                <li class="sidebar-menu-item active" data-view="dashboard">
-                    <a class="sidebar-menu-button" href="#" onclick="switchView('dashboard');return false;">
-                        <i class="sidebar-menu-icon sidebar-menu-icon--left material-icons">dashboard</i>
-                        <span class="sidebar-menu-text">Dashboard</span>
+            <ul class="sb-nav" id="sidebar-nav">
+                <li class="active" data-view="dashboard">
+                    <a href="#" onclick="switchView('dashboard');return false;">
+                        <i class="material-icons">dashboard</i> Dashboard
                     </a>
                 </li>
-                <li class="sidebar-menu-item" data-view="calendar">
-                    <a class="sidebar-menu-button" href="#" onclick="switchView('calendar');return false;">
-                        <i class="sidebar-menu-icon sidebar-menu-icon--left material-icons">calendar_today</i>
-                        <span class="sidebar-menu-text">Calendar</span>
+                <li data-view="calendar">
+                    <a href="#" onclick="switchView('calendar');return false;">
+                        <i class="material-icons">calendar_today</i> Calendar
                     </a>
                 </li>
-                <li class="sidebar-menu-item" data-view="kanban">
-                    <a class="sidebar-menu-button" href="#" onclick="switchView('kanban');return false;">
-                        <i class="sidebar-menu-icon sidebar-menu-icon--left material-icons">view_column</i>
-                        <span class="sidebar-menu-text">Kanban</span>
+                <li data-view="kanban">
+                    <a href="#" onclick="switchView('kanban');return false;">
+                        <i class="material-icons">view_column</i> Kanban
                     </a>
                 </li>
-                <li class="sidebar-menu-item" data-view="leads">
-                    <a class="sidebar-menu-button" href="#" onclick="switchView('leads');return false;">
-                        <i class="sidebar-menu-icon sidebar-menu-icon--left material-icons">people</i>
-                        <span class="sidebar-menu-text">Leads</span>
+                <li data-view="leads">
+                    <a href="#" onclick="switchView('leads');return false;">
+                        <i class="material-icons">people</i> Leads
                     </a>
                 </li>
-                <li class="sidebar-menu-item">
-                    <a class="sidebar-menu-button" href="#" onclick="openCrewModal();return false;">
-                        <i class="sidebar-menu-icon sidebar-menu-icon--left material-icons">group</i>
-                        <span class="sidebar-menu-text">Crew</span>
+                <li>
+                    <a href="#" onclick="openCrewModal();return false;">
+                        <i class="material-icons">group</i> Crew
                     </a>
                 </li>
             </ul>
-            <div class="p-3" style="border-top:1px solid rgba(255,255,255,.1)">
-                <a class="d-block mb-2" href="/" target="_blank" style="color:rgba(255,255,255,.6);font-size:13px">
-                    <i class="material-icons mr-1" style="font-size:14px;vertical-align:middle">open_in_new</i> Open Website
-                </a>
-                <a class="d-block" href="#" onclick="doLogout();return false;" style="color:rgba(255,255,255,.6);font-size:13px">
-                    <i class="material-icons mr-1" style="font-size:14px;vertical-align:middle">exit_to_app</i> Logout
-                </a>
+            <div class="sb-footer">
+                <a href="/" target="_blank"><i class="material-icons">open_in_new</i> Open Website</a>
+                <a href="#" onclick="doLogout();return false;"><i class="material-icons">exit_to_app</i> Logout</a>
             </div>
         </div>
 
@@ -573,8 +634,8 @@
         $('.view-container').removeClass('active');
         $('#view-' + view).addClass('active');
         // Update sidebar active state
-        $('#sidebar-nav .sidebar-menu-item').removeClass('active open');
-        $('#sidebar-nav .sidebar-menu-item[data-view="' + view + '"]').addClass('active');
+        $('#sidebar-nav li').removeClass('active');
+        $('#sidebar-nav li[data-view="' + view + '"]').addClass('active');
         // Update navbar title
         var titles = { dashboard: 'Dashboard', calendar: 'Calendar', kanban: 'Kanban Board', leads: 'All Leads' };
         $('#navbar-title').text(titles[view] || 'Dashboard');
