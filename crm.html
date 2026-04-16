@@ -524,16 +524,8 @@
     <script src="crm-assets/vendor/bootstrap.min.js"></script>
     <!-- Simplebar -->
     <script src="crm-assets/vendor/simplebar.min.js"></script>
-    <!-- DOM Factory -->
-    <script src="crm-assets/vendor/dom-factory.js"></script>
-    <!-- MDK -->
-    <script src="crm-assets/vendor/material-design-kit.js"></script>
-    <!-- App JS (sidebar, header, drawer) -->
-    <script src="crm-assets/js/toggle-check-all.js"></script>
-    <script src="crm-assets/js/check-selected-row.js"></script>
+    <!-- Dropdown only (rest of FlatAdmin layout JS removed — using custom flexbox) -->
     <script src="crm-assets/js/dropdown.js"></script>
-    <script src="crm-assets/js/sidebar-mini.js"></script>
-    <script src="crm-assets/js/app.js"></script>
     <!-- Moment -->
     <script src="crm-assets/vendor/moment.min.js"></script>
     <!-- jQuery UI (for FullCalendar drag) -->
@@ -1214,6 +1206,14 @@
                 '</div>' +
             '</div>' +
             '<button class="btn btn-outline-secondary btn-sm" onclick="addNote(\'' + lead.id + '\')"><i class="material-icons mr-1" style="font-size:14px">note_add</i> Note</button>' +
+            '<div class="btn-group btn-group-sm">' +
+                '<button class="btn btn-outline-success btn-sm dropdown-toggle" data-toggle="dropdown"><i class="material-icons mr-1" style="font-size:14px">send</i> Send to Crew</button>' +
+                '<div class="dropdown-menu">' +
+                    crewList.map(function(c) {
+                        return '<a class="dropdown-item" href="#" onclick="sendToCrew(\'' + lead.id + '\',\'' + c.id + '\');return false"><span class="crew-dot-sm" style="background:' + (c.color || '#C8102E') + '"></span> ' + escapeHtml(c.name) + (c.email ? '' : ' (no email)') + '</a>';
+                    }).join('') +
+                '</div>' +
+            '</div>' +
             '<button class="btn btn-outline-danger btn-sm ml-auto" onclick="deleteLead(\'' + lead.id + '\',\'' + escapeHtml(lead.name || '').replace(/'/g, "\\'") + '\')"><i class="material-icons mr-1" style="font-size:14px">delete</i> Delete</button>';
         $('#leadModal-footer').html(footer);
     }
@@ -1304,6 +1304,21 @@
         });
     }
 
+    function sendToCrew(leadId, crewId) {
+        var c = crewList.find(function(x) { return x.id === crewId; });
+        if (!c) return;
+        if (!c.email) { alert(c.name + ' has no email. Add it in Crew settings.'); return; }
+        if (!confirm('Send job details to ' + c.name + ' (' + c.email + ')?')) return;
+        $.ajax({
+            url: '/.netlify/functions/send-crew-job?pw=' + encodeURIComponent(PW) + '&leadId=' + encodeURIComponent(leadId) + '&crewId=' + encodeURIComponent(crewId),
+            success: function(data) {
+                if (data.ok) { alert('Job sent to ' + data.crewName + ' ✓'); openLead(leadId); }
+                else alert('Failed: ' + (data.error || 'unknown'));
+            },
+            error: function(xhr) { alert('Send failed: ' + (xhr.responseJSON?.error || 'network error')); }
+        });
+    }
+
     function sendFollowup(id, template) {
         var labels = { day1:'Day 1 — Thanks', day2:'Day 2 — Quick question', day3:'Day 3 — Still need help', day4:'Day 4 — Estimate waiting', day5:'Day 5 — Last chance', referral:'Referral + $50 off' };
         if (!confirm('Send "' + (labels[template]||template) + '" follow-up email?')) return;
@@ -1359,7 +1374,7 @@
         crewList.forEach(function(c) {
             html += '<div class="d-flex align-items-center p-2 border rounded mb-2">' +
                 '<span class="crew-dot-sm mr-2" style="background:' + c.color + ';width:12px;height:12px"></span>' +
-                '<div class="flex"><strong style="font-size:13px">' + escapeHtml(c.name) + '</strong><br><small class="text-muted">' + escapeHtml(c.role) + '</small></div>' +
+                '<div class="flex"><strong style="font-size:13px">' + escapeHtml(c.name) + '</strong><br><small class="text-muted">' + escapeHtml(c.role) + (c.email ? ' · ' + escapeHtml(c.email) : ' · no email') + '</small></div>' +
                 '<button class="btn btn-sm btn-outline-danger" onclick="removeCrew(\'' + c.id + '\')">Remove</button>' +
                 '</div>';
         });
@@ -1368,7 +1383,8 @@
         }
         html += '<hr><div class="form-row">' +
             '<div class="col"><input class="form-control form-control-sm" id="new-crew-name" placeholder="Name"></div>' +
-            '<div class="col"><input class="form-control form-control-sm" id="new-crew-role" placeholder="Role (e.g. Mover)"></div>' +
+            '<div class="col"><input class="form-control form-control-sm" id="new-crew-role" placeholder="Role"></div>' +
+            '<div class="col"><input class="form-control form-control-sm" id="new-crew-email" placeholder="Email" type="email"></div>' +
             '<div class="col-auto"><button class="btn btn-primary btn-sm" onclick="addCrewMember()">Add</button></div>' +
             '</div>';
         $('#crewModal-body').html(html);
@@ -1377,6 +1393,7 @@
     function addCrewMember() {
         var name = $('#new-crew-name').val().trim();
         var role = $('#new-crew-role').val().trim() || 'Mover';
+        var email = $('#new-crew-email').val().trim();
         if (!name) return;
         var colors = ['#C8102E', '#2563eb', '#16a34a', '#8b5cf6', '#f59e0b', '#0ea5e9', '#ec4899'];
         var color = colors[crewList.length % colors.length];
@@ -1384,7 +1401,7 @@
             url: '/.netlify/functions/crm',
             method: 'POST',
             headers: apiHeaders(),
-            data: JSON.stringify({ action: 'crew_add', member: { name: name, role: role, color: color } }),
+            data: JSON.stringify({ action: 'crew_add', member: { name: name, role: role, email: email, color: color } }),
             success: function() {
                 loadCrew().done(function() { renderCrewModal(); renderAll(); });
             },

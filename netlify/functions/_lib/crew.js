@@ -37,6 +37,7 @@ async function addCrew(member){
     id,
     name: member.name,
     role: member.role || 'Mover',
+    email: member.email || '',
     active: member.active !== false,
     color: member.color || '#2563eb',
   };
