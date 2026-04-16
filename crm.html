@@ -184,10 +184,18 @@
     .crm-sidebar .sb-nav li.active a .material-icons {
         color: var(--toro-red);
     }
-    .crm-sidebar .sb-nav a .material-icons {
-        font-size: 20px; color: #9ca3af; transition: color .15s;
+    .crm-sidebar .sb-nav a .material-icons,
+    .crm-sidebar .sb-nav a i {
+        font-size: 20px !important; color: #9ca3af !important; transition: color .15s;
+        background: none !important; width: auto !important; height: auto !important;
+        border-radius: 0 !important; padding: 0 !important; margin: 0 !important;
+        display: inline-flex !important; position: static !important;
+        box-shadow: none !important; flex-shrink: 0;
     }
-    .crm-sidebar .sb-nav a:hover .material-icons { color: #6b7280; }
+    .crm-sidebar .sb-nav a:hover .material-icons,
+    .crm-sidebar .sb-nav a:hover i { color: #6b7280 !important; }
+    .crm-sidebar .sb-nav li.active a .material-icons,
+    .crm-sidebar .sb-nav li.active a i { color: var(--toro-red) !important; }
     .crm-sidebar .sb-footer {
         padding: 14px 20px; border-top: 1px solid #e5e7eb;
     }
