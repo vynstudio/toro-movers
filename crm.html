@@ -167,15 +167,24 @@
     .crm-sidebar .sb-nav-item {
         margin-bottom: 2px;
     }
+    .crm-sidebar .sb-nav-item a {
+        display: flex; align-items: center; gap: 12px;
+        padding: 10px 14px; border-radius: 8px; color: #6b7280;
+        text-decoration: none; font-size: 14px; font-weight: 500;
+        transition: background .15s, color .15s;
+    }
     .crm-sidebar .sb-nav-item a:hover {
-        background: #f3f4f6 !important; color: #111 !important;
+        background: #f3f4f6; color: #111;
     }
     .crm-sidebar .sb-nav-item.active a {
-        background: rgba(200,16,46,.08) !important; color: var(--toro-red) !important; font-weight: 600 !important;
+        background: rgba(200,16,46,.08); color: var(--toro-red); font-weight: 600;
     }
-    .crm-sidebar .sb-nav-item.active a .material-icons {
-        color: var(--toro-red) !important;
+    .sb-icon {
+        width: 20px; text-align: center; font-size: 15px; color: #9ca3af;
+        flex-shrink: 0;
     }
+    .crm-sidebar .sb-nav-item a:hover .sb-icon { color: #6b7280; }
+    .crm-sidebar .sb-nav-item.active a .sb-icon { color: var(--toro-red); }
     .crm-sidebar .sb-footer {
         padding: 14px 20px; border-top: 1px solid #e5e7eb;
     }
@@ -277,33 +286,28 @@
             </div>
             <div class="sb-nav" id="sidebar-nav">
                 <div class="sb-nav-item active" data-view="dashboard">
-                    <a href="#" onclick="switchView('dashboard');return false;" style="display:flex!important;align-items:center!important;gap:12px!important;padding:10px 14px!important;border-radius:8px;color:#6b7280;text-decoration:none;font-size:14px;font-weight:500">
-                        <span class="material-icons" style="font-size:20px!important;color:inherit!important;background:none!important;width:auto!important;height:auto!important;padding:0!important;margin:0!important;display:inline!important;position:static!important">dashboard</span>
-                        <span>Dashboard</span>
+                    <a href="#" onclick="switchView('dashboard');return false;">
+                        <i class="fas fa-th-large sb-icon"></i> <span>Dashboard</span>
                     </a>
                 </div>
                 <div class="sb-nav-item" data-view="calendar">
-                    <a href="#" onclick="switchView('calendar');return false;" style="display:flex!important;align-items:center!important;gap:12px!important;padding:10px 14px!important;border-radius:8px;color:#6b7280;text-decoration:none;font-size:14px;font-weight:500">
-                        <span class="material-icons" style="font-size:20px!important;color:inherit!important;background:none!important;width:auto!important;height:auto!important;padding:0!important;margin:0!important;display:inline!important;position:static!important">event</span>
-                        <span>Calendar</span>
+                    <a href="#" onclick="switchView('calendar');return false;">
+                        <i class="fas fa-calendar-alt sb-icon"></i> <span>Calendar</span>
                     </a>
                 </div>
                 <div class="sb-nav-item" data-view="kanban">
-                    <a href="#" onclick="switchView('kanban');return false;" style="display:flex!important;align-items:center!important;gap:12px!important;padding:10px 14px!important;border-radius:8px;color:#6b7280;text-decoration:none;font-size:14px;font-weight:500">
-                        <span class="material-icons" style="font-size:20px!important;color:inherit!important;background:none!important;width:auto!important;height:auto!important;padding:0!important;margin:0!important;display:inline!important;position:static!important">view_column</span>
-                        <span>Kanban</span>
+                    <a href="#" onclick="switchView('kanban');return false;">
+                        <i class="fas fa-columns sb-icon"></i> <span>Kanban</span>
                     </a>
                 </div>
                 <div class="sb-nav-item" data-view="leads">
-                    <a href="#" onclick="switchView('leads');return false;" style="display:flex!important;align-items:center!important;gap:12px!important;padding:10px 14px!important;border-radius:8px;color:#6b7280;text-decoration:none;font-size:14px;font-weight:500">
-                        <span class="material-icons" style="font-size:20px!important;color:inherit!important;background:none!important;width:auto!important;height:auto!important;padding:0!important;margin:0!important;display:inline!important;position:static!important">people</span>
-                        <span>Leads</span>
+                    <a href="#" onclick="switchView('leads');return false;">
+                        <i class="fas fa-users sb-icon"></i> <span>Leads</span>
                     </a>
                 </div>
                 <div class="sb-nav-item">
-                    <a href="#" onclick="openCrewModal();return false;" style="display:flex!important;align-items:center!important;gap:12px!important;padding:10px 14px!important;border-radius:8px;color:#6b7280;text-decoration:none;font-size:14px;font-weight:500">
-                        <span class="material-icons" style="font-size:20px!important;color:inherit!important;background:none!important;width:auto!important;height:auto!important;padding:0!important;margin:0!important;display:inline!important;position:static!important">group</span>
-                        <span>Crew</span>
+                    <a href="#" onclick="openCrewModal();return false;">
+                        <i class="fas fa-hard-hat sb-icon"></i> <span>Crew</span>
                     </a>
                 </div>
             </div>
