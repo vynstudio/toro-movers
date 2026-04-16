@@ -1248,43 +1248,53 @@
     }
 
     function editEstimate(id, field, label) {
-        var lead = leads.find(function(l) { return l.id === id; });
-        var est = lead ? (lead.estimate || lead) : {};
-        var current = est[field] || '';
-        var val = prompt(label, current);
-        if (val === null) return;
-        var newEst = Object.assign({}, lead.estimate || {});
-        newEst[field] = isNaN(Number(val)) ? val : Number(val);
-        // Auto-recalc total if movers/hours changed
-        if (field === 'movers' || field === 'hours') {
-            var m = newEst.movers || 2;
-            var h = newEst.hours || 2;
-            newEst.total = Math.round(75 * m * h) + (newEst.truck ? 275 : 0);
-        }
+        // Must fetch full lead (index doesn't have estimate object)
         $.ajax({
-            url: '/.netlify/functions/crm',
-            method: 'POST',
+            url: '/.netlify/functions/crm?action=get&id=' + id,
             headers: apiHeaders(),
-            data: JSON.stringify({ action: 'update', id: id, patch: { estimate: newEst } }),
-            success: function() { loadLeads().done(function() { renderAll(); openLead(id); }); },
-            error: function() { alert('Update failed'); }
+            success: function(data) {
+                var lead = data.lead;
+                if (!lead) return;
+                var est = lead.estimate || {};
+                var current = est[field] || '';
+                var val = prompt(label, current);
+                if (val === null) return;
+                var newEst = Object.assign({}, est);
+                newEst[field] = isNaN(Number(val)) ? val : Number(val);
+                if (field === 'movers' || field === 'hours') {
+                    newEst.total = Math.round(75 * (newEst.movers || 2) * (newEst.hours || 2)) + (newEst.truck ? 275 : 0);
+                }
+                $.ajax({
+                    url: '/.netlify/functions/crm',
+                    method: 'POST',
+                    headers: apiHeaders(),
+                    data: JSON.stringify({ action: 'update', id: id, patch: { estimate: newEst } }),
+                    success: function() { loadLeads().done(function() { renderAll(); openLead(id); }); },
+                    error: function() { alert('Update failed'); }
+                });
+            }
         });
     }
 
     function toggleTruck(id) {
-        var lead = leads.find(function(l) { return l.id === id; });
-        var newEst = Object.assign({}, lead.estimate || {});
-        newEst.truck = !newEst.truck;
-        var m = newEst.movers || 2;
-        var h = newEst.hours || 2;
-        newEst.total = Math.round(75 * m * h) + (newEst.truck ? 275 : 0);
         $.ajax({
-            url: '/.netlify/functions/crm',
-            method: 'POST',
+            url: '/.netlify/functions/crm?action=get&id=' + id,
             headers: apiHeaders(),
-            data: JSON.stringify({ action: 'update', id: id, patch: { estimate: newEst } }),
-            success: function() { loadLeads().done(function() { renderAll(); openLead(id); }); },
-            error: function() { alert('Update failed'); }
+            success: function(data) {
+                var lead = data.lead;
+                if (!lead) return;
+                var newEst = Object.assign({}, lead.estimate || {});
+                newEst.truck = !newEst.truck;
+                newEst.total = Math.round(75 * (newEst.movers || 2) * (newEst.hours || 2)) + (newEst.truck ? 275 : 0);
+                $.ajax({
+                    url: '/.netlify/functions/crm',
+                    method: 'POST',
+                    headers: apiHeaders(),
+                    data: JSON.stringify({ action: 'update', id: id, patch: { estimate: newEst } }),
+                    success: function() { loadLeads().done(function() { renderAll(); openLead(id); }); },
+                    error: function() { alert('Update failed'); }
+                });
+            }
         });
     }
 
