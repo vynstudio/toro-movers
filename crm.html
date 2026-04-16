@@ -79,7 +79,7 @@
     .stat-card-icon .material-icons { font-size: 24px; color: #fff; }
 
     /* Kanban */
-    .kanban-board { display: flex; gap: 16px; overflow-x: auto; padding: 16px; min-height: calc(100vh - 200px); }
+    .kanban-board { display: flex; gap: 16px; overflow-x: auto; padding: 16px; min-height: calc(100vh - 200px); max-width: 100%; }
     .kanban-col { flex: 0 0 280px; min-width: 280px; background: #f8f9fa; border-radius: 8px; display: flex; flex-direction: column; max-height: calc(100vh - 220px); }
     .kanban-col-header { padding: 12px 16px; border-bottom: 1px solid #e9ecef; display: flex; justify-content: space-between; align-items: center; }
     .kanban-col-header .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 8px; }
@@ -199,7 +199,7 @@
     /* Main content */
     .crm-main {
         flex: 1; overflow-y: auto; background: #f5f6f7;
-        min-height: 0; display: flex; flex-direction: column;
+        min-height: 0; min-width: 0; display: flex; flex-direction: column;
     }
     .crm-header {
         background: #fff; border-bottom: 1px solid #e5e7eb;
@@ -549,6 +549,28 @@
     };
 
     // ===== UTILITIES =====
+    // Browser back/forward button support
+    window.addEventListener('popstate', function(e) {
+        if (e.state && e.state.view) {
+            switchView(e.state.view, true);
+        } else {
+            var hash = location.hash.replace('#', '');
+            if (hash && ['dashboard','calendar','kanban','leads'].indexOf(hash) >= 0) {
+                switchView(hash, true);
+            } else {
+                switchView('dashboard', true);
+            }
+        }
+    });
+
+    // On initial load, check hash
+    (function() {
+        var hash = location.hash.replace('#', '');
+        if (hash && ['dashboard','calendar','kanban','leads'].indexOf(hash) >= 0) {
+            currentView = hash;
+        }
+    })();
+
     function escapeHtml(s) {
         return String(s == null ? '' : s)
             .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -715,16 +737,15 @@
     }
 
     // ===== VIEW SWITCHING =====
-    function switchView(view) {
+    function switchView(view, skipHistory) {
         currentView = view;
         $('.view-container').removeClass('active');
         $('#view-' + view).addClass('active');
-        // Update sidebar active state
         $('#sidebar-nav .sb-nav-item').removeClass('active');
         $('#sidebar-nav .sb-nav-item[data-view="' + view + '"]').addClass('active');
-        // Update navbar title
         var titles = { dashboard: 'Dashboard', calendar: 'Calendar', kanban: 'Kanban Board', leads: 'All Leads' };
         $('#navbar-title').text(titles[view] || 'Dashboard');
+        if (!skipHistory) history.pushState({ view: view }, '', '/crm#' + view);
 
         // Initialize calendar on first visit
         if (view === 'calendar' && !calendarInitialized) {
