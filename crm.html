@@ -1188,13 +1188,14 @@
             '<div class="detail-row"><i class="fas fa-couch" style="color:#6c757d;width:16px"></i>' + ef(lead.id, 'furniture_size', 'Home size (e.g. 2 bedrooms)', lead.furniture_size, 'Add home size') + '</div>' +
             '</div>';
 
-        // Payment (total editable)
+        // Payment (total editable + record payment)
         body += '<div class="detail-section"><h6>Payment</h6>' +
             '<div class="money-box">' +
                 '<div class="money-row"><span>Estimated total</span><span>' + efEst(lead.id, 'total', 'Estimated total ($)', est.total) + '</span></div>' +
                 '<div class="money-row deposit"><span>Deposit paid</span><span>-' + fmtMoney(deposit) + '</span></div>' +
                 '<div class="money-row total"><span>Balance due</span><span>' + fmtMoney(balance) + '</span></div>' +
             '</div>' +
+            '<button class="btn btn-sm btn-outline-success mt-2" onclick="recordPayment(\'' + lead.id + '\')"><i class="fas fa-dollar-sign mr-1"></i> Record Payment</button>' +
             '</div>';
 
         // Crew
@@ -1247,7 +1248,7 @@
                     }).join('') +
                 '</div>' +
             '</div>' +
-            '<button class="btn btn-outline-danger btn-sm ml-auto" onclick="deleteLead(\'' + lead.id + '\',\'' + escapeHtml(lead.name || '').replace(/'/g, "\\'") + '\')"><i class="material-icons mr-1" style="font-size:14px">delete</i> Delete</button>';
+            '<button class="btn btn-outline-danger btn-sm ml-auto" data-delete-id="' + escapeHtml(lead.id) + '" data-delete-name="' + escapeHtml(lead.name || '') + '"><i class="material-icons mr-1" style="font-size:14px">delete</i> Delete</button>';
         $('#leadModal-footer').html(footer);
     }
 
@@ -1320,24 +1321,31 @@
     }
 
     function editField(id, field, label) {
-        var lead = leads.find(function(l) { return l.id === id; });
-        var current = lead ? (lead[field] || '') : '';
-        var val = prompt(label, current);
-        if (val === null) return;
-        var patch = {};
-        patch[field] = val;
         $.ajax({
-            url: '/.netlify/functions/crm',
-            method: 'POST',
+            url: '/.netlify/functions/crm?action=get&id=' + id,
             headers: apiHeaders(),
-            data: JSON.stringify({ action: 'update', id: id, patch: patch }),
-            success: function() {
-                loadLeads().done(function() {
-                    renderAll();
-                    openLead(id);
+            success: function(data) {
+                var lead = data.lead;
+                if (!lead) return;
+                var current = lead[field] || '';
+                var val = prompt(label, current);
+                if (val === null) return;
+                var patch = {};
+                patch[field] = val;
+                $.ajax({
+                    url: '/.netlify/functions/crm',
+                    method: 'POST',
+                    headers: apiHeaders(),
+                    data: JSON.stringify({ action: 'update', id: id, patch: patch }),
+                    success: function() {
+                        loadLeads().done(function() {
+                            renderAll();
+                            openLead(id);
                 });
             },
             error: function() { alert('Update failed'); }
+        });
+            }
         });
     }
 
@@ -1419,6 +1427,38 @@
             error: function(xhr) { alert('Send failed: ' + (xhr.responseJSON?.error || 'network error')); }
         });
     }
+
+    function recordPayment(id) {
+        var amount = prompt('Payment amount ($):');
+        if (!amount || isNaN(Number(amount))) return;
+        amount = Number(amount);
+        var method = prompt('Payment method:\n1 = Card\n2 = Zelle\n3 = Cash App\n4 = Cash\n5 = Other', '1');
+        var methods = { '1':'Card', '2':'Zelle', '3':'Cash App', '4':'Cash', '5':'Other' };
+        var methodName = methods[method] || 'Other';
+        $.ajax({
+            url: '/.netlify/functions/crm',
+            method: 'POST',
+            contentType: 'application/json',
+            headers: apiHeaders(),
+            data: JSON.stringify({
+                action: 'update', id: id,
+                patch: {
+                    depositPaid: true,
+                    timelineEntry: { type: 'payment', text: '$' + amount + ' deposit received via ' + methodName }
+                }
+            }),
+            success: function() {
+                loadLeads().done(function() { renderAll(); openLead(id); });
+            },
+            error: function() { alert('Failed to record payment'); }
+        });
+    }
+
+    $(document).on('click', '[data-delete-id]', function() {
+        var id = $(this).data('delete-id');
+        var name = $(this).data('delete-name');
+        deleteLead(id, name);
+    });
 
     function deleteLead(id, name) {
         if (!confirm('Delete "' + (name || 'this lead') + '"?\n\nThis cannot be undone.')) return;

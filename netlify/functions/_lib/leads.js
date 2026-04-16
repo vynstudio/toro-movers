@@ -117,9 +117,18 @@ async function updateLead(id, patch){
   if (!raw) return null;
   const lead = JSON.parse(raw);
   const now = new Date().toISOString();
-  Object.assign(lead, patch, { updatedAt: now });
-  if (patch.timelineEntry) {
-    lead.timeline.push({ at: now, type: patch.timelineEntry.type, text: patch.timelineEntry.text });
+  const ALLOWED = ['status','name','first_name','last_name','phone','email',
+    'zip_from','zip_to','pickup_address','dropoff_address','furniture_size',
+    'floor','stairs_elevator','code_access','boxes_count','tv_count',
+    'assembly','wrapping','move_date','move_time','estimate','crew_assigned',
+    'truck_assigned','depositPaid','stripeSessionId','deposit','page',
+    'utm_source','utm_medium','utm_campaign','utm_content','utm_term',
+    'fbclid','gclid','timelineEntry'];
+  const safe = {};
+  for (const k of Object.keys(patch)) { if (ALLOWED.includes(k)) safe[k] = patch[k]; }
+  Object.assign(lead, safe, { updatedAt: now });
+  if (safe.timelineEntry) {
+    lead.timeline.push({ at: now, type: safe.timelineEntry.type, text: safe.timelineEntry.text });
     delete lead.timelineEntry;
   }
   await s.set(id, JSON.stringify(lead));

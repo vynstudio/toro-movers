@@ -30,9 +30,16 @@ exports.handler = async (event) => {
     const amount = session.amount_total ? (session.amount_total / 100) : 0;
 
     try {
-      // Find the most recent lead with matching email (index is newest-first)
+      // Prefer metadata lead_id if set, fall back to email match
+      const metaLeadId = session.metadata?.lead_id || session.client_reference_id || '';
       const leads = await listLeads();
-      const match = leads.find(l => l.email && l.email.toLowerCase() === email.toLowerCase());
+      let match;
+      if (metaLeadId) {
+        match = leads.find(l => l.id === metaLeadId);
+      }
+      if (!match && email) {
+        match = leads.find(l => l.email && l.email.toLowerCase() === email.toLowerCase());
+      }
 
       if (match) {
         const updated = await updateLead(match.id, {

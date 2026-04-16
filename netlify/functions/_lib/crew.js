@@ -33,16 +33,23 @@ async function addCrew(member){
   const roster = await listCrew();
   const id = member.id || member.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
   const existing = roster.findIndex(c => c.id === id);
-  const entry = {
-    id,
-    name: member.name,
-    role: member.role || 'Mover',
-    email: member.email || '',
-    active: member.active !== false,
-    color: member.color || '#2563eb',
-  };
-  if (existing >= 0) roster[existing] = { ...roster[existing], ...entry };
-  else roster.push(entry);
+  const entry = { id };
+  if (member.name !== undefined) entry.name = member.name;
+  if (member.role !== undefined) entry.role = member.role;
+  if (member.email !== undefined) entry.email = member.email;
+  if (member.active !== undefined) entry.active = member.active;
+  if (member.color !== undefined) entry.color = member.color;
+  if (existing >= 0) {
+    roster[existing] = { ...roster[existing], ...entry };
+  }
+  else {
+    if (!entry.name) return null;
+    if (!entry.role) entry.role = 'Mover';
+    if (!entry.email) entry.email = '';
+    if (entry.active === undefined) entry.active = true;
+    if (!entry.color) entry.color = '#2563eb';
+    roster.push(entry);
+  }
   await s.set('_crew', JSON.stringify(roster));
   return entry;
 }
