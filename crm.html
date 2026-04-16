@@ -1116,38 +1116,61 @@
             '<span class="badge badge-' + escapeHtml(lead.status) + ' ml-2">' + escapeHtml(lead.status) + '</span>'
         );
 
+        // Helper for editable fields
+        function ef(id, field, label, val, fallback) {
+            return '<span class="editable" onclick="editField(\'' + id + '\',\'' + field + '\',\'' + label.replace(/'/g,"\\'") + '\')">' + escapeHtml(val || fallback || 'Add') + ' <i class="fas fa-pen" style="font-size:9px;color:#9ca3af;margin-left:3px"></i></span>';
+        }
+        function efEst(id, field, label, val) {
+            return '<span class="editable" onclick="editEstimate(\'' + id + '\',\'' + field + '\',\'' + label.replace(/'/g,"\\'") + '\')">' + escapeHtml(String(val || '?')) + ' <i class="fas fa-pen" style="font-size:9px;color:#9ca3af;margin-left:3px"></i></span>';
+        }
+
         // Body
         var body = '';
 
         // Customer
-        body += '<div class="detail-section"><h6>Customer</h6>';
-        if (lead.phone) body += '<div class="detail-row"><i class="material-icons">phone</i><a href="tel:' + lead.phone.replace(/\D/g, '') + '">' + escapeHtml(lead.phone) + '</a></div>';
-        if (lead.email) body += '<div class="detail-row"><i class="material-icons">email</i><a href="mailto:' + escapeHtml(lead.email) + '">' + escapeHtml(lead.email) + '</a></div>';
-        body += '</div>';
+        body += '<div class="detail-section"><h6>Customer</h6>' +
+            '<div class="detail-row"><i class="fas fa-user" style="color:#6c757d;width:16px"></i>' + ef(lead.id, 'name', 'Customer name', lead.name, 'Add name') + '</div>' +
+            '<div class="detail-row"><i class="fas fa-phone" style="color:#6c757d;width:16px"></i>' +
+                (lead.phone ? '<a href="tel:' + lead.phone.replace(/\D/g,'') + '" style="margin-right:8px">' + escapeHtml(lead.phone) + '</a>' : '') +
+                ef(lead.id, 'phone', 'Phone number', lead.phone ? '' : '', lead.phone ? '✏️' : 'Add phone') +
+            '</div>' +
+            '<div class="detail-row"><i class="fas fa-envelope" style="color:#6c757d;width:16px"></i>' +
+                (lead.email ? '<a href="mailto:' + escapeHtml(lead.email) + '" style="margin-right:8px">' + escapeHtml(lead.email) + '</a>' : '') +
+                ef(lead.id, 'email', 'Email', lead.email ? '' : '', lead.email ? '✏️' : 'Add email') +
+            '</div>' +
+            '</div>';
 
         // Schedule
         body += '<div class="detail-section"><h6>Schedule</h6>' +
-            '<div class="detail-row"><i class="material-icons">event</i><span class="editable" onclick="editField(\'' + lead.id + '\',\'move_date\',\'Move date (YYYY-MM-DD)\')">' + dateStr + '</span></div>' +
-            '<div class="detail-row"><i class="material-icons">schedule</i><span class="editable" onclick="editField(\'' + lead.id + '\',\'move_time\',\'Move time (e.g. 11:00 AM)\')">' + escapeHtml(lead.move_time || 'Add time') + '</span></div>' +
+            '<div class="detail-row"><i class="fas fa-calendar-alt" style="color:#6c757d;width:16px"></i>' + ef(lead.id, 'move_date', 'Move date (YYYY-MM-DD)', dateStr !== 'Not scheduled' ? dateStr : '', 'Add date') + '</div>' +
+            '<div class="detail-row"><i class="fas fa-clock" style="color:#6c757d;width:16px"></i>' + ef(lead.id, 'move_time', 'Move time (e.g. 11:00 AM)', lead.move_time, 'Add time') + '</div>' +
             '</div>';
 
         // Route
+        var pickupEdit = '<span class="editable" onclick="editField(\'' + lead.id + '\',\'pickup_address\',\'Pickup address\')">' +
+            escapeHtml(pickup || 'Add pickup address') + ' <i class="fas fa-pen" style="font-size:9px;color:#9ca3af;margin-left:3px"></i></span>';
+        var dropoffEdit = '<span class="editable" onclick="editField(\'' + lead.id + '\',\'dropoff_address\',\'Dropoff address\')">' +
+            escapeHtml(dropoff || 'Add dropoff address') + ' <i class="fas fa-pen" style="font-size:9px;color:#9ca3af;margin-left:3px"></i></span>';
+        var pickupMapLink = pickup && !pickup.startsWith('TBD') ? ' <a href="https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(pickup) + '" target="_blank" style="font-size:11px;color:#2563eb">📍 Map</a>' : '';
+        var dropoffMapLink = dropoff && !dropoff.startsWith('TBD') ? ' <a href="https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(dropoff) + '" target="_blank" style="font-size:11px;color:#2563eb">📍 Map</a>' : '';
+
         body += '<div class="detail-section"><h6>Route</h6>' +
-            '<div class="detail-row"><i class="material-icons">location_on</i>' + pickupHtml + '</div>' +
-            '<div class="detail-row"><i class="material-icons">flag</i>' + dropoffHtml + '</div>' +
+            '<div class="detail-row"><i class="fas fa-map-marker-alt" style="color:#6c757d;width:16px"></i>' + pickupEdit + pickupMapLink + '</div>' +
+            '<div class="detail-row"><i class="fas fa-flag-checkered" style="color:#6c757d;width:16px"></i>' + dropoffEdit + dropoffMapLink + '</div>' +
             '</div>';
 
-        // Service
+        // Service (all editable)
         body += '<div class="detail-section"><h6>Service</h6>' +
-            '<div class="detail-row"><i class="material-icons">engineering</i>' + (est.movers || '?') + ' movers' + (est.truck ? ' + moving truck' : '') + '</div>' +
-            '<div class="detail-row"><i class="material-icons">timer</i>' + (est.hours || '?') + ' hrs estimated</div>';
-        if (lead.furniture_size) body += '<div class="detail-row"><i class="material-icons">weekend</i>' + escapeHtml(lead.furniture_size) + '</div>';
-        body += '</div>';
+            '<div class="detail-row"><i class="fas fa-users" style="color:#6c757d;width:16px"></i>' + efEst(lead.id, 'movers', 'Number of movers', est.movers) + ' movers</div>' +
+            '<div class="detail-row"><i class="fas fa-clock" style="color:#6c757d;width:16px"></i>' + efEst(lead.id, 'hours', 'Estimated hours', est.hours) + ' hrs estimated</div>' +
+            '<div class="detail-row"><i class="fas fa-truck" style="color:#6c757d;width:16px"></i>' + '<span class="editable" onclick="toggleTruck(\'' + lead.id + '\')">' + (est.truck ? 'Truck included ✅' : 'No truck (labor only)') + ' <i class="fas fa-pen" style="font-size:9px;color:#9ca3af;margin-left:3px"></i></span></div>' +
+            '<div class="detail-row"><i class="fas fa-couch" style="color:#6c757d;width:16px"></i>' + ef(lead.id, 'furniture_size', 'Home size (e.g. 2 bedrooms)', lead.furniture_size, 'Add home size') + '</div>' +
+            '</div>';
 
-        // Payment
+        // Payment (total editable)
         body += '<div class="detail-section"><h6>Payment</h6>' +
             '<div class="money-box">' +
-                '<div class="money-row"><span>Estimated total</span><span>' + fmtMoney(est.total) + '</span></div>' +
+                '<div class="money-row"><span>Estimated total</span><span>' + efEst(lead.id, 'total', 'Estimated total ($)', est.total) + '</span></div>' +
                 '<div class="money-row deposit"><span>Deposit paid</span><span>-' + fmtMoney(deposit) + '</span></div>' +
                 '<div class="money-row total"><span>Balance due</span><span>' + fmtMoney(balance) + '</span></div>' +
             '</div>' +
@@ -1221,6 +1244,47 @@
                 });
             },
             error: function() { alert('Status update failed'); }
+        });
+    }
+
+    function editEstimate(id, field, label) {
+        var lead = leads.find(function(l) { return l.id === id; });
+        var est = lead ? (lead.estimate || lead) : {};
+        var current = est[field] || '';
+        var val = prompt(label, current);
+        if (val === null) return;
+        var newEst = Object.assign({}, lead.estimate || {});
+        newEst[field] = isNaN(Number(val)) ? val : Number(val);
+        // Auto-recalc total if movers/hours changed
+        if (field === 'movers' || field === 'hours') {
+            var m = newEst.movers || 2;
+            var h = newEst.hours || 2;
+            newEst.total = Math.round(75 * m * h) + (newEst.truck ? 275 : 0);
+        }
+        $.ajax({
+            url: '/.netlify/functions/crm',
+            method: 'POST',
+            headers: apiHeaders(),
+            data: JSON.stringify({ action: 'update', id: id, patch: { estimate: newEst } }),
+            success: function() { loadLeads().done(function() { renderAll(); openLead(id); }); },
+            error: function() { alert('Update failed'); }
+        });
+    }
+
+    function toggleTruck(id) {
+        var lead = leads.find(function(l) { return l.id === id; });
+        var newEst = Object.assign({}, lead.estimate || {});
+        newEst.truck = !newEst.truck;
+        var m = newEst.movers || 2;
+        var h = newEst.hours || 2;
+        newEst.total = Math.round(75 * m * h) + (newEst.truck ? 275 : 0);
+        $.ajax({
+            url: '/.netlify/functions/crm',
+            method: 'POST',
+            headers: apiHeaders(),
+            data: JSON.stringify({ action: 'update', id: id, patch: { estimate: newEst } }),
+            success: function() { loadLeads().done(function() { renderAll(); openLead(id); }); },
+            error: function() { alert('Update failed'); }
         });
     }
 
