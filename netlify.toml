@@ -146,6 +146,24 @@
   force = true
 
 [[redirects]]
+  from = "/pages/cities/lakeland-movers"
+  to = "/lakeland-movers"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/pages/cities/lakeland-movers.html"
+  to = "/lakeland-movers"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/movers-orlando-fl"
+  to = "/orlando-movers"
+  status = 301
+  force = true
+
+[[redirects]]
   from = "/pages/cities/*"
   to = "/#area"
   status = 301
