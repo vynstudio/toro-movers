@@ -152,14 +152,15 @@
 
     /* Sidebar */
     .crm-sidebar {
-        width: 240px; min-width: 240px; background: #111827;
+        width: 240px; min-width: 240px; background: #ffffff;
         display: flex; flex-direction: column; overflow-y: auto;
-        color: #fff; flex-shrink: 0; box-shadow: 2px 0 8px rgba(0,0,0,.15);
+        color: #111; flex-shrink: 0; border-right: 1px solid #e5e7eb;
     }
     .crm-sidebar .sb-brand {
-        padding: 20px 20px 16px; border-bottom: 1px solid rgba(255,255,255,.08);
+        padding: 20px 20px 16px; border-bottom: 1px solid #e5e7eb;
     }
-    .crm-sidebar .sb-brand .sidebar-brand-text { font-size: 20px; }
+    .crm-sidebar .sb-brand .sidebar-brand-text { font-size: 20px; color: #111; }
+    .crm-sidebar .sb-brand .sidebar-brand-text .red { color: var(--toro-red); }
     .crm-sidebar .sb-nav {
         list-style: none; padding: 12px 8px; margin: 0; flex: 1;
     }
@@ -168,32 +169,33 @@
     }
     .crm-sidebar .sb-nav a {
         display: flex; align-items: center; gap: 12px;
-        padding: 10px 14px; border-radius: 8px; color: rgba(255,255,255,.65);
+        padding: 10px 14px; border-radius: 8px; color: #6b7280;
         text-decoration: none; font-size: 14px; font-weight: 500;
         transition: all .15s;
     }
     .crm-sidebar .sb-nav a:hover {
-        background: rgba(255,255,255,.08); color: #fff;
+        background: #f3f4f6; color: #111;
     }
     .crm-sidebar .sb-nav li.active a {
-        background: rgba(200,16,46,.2); color: #fff; font-weight: 600;
+        background: rgba(200,16,46,.08); color: var(--toro-red); font-weight: 600;
+        position: relative; z-index: 1; overflow: visible;
     }
     .crm-sidebar .sb-nav li.active a .material-icons {
         color: var(--toro-red);
     }
     .crm-sidebar .sb-nav a .material-icons {
-        font-size: 20px; color: rgba(255,255,255,.4); transition: color .15s;
+        font-size: 20px; color: #9ca3af; transition: color .15s;
     }
-    .crm-sidebar .sb-nav a:hover .material-icons { color: rgba(255,255,255,.8); }
+    .crm-sidebar .sb-nav a:hover .material-icons { color: #6b7280; }
     .crm-sidebar .sb-footer {
-        padding: 14px 20px; border-top: 1px solid rgba(255,255,255,.08);
+        padding: 14px 20px; border-top: 1px solid #e5e7eb;
     }
     .crm-sidebar .sb-footer a {
         display: flex; align-items: center; gap: 8px;
-        color: rgba(255,255,255,.45); font-size: 12px; text-decoration: none;
+        color: #9ca3af; font-size: 12px; text-decoration: none;
         margin-bottom: 8px; transition: color .15s;
     }
-    .crm-sidebar .sb-footer a:hover { color: rgba(255,255,255,.8); }
+    .crm-sidebar .sb-footer a:hover { color: #6b7280; }
     .crm-sidebar .sb-footer a .material-icons { font-size: 15px; }
 
     /* Main content */
@@ -279,9 +281,9 @@
         <!-- SIDEBAR -->
         <div class="crm-sidebar">
             <div class="sb-brand">
-                <a href="#" onclick="switchView('dashboard');return false;" style="text-decoration:none;color:#fff">
+                <a href="#" onclick="switchView('dashboard');return false;" style="text-decoration:none">
                     <div class="sidebar-brand-text">TORO <span class="red">MOVERS</span></div>
-                    <small style="color:rgba(255,255,255,.35);font-size:11px;letter-spacing:.5px">CRM DASHBOARD</small>
+                    <small style="color:#9ca3af;font-size:11px;letter-spacing:.5px">CRM DASHBOARD</small>
                 </a>
             </div>
             <ul class="sb-nav" id="sidebar-nav">
@@ -323,7 +325,10 @@
             <div class="crm-header">
                 <h4 id="navbar-title">Dashboard</h4>
                 <div class="d-none d-md-flex align-items-center text-muted ml-3" id="stat-strip" style="font-size:13px;gap:16px"></div>
-                <div class="ml-auto">
+                <div class="ml-auto d-flex" style="gap:8px">
+                    <button class="btn btn-sm btn-primary" onclick="openAddLeadModal()">
+                        <i class="material-icons" style="font-size:16px;vertical-align:middle;margin-right:4px">add</i> Add Lead
+                    </button>
                     <button class="btn btn-sm btn-outline-secondary" onclick="loadAll()" title="Refresh">
                         <i class="material-icons" style="font-size:18px;vertical-align:middle">refresh</i>
                     </button>
@@ -458,6 +463,50 @@
         </div>
     </div>
 
+    <!-- ========== ADD LEAD MODAL ========== -->
+    <div class="modal fade" id="addLeadModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Lead</h5>
+                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addLeadForm">
+                        <div class="row">
+                            <div class="col-6"><div class="form-group"><label>Name *</label><input class="form-control" name="name" required></div></div>
+                            <div class="col-6"><div class="form-group"><label>Phone</label><input class="form-control" name="phone"></div></div>
+                        </div>
+                        <div class="form-group"><label>Email</label><input class="form-control" name="email" type="email"></div>
+                        <div class="row">
+                            <div class="col-6"><div class="form-group"><label>Move Date</label><input class="form-control" name="move_date" type="date"></div></div>
+                            <div class="col-6"><div class="form-group"><label>Move Time</label><input class="form-control" name="move_time" placeholder="e.g. 11:00 AM"></div></div>
+                        </div>
+                        <div class="form-group"><label>Pickup Address</label><input class="form-control" name="pickup_address"></div>
+                        <div class="form-group"><label>Dropoff Address</label><input class="form-control" name="dropoff_address"></div>
+                        <div class="row">
+                            <div class="col-4"><div class="form-group"><label>Movers</label><input class="form-control" name="movers" type="number" value="2" min="1"></div></div>
+                            <div class="col-4"><div class="form-group"><label>Hours</label><input class="form-control" name="hours" type="number" value="2" min="1" step="0.5"></div></div>
+                            <div class="col-4"><div class="form-group"><label>Truck?</label><select class="form-control" name="truck"><option value="no">No</option><option value="yes">Yes</option></select></div></div>
+                        </div>
+                        <div class="form-group"><label>Status</label>
+                            <select class="form-control" name="status">
+                                <option value="new">New Lead</option>
+                                <option value="contacted">Contacted</option>
+                                <option value="quoted">Quoted</option>
+                                <option value="booked">Booked</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="submitAddLead()">Add Lead</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- ========== SCRIPTS ========== -->
     <!-- jQuery -->
     <script src="crm-assets/vendor/jquery.min.js"></script>
@@ -503,7 +552,11 @@
         new: '#2563eb', contacted: '#8b5cf6', quoted: '#f59e0b',
         booked: '#16a34a', done: '#9ca3af', lost: '#ef4444'
     };
-    var STATUS_ORDER = ['new', 'contacted', 'quoted', 'booked', 'done', 'lost'];
+    var STATUS_ORDER = ['new', 'contacted', 'quoted', 'booked', 'done'];
+    var STATUS_LABELS = {
+        new: 'New Leads', contacted: 'Contacted', quoted: 'Quoted',
+        booked: 'Booked', done: 'Job Completed', lost: 'Lost'
+    };
 
     // ===== UTILITIES =====
     function escapeHtml(s) {
@@ -587,6 +640,49 @@
         $('#app-screen').addClass('show');
         $('body').css('overflow', 'hidden');
         loadAll();
+    }
+
+    // ===== ADD LEAD =====
+    function openAddLeadModal() {
+        $('#addLeadForm')[0].reset();
+        $('#addLeadModal').modal('show');
+    }
+
+    function submitAddLead() {
+        var f = $('#addLeadForm');
+        var name = f.find('[name="name"]').val().trim();
+        if (!name) { alert('Name is required.'); return; }
+        var movers = parseInt(f.find('[name="movers"]').val()) || 2;
+        var hours = parseFloat(f.find('[name="hours"]').val()) || 2;
+        var truck = f.find('[name="truck"]').val() === 'yes';
+        var total = Math.round(75 * movers * hours) + (truck ? 275 : 0);
+
+        var payload = {
+            name: name,
+            phone: f.find('[name="phone"]').val().trim(),
+            email: f.find('[name="email"]').val().trim(),
+            move_date: f.find('[name="move_date"]').val(),
+            move_time: f.find('[name="move_time"]').val().trim(),
+            pickup_address: f.find('[name="pickup_address"]').val().trim(),
+            dropoff_address: f.find('[name="dropoff_address"]').val().trim(),
+            status: f.find('[name="status"]').val(),
+            estimate: { movers: movers, hours: hours, total: total, truck: truck }
+        };
+
+        $.ajax({
+            url: '/.netlify/functions/insert-job?pw=' + encodeURIComponent(PW),
+            method: 'POST',
+            contentType: 'application/json',
+            headers: apiHeaders(),
+            data: JSON.stringify(payload),
+            success: function() {
+                $('#addLeadModal').modal('hide');
+                loadAll();
+            },
+            error: function(xhr) {
+                alert('Failed to add lead: ' + (xhr.responseJSON?.error || 'unknown'));
+            }
+        });
     }
 
     function doLogout() {
@@ -859,7 +955,7 @@
 
             html += '<div class="kanban-col">' +
                 '<div class="kanban-col-header">' +
-                    '<h6><span class="dot" style="background:' + STATUS_COLORS[s] + '"></span>' + s + '</h6>' +
+                    '<h6><span class="dot" style="background:' + STATUS_COLORS[s] + '"></span>' + (STATUS_LABELS[s] || s) + '</h6>' +
                     '<small class="text-muted">' + colLeads.length + (subtotal ? ' &middot; ' + fmtMoney(subtotal) : '') + '</small>' +
                 '</div>' +
                 '<div class="kanban-col-body" data-status="' + s + '" id="kanban-col-' + s + '">';
@@ -1008,7 +1104,7 @@
 
         // Status chips
         var statusChips = STATUS_ORDER.map(function(s) {
-            return '<button class="s-chip ' + s + ' ' + (lead.status === s ? 'active' : '') + '" onclick="setLeadStatus(\'' + lead.id + '\',\'' + s + '\')">' + s + '</button>';
+            return '<button class="s-chip ' + s + ' ' + (lead.status === s ? 'active' : '') + '" onclick="setLeadStatus(\'' + lead.id + '\',\'' + s + '\')">' + (STATUS_LABELS[s] || s) + '</button>';
         }).join('');
 
         // Address links
@@ -1188,9 +1284,7 @@
     }
 
     function deleteLead(id, name) {
-        if (!confirm('Delete "' + (name || 'this lead') + '" permanently?\n\nThis cannot be undone.')) return;
-        var double = prompt('Type DELETE to confirm:');
-        if (double !== 'DELETE') return;
+        if (!confirm('Delete "' + (name || 'this lead') + '"?\n\nThis cannot be undone.')) return;
         $.ajax({
             url: '/.netlify/functions/crm',
             method: 'POST',
