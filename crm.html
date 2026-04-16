@@ -182,6 +182,7 @@
 
     <!-- ========== APP (hidden until login) ========== -->
     <div id="app-screen" style="display:none">
+        <div class="preloader" style="display:none"></div>
         <div class="mdk-drawer-layout js-mdk-drawer-layout" data-push data-responsive-width="992px" data-fullbleed>
             <div class="mdk-drawer-layout__content">
 
@@ -526,13 +527,20 @@
     function showApp() {
         $('#login-screen').hide();
         $('#app-screen').show();
-        // Switch body class for layout
         $('#body-el').removeClass('layout-login-centered-boxed').addClass('layout-default');
-        // Re-init MDK layout
-        if (typeof domFactory !== 'undefined') {
-            domFactory.handler.autoInit();
-        }
-        loadAll();
+        // MDK layout needs a repaint cycle before it can measure elements
+        setTimeout(function() {
+            if (typeof domFactory !== 'undefined') {
+                domFactory.handler.upgradeAll();
+                domFactory.handler.autoInit();
+            }
+            // Force sidebar drawer init
+            var layoutEl = document.querySelector('.js-mdk-drawer-layout');
+            if (layoutEl && layoutEl.mdkDrawerLayout) {
+                layoutEl.mdkDrawerLayout._resetLayout();
+            }
+            loadAll();
+        }, 100);
     }
 
     function doLogout() {
