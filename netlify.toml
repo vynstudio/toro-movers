@@ -164,6 +164,54 @@
   force = true
 
 [[redirects]]
+  from = "/pages/cities/celebration-movers.html"
+  to = "/celebration-movers"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/pages/cities/longwood-movers.html"
+  to = "/longwood-movers"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/pages/cities/doctor-phillips-movers.html"
+  to = "/doctor-phillips-movers"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/pages/cities/deltona-movers.html"
+  to = "/deltona-movers"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/pages/cities/poinciana-movers.html"
+  to = "/poinciana-movers"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/pages/cities/ocala-movers.html"
+  to = "/ocala-movers"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/pages/cities/mount-dora-movers.html"
+  to = "/mount-dora-movers"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/pages/cities/leesburg-movers.html"
+  to = "/leesburg-movers"
+  status = 301
+  force = true
+
+[[redirects]]
   from = "/pages/cities/*"
   to = "/#area"
   status = 301
