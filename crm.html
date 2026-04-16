@@ -162,16 +162,17 @@
     .crm-sidebar .sb-brand .sidebar-brand-text { font-size: 20px; color: #111; }
     .crm-sidebar .sb-brand .sidebar-brand-text .red { color: var(--toro-red); }
     .crm-sidebar .sb-nav {
-        list-style: none; padding: 12px 8px; margin: 0; flex: 1;
+        list-style: none !important; padding: 12px 8px !important; margin: 0 !important; flex: 1;
     }
     .crm-sidebar .sb-nav li {
-        margin-bottom: 2px;
+        margin-bottom: 2px !important; display: block !important; visibility: visible !important;
+        overflow: visible !important; height: auto !important; opacity: 1 !important;
     }
     .crm-sidebar .sb-nav a {
-        display: flex; align-items: center; gap: 12px;
+        display: flex !important; align-items: center; gap: 12px;
         padding: 10px 14px; border-radius: 8px; color: #6b7280;
         text-decoration: none; font-size: 14px; font-weight: 500;
-        transition: all .15s;
+        transition: all .15s; overflow: visible !important;
     }
     .crm-sidebar .sb-nav a:hover {
         background: #f3f4f6; color: #111;
@@ -1191,8 +1192,20 @@
         $('#leadModal-body').html(body);
 
         // Footer actions
-        var footer = '<button class="btn btn-primary btn-sm" onclick="sendConfirmation(\'' + lead.id + '\')"><i class="material-icons mr-1" style="font-size:14px">email</i> Send Confirmation</button>' +
-            '<button class="btn btn-outline-secondary btn-sm" onclick="addNote(\'' + lead.id + '\')"><i class="material-icons mr-1" style="font-size:14px">note_add</i> Add Note</button>' +
+        var footer = '<button class="btn btn-primary btn-sm" onclick="sendConfirmation(\'' + lead.id + '\')"><i class="material-icons mr-1" style="font-size:14px">email</i> Confirmation</button>' +
+            '<div class="btn-group btn-group-sm">' +
+                '<button class="btn btn-outline-primary btn-sm dropdown-toggle" data-toggle="dropdown">Follow-up</button>' +
+                '<div class="dropdown-menu">' +
+                    '<a class="dropdown-item" href="#" onclick="sendFollowup(\'' + lead.id + '\',\'day1\');return false">Day 1 — Thanks for reaching out</a>' +
+                    '<a class="dropdown-item" href="#" onclick="sendFollowup(\'' + lead.id + '\',\'day2\');return false">Day 2 — Quick question</a>' +
+                    '<a class="dropdown-item" href="#" onclick="sendFollowup(\'' + lead.id + '\',\'day3\');return false">Day 3 — Still need help?</a>' +
+                    '<a class="dropdown-item" href="#" onclick="sendFollowup(\'' + lead.id + '\',\'day4\');return false">Day 4 — Estimate waiting</a>' +
+                    '<a class="dropdown-item" href="#" onclick="sendFollowup(\'' + lead.id + '\',\'day5\');return false">Day 5 — Last chance</a>' +
+                    '<div class="dropdown-divider"></div>' +
+                    '<a class="dropdown-item" href="#" onclick="sendFollowup(\'' + lead.id + '\',\'referral\');return false">Referral + $50 off</a>' +
+                '</div>' +
+            '</div>' +
+            '<button class="btn btn-outline-secondary btn-sm" onclick="addNote(\'' + lead.id + '\')"><i class="material-icons mr-1" style="font-size:14px">note_add</i> Note</button>' +
             '<button class="btn btn-outline-danger btn-sm ml-auto" onclick="deleteLead(\'' + lead.id + '\',\'' + escapeHtml(lead.name || '').replace(/'/g, "\\'") + '\')"><i class="material-icons mr-1" style="font-size:14px">delete</i> Delete</button>';
         $('#leadModal-footer').html(footer);
     }
@@ -1280,6 +1293,23 @@
                 loadLeads().done(function() { openLead(id); });
             },
             error: function() {}
+        });
+    }
+
+    function sendFollowup(id, template) {
+        var labels = { day1:'Day 1 — Thanks', day2:'Day 2 — Quick question', day3:'Day 3 — Still need help', day4:'Day 4 — Estimate waiting', day5:'Day 5 — Last chance', referral:'Referral + $50 off' };
+        if (!confirm('Send "' + (labels[template]||template) + '" follow-up email?')) return;
+        $.ajax({
+            url: '/.netlify/functions/send-followup?pw=' + encodeURIComponent(PW) + '&leadId=' + encodeURIComponent(id) + '&template=' + encodeURIComponent(template),
+            success: function(data) {
+                if (data.ok) {
+                    alert('Follow-up sent ✓');
+                    openLead(id);
+                } else {
+                    alert('Failed: ' + (data.error || 'unknown'));
+                }
+            },
+            error: function(xhr) { alert('Send failed: ' + (xhr.responseJSON?.error || 'network error')); }
         });
     }
 
