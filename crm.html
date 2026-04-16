@@ -235,9 +235,24 @@
     /* Section label */
     .section-label { font-size: 11px; font-weight: 800; color: #9ca3af; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
 
+    .hamburger-btn {
+        display: none; background: none; border: none; font-size: 24px;
+        cursor: pointer; padding: 4px 8px; margin-right: 8px; color: #111;
+    }
+    .mobile-backdrop {
+        display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+        background: rgba(0,0,0,.4); z-index: 99;
+    }
+    .mobile-backdrop.show { display: block; }
+    .crm-sidebar.mobile-open {
+        display: flex !important; position: fixed; z-index: 100;
+        top: 0; left: 0; height: 100vh; width: 240px;
+        box-shadow: 4px 0 20px rgba(0,0,0,.2);
+    }
     @media (max-width: 768px) {
         .crm-sidebar { display: none; }
         #app-screen.show { flex-direction: column; }
+        .hamburger-btn { display: inline-block; }
     }
     </style>
 </head>
@@ -276,6 +291,7 @@
 
     <!-- ========== APP (hidden until login) ========== -->
     <div id="app-screen">
+        <div class="mobile-backdrop" id="mobile-backdrop" onclick="toggleMobileSidebar()"></div>
         <!-- SIDEBAR -->
         <div class="crm-sidebar">
             <div class="sb-brand">
@@ -321,6 +337,7 @@
         <div class="crm-main">
             <!-- Header -->
             <div class="crm-header">
+                <button class="hamburger-btn" onclick="toggleMobileSidebar()">&#9776;</button>
                 <h4 id="navbar-title">Dashboard</h4>
                 <div class="d-none d-md-flex align-items-center text-muted ml-3" id="stat-strip" style="font-size:13px;gap:16px"></div>
                 <div class="ml-auto d-flex" style="gap:8px">
@@ -425,14 +442,10 @@
                     </div>
                     <!-- // END Main Content -->
 
-                </div>
-                <!-- // END header-layout -->
-            </div>
             </div>
             <!-- // END crm-main -->
         </div>
         <!-- // END app-screen -->
-    </div>
 
     <!-- ========== LEAD DETAIL MODAL ========== -->
     <div class="modal fade" id="leadModal" tabindex="-1" role="dialog" aria-hidden="true">
@@ -697,6 +710,13 @@
         });
     }
 
+    function toggleMobileSidebar() {
+        var sb = document.querySelector('.crm-sidebar');
+        var bd = document.getElementById('mobile-backdrop');
+        sb.classList.toggle('mobile-open');
+        bd.classList.toggle('show');
+    }
+
     function doLogout() {
         localStorage.removeItem('crm_pw');
         location.reload();
@@ -758,6 +778,14 @@
         if (view === 'kanban') renderKanban();
         if (view === 'leads') renderLeadsTable();
         if (view === 'dashboard') renderDashboard();
+
+        // Close mobile sidebar if open
+        var sb = document.querySelector('.crm-sidebar');
+        var bd = document.getElementById('mobile-backdrop');
+        if (sb && sb.classList.contains('mobile-open')) {
+            sb.classList.remove('mobile-open');
+            bd.classList.remove('show');
+        }
     }
 
     // ===== RENDER ALL =====
@@ -933,7 +961,7 @@
                     if (t) {
                         startMoment.hour(t.hour).minute(t.minute);
                     }
-                    var hrs = 2;
+                    var hrs = l.estimate_hours || 2;
                     events.push({
                         id: l.id,
                         title: (l.name || '(no name)'),
@@ -1351,33 +1379,47 @@
 
     function assignCrew(leadId, crewId) {
         if (!crewId) return;
-        var lead = leads.find(function(l) { return l.id === leadId; });
-        var next = Array.isArray(lead.crew_assigned) ? lead.crew_assigned.slice() : [];
-        if (next.indexOf(crewId) === -1) next.push(crewId);
         $.ajax({
-            url: '/.netlify/functions/crm',
-            method: 'POST',
+            url: '/.netlify/functions/crm?action=get&id=' + leadId,
             headers: apiHeaders(),
-            data: JSON.stringify({ action: 'update', id: leadId, patch: { crew_assigned: next } }),
-            success: function() {
-                loadLeads().done(function() { renderAll(); openLead(leadId); });
-            },
-            error: function() { alert('Crew assign failed'); }
+            success: function(data) {
+                var lead = data.lead;
+                if (!lead) return;
+                var next = Array.isArray(lead.crew_assigned) ? lead.crew_assigned.slice() : [];
+                if (next.indexOf(crewId) === -1) next.push(crewId);
+                $.ajax({
+                    url: '/.netlify/functions/crm',
+                    method: 'POST',
+                    headers: apiHeaders(),
+                    data: JSON.stringify({ action: 'update', id: leadId, patch: { crew_assigned: next } }),
+                    success: function() {
+                        loadLeads().done(function() { renderAll(); openLead(leadId); });
+                    },
+                    error: function() { alert('Crew assign failed'); }
+                });
+            }
         });
     }
 
     function removeCrewAssign(leadId, crewId) {
-        var lead = leads.find(function(l) { return l.id === leadId; });
-        var next = (lead.crew_assigned || []).filter(function(c) { return c !== crewId; });
         $.ajax({
-            url: '/.netlify/functions/crm',
-            method: 'POST',
+            url: '/.netlify/functions/crm?action=get&id=' + leadId,
             headers: apiHeaders(),
-            data: JSON.stringify({ action: 'update', id: leadId, patch: { crew_assigned: next } }),
-            success: function() {
-                loadLeads().done(function() { renderAll(); openLead(leadId); });
-            },
-            error: function() {}
+            success: function(data) {
+                var lead = data.lead;
+                if (!lead) return;
+                var next = (lead.crew_assigned || []).filter(function(c) { return c !== crewId; });
+                $.ajax({
+                    url: '/.netlify/functions/crm',
+                    method: 'POST',
+                    headers: apiHeaders(),
+                    data: JSON.stringify({ action: 'update', id: leadId, patch: { crew_assigned: next } }),
+                    success: function() {
+                        loadLeads().done(function() { renderAll(); openLead(leadId); });
+                    },
+                    error: function() {}
+                });
+            }
         });
     }
 
@@ -1402,7 +1444,8 @@
         if (!c.email) { alert(c.name + ' has no email. Add it in Crew settings.'); return; }
         if (!confirm('Send job details to ' + c.name + ' (' + c.email + ')?')) return;
         $.ajax({
-            url: '/.netlify/functions/send-crew-job?pw=' + encodeURIComponent(PW) + '&leadId=' + encodeURIComponent(leadId) + '&crewId=' + encodeURIComponent(crewId),
+            url: '/.netlify/functions/send-crew-job?leadId=' + encodeURIComponent(leadId) + '&crewId=' + encodeURIComponent(crewId),
+            headers: apiHeaders(),
             success: function(data) {
                 if (data.ok) { alert('Job sent to ' + data.crewName + ' ✓'); openLead(leadId); }
                 else alert('Failed: ' + (data.error || 'unknown'));
@@ -1415,7 +1458,8 @@
         var labels = { day1:'Day 1 — Thanks', day2:'Day 2 — Quick question', day3:'Day 3 — Still need help', day4:'Day 4 — Estimate waiting', day5:'Day 5 — Last chance', referral:'Referral + $50 off' };
         if (!confirm('Send "' + (labels[template]||template) + '" follow-up email?')) return;
         $.ajax({
-            url: '/.netlify/functions/send-followup?pw=' + encodeURIComponent(PW) + '&leadId=' + encodeURIComponent(id) + '&template=' + encodeURIComponent(template),
+            url: '/.netlify/functions/send-followup?leadId=' + encodeURIComponent(id) + '&template=' + encodeURIComponent(template),
+            headers: apiHeaders(),
             success: function(data) {
                 if (data.ok) {
                     alert('Follow-up sent ✓');
@@ -1477,13 +1521,33 @@
 
     function sendConfirmation(id) {
         if (!confirm('Send booking confirmation email to this customer?')) return;
+        // Fetch full lead to calculate deposit from timeline payments
         $.ajax({
-            url: '/.netlify/functions/resend-confirmation?pw=' + encodeURIComponent(PW) + '&leadId=' + encodeURIComponent(id),
+            url: '/.netlify/functions/crm?action=get&id=' + id,
+            headers: apiHeaders(),
             success: function(data) {
-                if (data.ok) alert('Confirmation sent!');
-                else alert('Failed: ' + (data.error || 'unknown'));
+                var lead = data.lead;
+                var deposit = 0;
+                if (lead) {
+                    (lead.timeline || []).forEach(function(t) {
+                        var m = (t.text || '').match(/\$(\d+)\s*deposit/i);
+                        if (m && t.type === 'payment') deposit = Math.max(deposit, parseInt(m[1], 10));
+                    });
+                    if (lead.depositPaid && !deposit) {
+                        deposit = lead.deposit || 0;
+                    }
+                }
+                $.ajax({
+                    url: '/.netlify/functions/resend-confirmation?leadId=' + encodeURIComponent(id) + '&deposit=' + encodeURIComponent(deposit),
+                    headers: apiHeaders(),
+                    success: function(data) {
+                        if (data.ok) alert('Confirmation sent!');
+                        else alert('Failed: ' + (data.error || 'unknown'));
+                    },
+                    error: function() { alert('Send failed'); }
+                });
             },
-            error: function() { alert('Send failed'); }
+            error: function() { alert('Send failed — could not fetch lead'); }
         });
     }
 

@@ -104,6 +104,7 @@ async function appendToIndex(s, id, lead){
     utm_content: lead.utm_content,
     utm_source: lead.utm_source,
     estimate_total: lead.estimate?.total || 0,
+    estimate_hours: lead.estimate?.hours || 0,
     depositPaid: lead.depositPaid,
   });
   // Keep most recent 500
@@ -159,6 +160,7 @@ async function rebuildIndexEntry(s, lead){
     utm_content: lead.utm_content,
     utm_source: lead.utm_source,
     estimate_total: lead.estimate?.total || 0,
+    estimate_hours: lead.estimate?.hours || 0,
     depositPaid: lead.depositPaid,
   };
   if (existing >= 0) idx[existing] = summary;

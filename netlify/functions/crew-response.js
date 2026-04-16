@@ -35,6 +35,34 @@ exports.handler = async (event) => {
   const crewName = crew ? crew.name : crewId;
   const clientName = lead ? lead.name : '(unknown)';
 
+  // Replay protection: check if this crew member already responded
+  if (lead) {
+    const alreadyResponded = (lead.timeline || []).some(t => {
+      const text = t.text || '';
+      return (text.includes('ACCEPTED') || text.includes('DECLINED')) && text.includes(crewName);
+    });
+    if (alreadyResponded) {
+      return {
+        statusCode: 200,
+        headers: { 'Content-Type': 'text/html; charset=utf-8' },
+        body: `
+          <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>
+            body{font-family:-apple-system,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#fefce8}
+            .card{background:#fff;border-radius:16px;padding:40px;text-align:center;max-width:400px;box-shadow:0 4px 20px rgba(0,0,0,.1)}
+            h1{color:#ca8a04;margin:0 0 12px}
+            p{color:#3a3a3a;font-size:15px;line-height:1.6}
+          </style></head><body>
+            <div class="card">
+              <h1>Already Responded</h1>
+              <p>You've already responded to this job, ${crewName}. No further action needed.</p>
+              <p style="color:#6b7280;font-size:13px;margin-top:20px">— Toro Movers</p>
+            </div>
+          </body></html>
+        `,
+      };
+    }
+  }
+
   if (response === 'accept') {
     if (lead) await addNote(leadId, `${crewName} ACCEPTED the job`, 'crew-response');
     await sendTG(`✅ *${crewName}* ACCEPTED the job for *${clientName}*\n📅 ${lead?.move_date || ''} ${lead?.move_time || ''}\n\nOpen: https://toromovers.net/crm#lead/${leadId}`);
@@ -91,7 +119,8 @@ exports.handler = async (event) => {
 
 function parseDate(lead) {
   if (!lead.move_date) return null;
-  const d = new Date(lead.move_date);
+  const iso = /^\d{4}-\d{2}-\d{2}$/.test(lead.move_date);
+  const d = iso ? new Date(lead.move_date + 'T00:00:00') : new Date(lead.move_date);
   return isNaN(d.getTime()) ? null : d;
 }
 

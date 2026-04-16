@@ -31,8 +31,10 @@ exports.handler = async (event) => {
   if (!expected) return json(500, { error: 'CRM_PASSWORD not configured' });
   if (pw !== expected) return json(401, { error: 'Unauthorized' });
 
-  const action = event.queryStringParameters?.action || (event.body ? JSON.parse(event.body).action : '') || 'list';
-  const id     = event.queryStringParameters?.id     || (event.body ? JSON.parse(event.body).id     : '');
+  let parsedBody = {};
+  try { if (event.body) parsedBody = JSON.parse(event.body); } catch(e) { parsedBody = {}; }
+  const action = event.queryStringParameters?.action || parsedBody.action || 'list';
+  const id     = event.queryStringParameters?.id     || parsedBody.id     || '';
 
   try {
     if (event.httpMethod === 'GET') {
