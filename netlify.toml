@@ -212,6 +212,54 @@
   force = true
 
 [[redirects]]
+  from = "/pages/cities/lake-nona-movers.html"
+  to = "/lake-nona-movers"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/pages/cities/hunters-creek-movers.html"
+  to = "/hunters-creek-movers"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/pages/cities/avalon-park-movers.html"
+  to = "/avalon-park-movers"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/pages/cities/deland-movers.html"
+  to = "/deland-movers"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/pages/cities/tavares-movers.html"
+  to = "/tavares-movers"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/pages/cities/groveland-movers.html"
+  to = "/groveland-movers"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/pages/cities/minneola-movers.html"
+  to = "/minneola-movers"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/pages/cities/debary-movers.html"
+  to = "/debary-movers"
+  status = 301
+  force = true
+
+[[redirects]]
   from = "/pages/cities/*"
   to = "/#area"
   status = 301
