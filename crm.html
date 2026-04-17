@@ -346,6 +346,7 @@
                     <button class="btn btn-sm btn-primary" onclick="openAddLeadModal()">
                         <i class="material-icons" style="font-size:16px;vertical-align:middle;margin-right:4px">add</i> Add Lead
                     </button>
+                    <button class="btn btn-sm btn-outline-secondary" onclick="exportCSV()"><i class="fas fa-download mr-1"></i> Export</button>
                     <button class="btn btn-sm btn-outline-secondary" onclick="loadAll()" title="Refresh">
                         <i class="material-icons" style="font-size:18px;vertical-align:middle">refresh</i>
                     </button>
@@ -1662,6 +1663,59 @@
             $('#crewModal').modal('hide');
         }
     });
+
+    // ===== CSV EXPORT =====
+    function exportCSV() {
+        if (!leads || !leads.length) { alert('No leads to export.'); return; }
+
+        var cols = ['Name','Phone','Email','Status','Move Date','Move Time',
+                    'Pickup Address','Dropoff Address','Movers','Hours','Truck',
+                    'Estimate Total','Deposit Paid','Crew Assigned','Created At','Source'];
+
+        function csvVal(v) {
+            if (v == null) return '';
+            var s = String(v);
+            if (s.indexOf(',') !== -1 || s.indexOf('"') !== -1 || s.indexOf('\n') !== -1) {
+                return '"' + s.replace(/"/g, '""') + '"';
+            }
+            return s;
+        }
+
+        var rows = [cols.join(',')];
+        leads.forEach(function(l) {
+            var est = l.estimate || {};
+            rows.push([
+                csvVal(l.name),
+                csvVal(l.phone),
+                csvVal(l.email),
+                csvVal(l.status),
+                csvVal(l.move_date),
+                csvVal(l.move_time),
+                csvVal(l.pickup_address),
+                csvVal(l.dropoff_address),
+                csvVal(est.movers),
+                csvVal(est.hours),
+                csvVal(est.truck ? 'Yes' : 'No'),
+                csvVal(est.total),
+                csvVal(l.deposit_paid ? 'Yes' : 'No'),
+                csvVal(l.crew_assigned),
+                csvVal(l.created_at),
+                csvVal(l.source || l.page || l.utm_source || '')
+            ].join(','));
+        });
+
+        var csv = rows.join('\r\n');
+        var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        var today = new Date().toISOString().slice(0, 10);
+        a.href = url;
+        a.download = 'toro-movers-leads-' + today + '.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
 
     </script>
 </body>

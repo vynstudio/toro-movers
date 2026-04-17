@@ -464,6 +464,55 @@ exports.handler = async (event) => {
       if (r.status === 'rejected') console.error(`Drip ${i+1} failed:`, r.reason?.message || r.reason);
     });
 
+    // ===== Google Sheets backup — fire and forget =====
+    // Sends every new lead to a Google Apps Script Web App that appends
+    // rows to a Google Sheet. Acts as a permanent backup independent of
+    // Netlify Blobs.
+    //
+    // Setup instructions:
+    //   1. Create a Google Sheet with columns matching the fields below
+    //   2. Go to Extensions → Apps Script
+    //   3. Paste a doPost(e) function that parses JSON and appends a row:
+    //        function doPost(e) {
+    //          var data = JSON.parse(e.postData.contents);
+    //          var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    //          sheet.appendRow([data.name, data.phone, data.email, data.status,
+    //            data.move_date, data.move_time, data.pickup_address,
+    //            data.dropoff_address, data.movers, data.hours, data.truck,
+    //            data.total, data.source, data.created_at, data.lead_id]);
+    //          return ContentService.createTextOutput('ok');
+    //        }
+    //   4. Deploy → New deployment → Web App → Execute as Me → Anyone
+    //   5. Copy the Web App URL and set it as GOOGLE_SHEETS_WEBHOOK env var
+    //      in Netlify (Site settings → Environment variables)
+    try {
+      const sheetsUrl = process.env.GOOGLE_SHEETS_WEBHOOK;
+      if (sheetsUrl) {
+        const sheetData = savedLead || { ...payload, estimate };
+        fetch(sheetsUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: sheetData.name || '',
+            phone: sheetData.phone || payload.phone || '',
+            email: sheetData.email || payload.email || '',
+            status: sheetData.status || 'new',
+            move_date: sheetData.move_date || payload.move_date || '',
+            move_time: sheetData.move_time || payload.move_time || '',
+            pickup_address: sheetData.pickup_address || payload.pickup_address || '',
+            dropoff_address: sheetData.dropoff_address || payload.dropoff_address || '',
+            movers: (sheetData.estimate || estimate || {}).movers || '',
+            hours: (sheetData.estimate || estimate || {}).hours || '',
+            truck: (sheetData.estimate || estimate || {}).truck ? 'Yes' : 'No',
+            total: (sheetData.estimate || estimate || {}).total || '',
+            source: payload.page || payload.utm_source || 'web',
+            created_at: new Date().toISOString(),
+            lead_id: sheetData.id || '',
+          }),
+        }).catch(e => console.error('[sheets-sync] failed:', e.message));
+      }
+    } catch(e) { console.error('[sheets-sync] error:', e.message); }
+
     return {
       statusCode: 200,
       headers,
