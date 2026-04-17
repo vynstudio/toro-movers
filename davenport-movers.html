@@ -1482,7 +1482,7 @@ section.section { padding: 100px 24px; }
           <div class="calc-email-fields">
             <input type="text" id="calc-name" class="calc-email-input" placeholder="Your name" required>
             <input type="email" id="calc-email-input" class="calc-email-input" placeholder="Your email" required>
-            <input type="tel" id="calc-phone" class="calc-email-input" placeholder="Phone (optional)">
+            <input type="tel" id="calc-phone" class="calc-email-input" placeholder="Your phone" required>
           </div>
           <button class="calc-email-btn" id="calc-send-quote">Get My Free Quote</button>
           <p class="calc-email-status" id="calc-email-status" style="display:none"></p>
@@ -1703,7 +1703,7 @@ section.section { padding: 100px 24px; }
         <p style="display:none"><label>Don't fill this out: <input name="bot-field"></label></p>
         <input type="text" name="name" placeholder="Your name" required>
         <input type="tel" name="phone" placeholder="Phone number" required>
-        <input type="email" name="email" placeholder="Email (optional)">
+        <input type="email" name="email" placeholder="Your email" required>
         <button type="submit" class="book-compact-btn">Request a Call →</button>
       </form>
     </div>
@@ -1904,8 +1904,8 @@ function selectPackage(pkg) {
     var phone = document.getElementById('calc-phone').value.trim();
     var status = document.getElementById('calc-email-status');
 
-    if (!name || !email) {
-      status.textContent = 'Please enter your name and email.';
+    if (!name || !email || !phone) {
+      status.textContent = 'Please enter your name, phone, and email.';
       status.className = 'calc-email-status error';
       status.style.display = '';
       return;
