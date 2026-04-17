@@ -349,7 +349,7 @@ var STEPS=[
   ]},
   {id:6,q:'When & where?',type:'inputs',fields:['date','zipFrom','zipTo']},
   {id:7,q:'Where should we send your quote?',sub:"We'll show your price on the next step.",type:'contact'},
-  {id:8,q:'Your move',type:'estimate'}
+  {id:8,q:'Your quote is on its way',type:'estimate'}
 ];
 var T=STEPS.length,cur=0;
 var D={moveType:'',bedrooms:'',stairs:'none',packing:'none',specials:[],date:'',zipFrom:'',zipTo:'',name:'',phone:'',email:''};
@@ -375,14 +375,10 @@ function render(){
     h+='<div class="qi"><input type="text" id="q-name" value="'+D.name+'" placeholder="Your name" required><input type="tel" id="q-phone" value="'+D.phone+'" placeholder="Phone number" required inputmode="tel"><input type="email" id="q-email" value="'+D.email+'" placeholder="Email address" required></div><div class="qn"><button class="qn-back" onclick="go(-1)">\u2190 Back</button><button class="qn-next" id="q-sub" onclick="sub()">See My Price \u2192</button></div><p class="q-status" id="q-st" style="display:none"></p><p style="font-size:11px;color:var(--gray-500);text-align:center;margin-top:10px">$75/mover/hour \xb7 2-hour minimum \xb7 Licensed & insured</p>';
   }
   else if(s.type==='estimate'){
-    var e=LAST_EST||calc();
     h+='<div class="est">';
-    h+='<div class="est-head">Your estimated total</div>';
-    h+='<div class="est-price">$'+e.total.toLocaleString()+'</div>';
-    h+='<div class="est-breakdown">'+e.movers+' movers \xb7 '+e.hours+' hrs \xb7 $75/hr'+(e.truck?' + $275 truck':'')+'</div>';
-    h+='<div style="height:18px"></div>';
+    h+='<p style="font-size:15px;color:var(--charcoal-soft);max-width:340px;line-height:1.5;margin:8px 0 24px">We just emailed your full quote to <strong>'+(D.email||'your inbox')+'</strong>. Lock in your date below, or reply when you\'re ready.</p>';
     h+='<button class="est-book" id="est-book" onclick="book()">Book now</button>';
-    h+='<button class="est-alt" onclick="emailOnly()">Just email me the quote</button>';
+    h+='<button class="est-alt" onclick="emailOnly()">I\'ll book later</button>';
     h+='<p class="est-reassure">Secure checkout \xb7 Refundable with 24-hour notice.</p>';
     h+='<p class="q-status" id="q-st" style="display:none"></p>';
     h+='</div>';
