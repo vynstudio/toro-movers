@@ -4,8 +4,12 @@
 // with the browser Pixel (matched by event_id).
 //
 // Env vars required (set in Netlify UI → Site settings → Environment variables):
-//   META_PIXEL_ID      — numeric pixel id
-//   META_CAPI_TOKEN    — long-lived CAPI access token
+//   META_PIXEL_ID      — primary pixel id (legacy / historical)
+//   META_PIXEL_ID_LP   — optional second pixel id (LP/campaign pixel).
+//                        When set, every event is relayed to BOTH pixels so
+//                        server-side dedup works for both fbq('init') pixels.
+//   META_CAPI_TOKEN    — long-lived CAPI access token (must have access to
+//                        all configured pixels)
 //
 // POST body shape (JSON):
 //   {
@@ -24,7 +28,7 @@
 
 const crypto = require('crypto');
 
-const PIXEL_ID = process.env.META_PIXEL_ID;
+const PIXEL_IDS = [process.env.META_PIXEL_ID, process.env.META_PIXEL_ID_LP].filter(Boolean);
 const ACCESS_TOKEN = process.env.META_CAPI_TOKEN;
 const API_VERSION = 'v21.0';
 
@@ -49,7 +53,7 @@ exports.handler = async (event) => {
     return { statusCode: 405, headers: corsHeaders, body: 'Method not allowed' };
   }
 
-  if (!PIXEL_ID || !ACCESS_TOKEN) {
+  if (PIXEL_IDS.length === 0 || !ACCESS_TOKEN) {
     return {
       statusCode: 500,
       headers: corsHeaders,
@@ -114,26 +118,31 @@ exports.handler = async (event) => {
     ],
   };
 
-  try {
-    const res = await fetch(
-      `https://graph.facebook.com/${API_VERSION}/${PIXEL_ID}/events?access_token=${ACCESS_TOKEN}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
+  // Fan out to every configured pixel in parallel. One failure shouldn't kill
+  // the other — each pixel result is captured independently.
+  const results = await Promise.all(
+    PIXEL_IDS.map(async (pixelId) => {
+      try {
+        const res = await fetch(
+          `https://graph.facebook.com/${API_VERSION}/${pixelId}/events?access_token=${ACCESS_TOKEN}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+          }
+        );
+        const text = await res.text();
+        return { pixel_id: pixelId, ok: res.ok, status: res.status, body: text };
+      } catch (err) {
+        return { pixel_id: pixelId, ok: false, status: 0, error: String(err) };
       }
-    );
-    const text = await res.text();
-    return {
-      statusCode: res.ok ? 200 : 502,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      body: text,
-    };
-  } catch (err) {
-    return {
-      statusCode: 502,
-      headers: corsHeaders,
-      body: JSON.stringify({ error: 'CAPI upstream failed', detail: String(err) }),
-    };
-  }
+    })
+  );
+
+  const anyOk = results.some((r) => r.ok);
+  return {
+    statusCode: anyOk ? 200 : 502,
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ results }),
+  };
 };
