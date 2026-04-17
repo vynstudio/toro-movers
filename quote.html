@@ -371,7 +371,8 @@ function render(){
     h+='<div class="qc">';s.opts.forEach(function(o){var ck=D.specials.indexOf(o.v)>-1?' ck':'';var chk=ck?' checked':'';h+='<label class="qc-item'+ck+'"><input type="checkbox" value="'+o.v+'"'+chk+'> '+o.ico+' '+o.v+'</label>'});h+='</div><div class="qn">'+(cur>0?'<button class="qn-back" onclick="go(-1)">\u2190 Back</button>':'')+'<button class="qn-next" onclick="go(1)">Next \u2192</button></div>';
   }
   else if(s.type==='inputs'){
-    h+='<div class="qi"><input type="date" id="q-date" value="'+D.date+'"><div class="qi-row"><input type="text" id="q-zf" value="'+D.zipFrom+'" placeholder="Pickup ZIP" maxlength="5" inputmode="numeric"><input type="text" id="q-zt" value="'+D.zipTo+'" placeholder="Dropoff ZIP" maxlength="5" inputmode="numeric"></div></div><div class="qn"><button class="qn-back" onclick="go(-1)">\u2190 Back</button><button class="qn-next" onclick="go(1)">Almost done \u2192</button></div>';
+    var today=new Date().toISOString().split('T')[0];
+    h+='<div class="qi"><input type="date" id="q-date" value="'+D.date+'" min="'+today+'"><div class="qi-row"><input type="text" id="q-zf" value="'+D.zipFrom+'" placeholder="Pickup ZIP" maxlength="5" inputmode="numeric" pattern="\\d{5}"><input type="text" id="q-zt" value="'+D.zipTo+'" placeholder="Dropoff ZIP" maxlength="5" inputmode="numeric" pattern="\\d{5}"></div></div><div class="qn"><button class="qn-back" onclick="go(-1)">\u2190 Back</button><button class="qn-next" onclick="go(1)">Almost done \u2192</button></div><p class="q-status" id="q-st" style="display:none"></p>';
   }
   else if(s.type==='contact'){
     h+='<div class="qi"><input type="text" id="q-name" value="'+D.name+'" placeholder="Your name" required><input type="tel" id="q-phone" value="'+D.phone+'" placeholder="Phone number" required inputmode="tel"><input type="email" id="q-email" value="'+D.email+'" placeholder="Email address" required></div><div class="qn"><button class="qn-back" onclick="go(-1)">\u2190 Back</button><button class="qn-next" id="q-sub" onclick="sub()">See My Price \u2192</button></div><p class="q-status" id="q-st" style="display:none"></p><p style="font-size:11px;color:var(--gray-500);text-align:center;margin-top:10px">$75/mover/hour \xb7 2-hour minimum \xb7 Licensed & insured</p>';
@@ -402,7 +403,21 @@ function wire(c){
 
 function go(dir){
   var c=document.getElementById('the-quiz');
-  if(STEPS[cur].type==='inputs'){var d=c.querySelector('#q-date');if(d)D.date=d.value;var zf=c.querySelector('#q-zf');if(zf)D.zipFrom=zf.value;var zt=c.querySelector('#q-zt');if(zt)D.zipTo=zt.value;}
+  if(STEPS[cur].type==='inputs'){
+    var d=c.querySelector('#q-date');if(d)D.date=d.value;
+    var zf=c.querySelector('#q-zf');if(zf)D.zipFrom=zf.value;
+    var zt=c.querySelector('#q-zt');if(zt)D.zipTo=zt.value;
+    if(dir===1){
+      var today=new Date().toISOString().split('T')[0];
+      var st=c.querySelector('#q-st');
+      var err='';
+      if(D.date&&D.date<today)err='Please pick a date today or later.';
+      else if(D.zipFrom&&!/^\d{5}$/.test(D.zipFrom))err='Pickup ZIP must be 5 digits.';
+      else if(D.zipTo&&!/^\d{5}$/.test(D.zipTo))err='Dropoff ZIP must be 5 digits.';
+      if(err){if(st){st.textContent=err;st.className='q-status err';st.style.display='';}return;}
+      if(st)st.style.display='none';
+    }
+  }
   if(STEPS[cur].type==='contact'){var n=c.querySelector('#q-name');if(n)D.name=n.value;var p=c.querySelector('#q-phone');if(p)D.phone=p.value;var e=c.querySelector('#q-email');if(e)D.email=e.value;}
   var nx=cur+dir;if(nx<0||nx>=T)return;cur=nx;render();
 }
