@@ -410,7 +410,7 @@ exports.handler = async (event) => {
     },
   ] : [];
 
-  // Save lead to CRM + ping Telegram
+  // Save lead to CRM + ping Telegram + email (redundant delivery — if one fails, others still fire)
   let savedLead = null;
   try {
     savedLead = await createLead({ ...payload, estimate });
@@ -418,15 +418,26 @@ exports.handler = async (event) => {
   } catch(e) {
     console.error('[notify] CRM save FAILED:', e.message, e.stack);
   }
-  if (savedLead) {
-    try {
-      const tgResult = await notifyTelegram(savedLead);
-      console.log('[notify] telegram result:', JSON.stringify(tgResult));
-    } catch(e) {
-      console.error('[notify] Telegram FAILED:', e.message, e.stack);
+
+  // Always send Telegram — even if Blobs/CRM failed, use raw payload as fallback
+  try {
+    const tgLead = savedLead || { ...payload, estimate, id: 'UNSAVED-' + Date.now(), status: 'new', name: payload.name || ((payload.first_name || '') + ' ' + (payload.last_name || '')).trim() };
+    const tgResult = await notifyTelegram(tgLead);
+    console.log('[notify] telegram result:', JSON.stringify(tgResult));
+    if (!savedLead) {
+      // Extra warning in Telegram that CRM save failed
+      const TG_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+      const TG_CHAT = process.env.TELEGRAM_CHAT_ID;
+      if (TG_TOKEN && TG_CHAT) {
+        await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ chat_id: TG_CHAT, text: '⚠️ *CRM SAVE FAILED* — lead above was NOT saved to the database. Add it manually in the CRM.', parse_mode: 'Markdown' }),
+        }).catch(() => {});
+      }
     }
-  } else {
-    console.warn('[notify] no savedLead, skipping Telegram');
+  } catch(e) {
+    console.error('[notify] Telegram FAILED:', e.message, e.stack);
   }
 
   try {
