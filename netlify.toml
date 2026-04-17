@@ -26,6 +26,16 @@
 # ============================================================
 # SECURITY HEADERS
 # ============================================================
+# CSP notes:
+# - 'unsafe-inline' is required because quote.html / lp.html / index.html
+#   ship large inline <style> and <script> blocks. Switching to nonces would
+#   require rewriting every inline block + a build step.
+# - Allowed third parties: Meta Pixel (connect.facebook.net,
+#   *.facebook.com), GA4 / GTM (googletagmanager.com, *.google-analytics.com),
+#   Stripe (js.stripe.com, checkout.stripe.com, m.stripe.network,
+#   api.stripe.com).
+# - Test after any change: load /quote, submit a lead, run through Stripe
+#   checkout, and watch the browser console for CSP violations.
 [[headers]]
   for = "/*"
   [headers.values]
@@ -34,6 +44,7 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "camera=(), microphone=(), geolocation=(self)"
     Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://connect.facebook.net https://www.googletagmanager.com https://js.stripe.com https://m.stripe.network; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://www.facebook.com https://*.facebook.com https://*.google-analytics.com https://*.googletagmanager.com https://*.google.com; connect-src 'self' https://*.facebook.net https://*.facebook.com https://*.google-analytics.com https://*.googletagmanager.com https://*.stripe.com https://api.stripe.com https://m.stripe.network; frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://checkout.stripe.com https://m.stripe.network; font-src 'self' data:; form-action 'self' https://checkout.stripe.com; base-uri 'self'; object-src 'none'; frame-ancestors 'none'"
 
 # ============================================================
 # CACHE
