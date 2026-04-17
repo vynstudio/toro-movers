@@ -8,8 +8,8 @@
 // a read-only feed URL stored in calendar apps, so use a separate secret).
 // Set CALENDAR_FEED_KEY in Netlify env vars.
 
-const { getStore } = require('@netlify/blobs');
-const { listLeads, getLead } = require('./_lib/leads');
+const { getStore } = require('@netlify/blobs'); // scanner hint — Netlify needs this to inject Blobs runtime
+const { listLeads } = require('./_lib/leads');
 
 exports.handler = async (event) => {
   const key = event.queryStringParameters?.key || '';
