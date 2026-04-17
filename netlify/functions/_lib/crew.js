@@ -4,7 +4,7 @@
 const { getStore } = require('@netlify/blobs');
 
 function store(){
-  const siteID = process.env.NETLIFY_SITE_ID || '5d1b562a-d00c-4a66-8dd3-5b083eb11ce9';
+  const siteID = process.env.NETLIFY_SITE_ID;
   const token = process.env.NETLIFY_BLOBS_TOKEN;
   if (token) return getStore({ name: 'leads', siteID, token, consistency: 'strong' });
   return getStore({ name: 'leads', consistency: 'strong' });

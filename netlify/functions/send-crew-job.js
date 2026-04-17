@@ -15,6 +15,8 @@ const json = (status, data) => ({
 });
 
 exports.handler = async (event) => {
+  if (event.httpMethod === 'OPTIONS') return { statusCode: 204, headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Content-Type, x-crm-password', 'Access-Control-Allow-Methods': 'GET, POST, OPTIONS' }, body: '' };
+
   const pw = event.headers['x-crm-password'] || event.queryStringParameters?.pw || '';
   if (!process.env.CRM_PASSWORD || pw !== process.env.CRM_PASSWORD) return json(401, { error: 'Unauthorized' });
 

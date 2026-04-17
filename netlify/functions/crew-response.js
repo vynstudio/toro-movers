@@ -166,7 +166,8 @@ function buildIcsUrl(lead) {
   const endD = new Date(d); endD.setHours(startH + Math.ceil(hrs), 0, 0, 0);
   const end = fmtGcalDate(endD, `${endD.getHours()}:00`);
   const ics = [
-    'BEGIN:VCALENDAR', 'VERSION:2.0', 'BEGIN:VEVENT',
+    'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Toro Movers//CRM//EN',
+    'BEGIN:VEVENT', `UID:${lead.id}@toromovers.net`,
     `DTSTART:${start}`, `DTEND:${end}`,
     `SUMMARY:Toro Movers — ${lead.name}`,
     `LOCATION:${(lead.pickup_address || '').replace(/,/g, '\\,')}`,

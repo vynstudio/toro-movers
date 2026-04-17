@@ -73,6 +73,8 @@
     .badge-booked { background-color: var(--s-booked); color: #fff; }
     .badge-done { background-color: var(--s-done); color: #fff; }
     .badge-lost { background-color: var(--s-lost); color: #fff; }
+    .badge-abandoned { background-color: #f97316; color: #fff; }
+    .badge-partial { background-color: #fbbf24; color: #fff; }
 
     /* Stats cards */
     .stat-card-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
@@ -555,7 +557,7 @@
         new: '#2563eb', contacted: '#8b5cf6', quoted: '#f59e0b',
         booked: '#16a34a', done: '#9ca3af', lost: '#ef4444'
     };
-    var STATUS_ORDER = ['new', 'contacted', 'quoted', 'booked', 'done'];
+    var STATUS_ORDER = ['new', 'contacted', 'quoted', 'booked', 'done', 'lost'];
     var STATUS_LABELS = {
         new: 'New Leads', contacted: 'Contacted', quoted: 'Quoted',
         booked: 'Booked', done: 'Job Completed', lost: 'Lost'
@@ -570,6 +572,10 @@
             var hash = location.hash.replace('#', '');
             if (hash && ['dashboard','calendar','kanban','leads'].indexOf(hash) >= 0) {
                 switchView(hash, true);
+            } else if (location.hash.startsWith('#lead/')) {
+                // Bug 42: Handle #lead/xxx deep links on popstate
+                var leadId = location.hash.replace('#lead/', '');
+                if (leadId) openLead(leadId);
             } else {
                 switchView('dashboard', true);
             }
@@ -729,6 +735,12 @@
     function loadAll() {
         $.when(loadLeads(), loadCrew()).done(function() {
             renderAll();
+            // Bug 42: Handle #lead/xxx deep links (e.g. from Telegram)
+            var hash = location.hash;
+            if (hash.startsWith('#lead/')) {
+                var leadId = hash.replace('#lead/', '');
+                if (leadId) openLead(leadId);
+            }
         });
     }
 
@@ -954,6 +966,8 @@
             events: function(start, end, timezone, callback) {
                 var events = [];
                 leads.forEach(function(l) {
+                    // Bug 41: Don't show lost or abandoned leads on the calendar
+                    if (l.status === 'lost' || l.status === 'abandoned') return;
                     var d = parseMoveDate(l);
                     if (!d) return;
                     var t = parseMoveTime(l);
@@ -987,7 +1001,12 @@
     function renderKanban() {
         var html = '';
         STATUS_ORDER.forEach(function(s) {
-            var colLeads = leads.filter(function(l) { return l.status === s; }).sort(function(a, b) {
+            // Bug 14: Map 'abandoned' and 'partial' leads into the 'new' column
+            // since they are early-stage leads that need attention.
+            var colLeads = leads.filter(function(l) {
+                if (s === 'new') return l.status === 'new' || l.status === 'abandoned' || l.status === 'partial';
+                return l.status === s;
+            }).sort(function(a, b) {
                 return new Date(b.createdAt) - new Date(a.createdAt);
             });
             var subtotal = colLeads.reduce(function(x, l) { return x + (l.estimate_total || 0); }, 0);
@@ -1180,12 +1199,16 @@
         body += '<div class="detail-section"><h6>Customer</h6>' +
             '<div class="detail-row"><i class="fas fa-user" style="color:#6c757d;width:16px"></i>' + ef(lead.id, 'name', 'Customer name', lead.name, 'Add name') + '</div>' +
             '<div class="detail-row"><i class="fas fa-phone" style="color:#6c757d;width:16px"></i>' +
-                (lead.phone ? '<a href="tel:' + lead.phone.replace(/\D/g,'') + '" style="margin-right:8px">' + escapeHtml(lead.phone) + '</a>' : '') +
-                ef(lead.id, 'phone', 'Phone number', lead.phone ? '' : '', lead.phone ? '✏️' : 'Add phone') +
+                (lead.phone
+                    ? '<a href="tel:' + lead.phone.replace(/\D/g,'') + '" style="margin-right:6px">' + escapeHtml(lead.phone) + '</a>' +
+                      '<span class="editable" onclick="editField(\'' + lead.id + '\',\'phone\',\'Phone number\')" style="font-size:11px;color:#9ca3af">✏️</span>'
+                    : ef(lead.id, 'phone', 'Phone number', '', 'Add phone')) +
             '</div>' +
             '<div class="detail-row"><i class="fas fa-envelope" style="color:#6c757d;width:16px"></i>' +
-                (lead.email ? '<a href="mailto:' + escapeHtml(lead.email) + '" style="margin-right:8px">' + escapeHtml(lead.email) + '</a>' : '') +
-                ef(lead.id, 'email', 'Email', lead.email ? '' : '', lead.email ? '✏️' : 'Add email') +
+                (lead.email
+                    ? '<a href="mailto:' + escapeHtml(lead.email) + '" style="margin-right:6px">' + escapeHtml(lead.email) + '</a>' +
+                      '<span class="editable" onclick="editField(\'' + lead.id + '\',\'email\',\'Email\')" style="font-size:11px;color:#9ca3af">✏️</span>'
+                    : ef(lead.id, 'email', 'Email', '', 'Add email')) +
             '</div>' +
             '</div>';
 
@@ -1432,7 +1455,7 @@
             headers: apiHeaders(),
             data: JSON.stringify({ action: 'note', id: id, text: text }),
             success: function() {
-                loadLeads().done(function() { openLead(id); });
+                openLead(id);
             },
             error: function() {}
         });

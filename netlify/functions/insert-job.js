@@ -21,12 +21,18 @@ const { createLead, updateLead } = require('./_lib/leads');
 
 const json = (status, data) => ({
   statusCode: status,
-  headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
+  headers: {
+    'Content-Type': 'application/json',
+    'Cache-Control': 'no-store',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type, x-crm-password',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  },
   body: JSON.stringify(data),
 });
 
 exports.handler = async (event) => {
-  if (event.httpMethod === 'OPTIONS') return { statusCode: 204, body: '' };
+  if (event.httpMethod === 'OPTIONS') return { statusCode: 204, headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Content-Type, x-crm-password', 'Access-Control-Allow-Methods': 'GET, POST, OPTIONS' }, body: '' };
   if (event.httpMethod !== 'POST') return json(405, { error: 'POST only' });
 
   const pw = event.headers['x-crm-password'] || event.queryStringParameters?.pw || '';
