@@ -5,6 +5,7 @@
 //   RESEND_FROM_EMAIL  — hello@toromovers.net (domain must be verified in Resend)
 
 const { Resend } = require('resend');
+const { createLead, notifyTelegram } = require('./_lib/leads');
 
 exports.handler = async (event) => {
   const headers = {
@@ -46,11 +47,47 @@ exports.handler = async (event) => {
     total = 300,
     packing = 'none',
     bedrooms = '',
+    stairs = '',
+    specials = '',
+    move_date = '',
+    zip_from = '',
+    zip_to = '',
     page = '',
+    utm_source = '',
+    utm_medium = '',
+    utm_campaign = '',
+    utm_content = '',
+    utm_term = '',
+    fbclid = '',
+    gclid = '',
   } = payload;
 
   if (!email) {
     return { statusCode: 400, headers, body: JSON.stringify({ error: 'Email required' }) };
+  }
+
+  // Create CRM lead (Netlify Blobs) + fire Telegram notification. Don't block
+  // the quote email on failure — lead capture is important but email is the
+  // customer-facing priority.
+  const nameParts = String(name).trim().split(/\s+/);
+  const first_name = nameParts[0] || '';
+  const last_name = nameParts.slice(1).join(' ');
+  const leadPayload = {
+    name, first_name, last_name, email, phone,
+    zip_from, zip_to, move_date,
+    furniture_size: bedrooms ? `${bedrooms} BR` : '',
+    stairs_elevator: stairs,
+    page,
+    utm_source, utm_medium, utm_campaign, utm_content, utm_term,
+    fbclid, gclid,
+    estimate: { movers, hours, total, truck, labor, truckFee, packing, specials },
+  };
+  let lead = null;
+  try {
+    lead = await createLead(leadPayload);
+    notifyTelegram(lead).catch(e => console.error('Telegram failed:', e.message));
+  } catch (e) {
+    console.error('createLead failed:', e.message);
   }
 
   const truckLine = truck
@@ -110,8 +147,8 @@ exports.handler = async (event) => {
 
   <!-- CTA -->
   <tr><td style="padding:0 32px 32px;text-align:center">
-    <p style="margin:0 0 16px;font-size:14px;color:#374151;font-weight:600">Ready to reserve your move?</p>
-    <a href="https://toromovers.net/.netlify/functions/reserve-from-email?truck=${truck}&total=${total}&movers=${movers}&hours=${hours}&name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&phone=${encodeURIComponent(phone)}" style="display:inline-block;background:#C8102E;color:#fff;font-weight:800;font-size:15px;padding:16px 36px;border-radius:999px;text-decoration:none">Reserve This Move — Pay $${truck ? 125 : 50} Deposit</a>
+    <p style="margin:0 0 16px;font-size:14px;color:#374151;font-weight:600">Ready to lock in your date?</p>
+    <a href="https://toromovers.net/.netlify/functions/reserve-from-email?truck=${truck}&total=${total}&movers=${movers}&hours=${hours}&name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&phone=${encodeURIComponent(phone)}" style="display:inline-block;background:#C8102E;color:#fff;font-weight:800;font-size:16px;padding:18px 48px;border-radius:999px;text-decoration:none;box-shadow:0 6px 20px rgba(200,16,46,0.3)">Book now</a>
     <p style="margin:16px 0 0;font-size:13px;color:#6B7280">Or call <a href="tel:3217580094" style="color:#C8102E;font-weight:700;text-decoration:none">(321) 758-0094</a></p>
   </td></tr>
 

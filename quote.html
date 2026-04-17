@@ -354,6 +354,7 @@ var STEPS=[
 var T=STEPS.length,cur=0;
 var D={moveType:'',bedrooms:'',stairs:'none',packing:'none',specials:[],date:'',zipFrom:'',zipTo:'',name:'',phone:'',email:''};
 var LAST_EST=null;
+var UTM=(function(){var p=new URLSearchParams(window.location.search);return{utm_source:p.get('utm_source')||'',utm_medium:p.get('utm_medium')||'',utm_campaign:p.get('utm_campaign')||'',utm_content:p.get('utm_content')||'',utm_term:p.get('utm_term')||'',fbclid:p.get('fbclid')||'',gclid:p.get('gclid')||''}})();
 
 function render(){
   var c=document.getElementById('the-quiz');
@@ -420,7 +421,15 @@ function sub(){
   if(st)st.style.display='none';
   LAST_EST=calc();
   try{if(window.ToroTrack)window.ToroTrack.lead({name:D.name,email:D.email,phone:D.phone})}catch(x){}
-  fetch('/.netlify/functions/send-quote',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:D.name,email:D.email,phone:D.phone,movers:LAST_EST.movers,hours:LAST_EST.hours,truck:LAST_EST.truck,truckFee:LAST_EST.truckFee,labor:LAST_EST.labor,total:LAST_EST.total,packing:D.packing,bedrooms:D.bedrooms,page:'/quote'})}).catch(function(){});
+  fetch('/.netlify/functions/send-quote',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+    name:D.name,email:D.email,phone:D.phone,
+    movers:LAST_EST.movers,hours:LAST_EST.hours,truck:LAST_EST.truck,truckFee:LAST_EST.truckFee,labor:LAST_EST.labor,total:LAST_EST.total,
+    packing:D.packing,bedrooms:D.bedrooms,stairs:D.stairs,specials:D.specials.join(', '),
+    move_date:D.date,zip_from:D.zipFrom,zip_to:D.zipTo,
+    page:'/quote',
+    utm_source:UTM.utm_source,utm_medium:UTM.utm_medium,utm_campaign:UTM.utm_campaign,utm_content:UTM.utm_content,utm_term:UTM.utm_term,
+    fbclid:UTM.fbclid,gclid:UTM.gclid
+  })}).catch(function(){});
   cur=T-1;render();
 }
 
