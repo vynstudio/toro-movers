@@ -133,6 +133,8 @@ h1,h2,h3{font-weight:800;line-height:1.1;letter-spacing:-.02em}
 .qn{display:flex;gap:10px;margin-top:auto;padding-top:20px}
 .qn-back{flex:0 0 auto;padding:14px 20px;background:var(--gray-100);color:var(--charcoal);border:none;border-radius:999px;font-size:14px;font-weight:600;cursor:pointer}
 .qn-back:hover{background:var(--gray-200)}
+.qn-back-top{align-self:flex-start;padding:6px 12px 6px 0;background:transparent;color:var(--gray-500);border:none;font-size:13px;font-weight:600;cursor:pointer;margin:-4px 0 10px}
+.qn-back-top:hover{color:var(--charcoal)}
 .qn-next{flex:1;padding:16px;background:var(--red);color:#fff;border:none;border-radius:999px;font-size:16px;font-weight:800;cursor:pointer;transition:all .15s var(--ease);box-shadow:0 4px 16px rgba(200,16,46,.2)}
 .qn-next:hover{background:var(--red-dark);transform:translateY(-1px)}
 .qn-next:disabled{opacity:.5;cursor:not-allowed;transform:none}
@@ -311,7 +313,7 @@ h1,h2,h3{font-weight:800;line-height:1.1;letter-spacing:-.02em}
 
 <section class="quiz-section" id="quiz">
   <h2>Ready? Tell us about your move.</h2>
-  <p>7 quick questions. See your price and book in 2 minutes.</p>
+  <p>5 quick questions. See your price and book in 2 minutes.</p>
   <div class="quiz-wrap">
     <div class="quiz" id="the-quiz"></div>
   </div>
@@ -341,15 +343,9 @@ var STEPS=[
   {id:3,q:'Any stairs?',sub:'No extra charge — helps us plan.',type:'pill',field:'stairs',opts:[
     {v:'none',ico:'1',t:'Ground floor'},{v:'2nd',ico:'2',t:'2nd floor'},{v:'3rd',ico:'3+',t:'3rd floor+'}
   ]},
-  {id:4,q:'Need packing help?',type:'pill',field:'packing',opts:[
-    {v:'none',ico:'✅',t:"No — I'll pack"},{v:'fragile',ico:'🥂',t:'Fragile items only',d:'Kitchen, mirrors, art'},{v:'full',ico:'📦',t:'Full-house packing',d:'We pack everything'}
-  ]},
-  {id:5,q:'Special items?',sub:'Check any. Skip if none.',type:'check',field:'specials',opts:[
-    {v:'Piano',ico:'🎹'},{v:'Gun safe',ico:'🔒'},{v:'Pool table',ico:'🎱'},{v:'Heavy appliance',ico:'🧊'},{v:'Antiques',ico:'🪑'},{v:'Gym equipment',ico:'🏋️'}
-  ]},
-  {id:6,q:'When & where?',type:'inputs',fields:['date','zipFrom','zipTo']},
-  {id:7,q:'Where should we send your quote?',sub:"We'll show your price on the next step.",type:'contact'},
-  {id:8,q:'Your quote is on its way',type:'estimate'}
+  {id:4,q:'When & where?',type:'inputs',fields:['date','zipFrom','zipTo']},
+  {id:5,q:'Where should we send your quote?',sub:"We'll send your estimate on the next step.",type:'contact'},
+  {id:6,q:'Your quote is on its way',type:'estimate'}
 ];
 var T=STEPS.length,cur=0;
 var D={moveType:'',bedrooms:'',stairs:'none',packing:'none',specials:[],date:'',zipFrom:'',zipTo:'',name:'',phone:'',email:''};
@@ -363,6 +359,7 @@ function render(){
   h+='<div class="qs on"><p class="qs-q">'+s.q+'</p>';
   if(s.sub)h+='<p class="qs-sub">'+s.sub+'</p>';
   if(s.type==='pill'){
+    if(cur>0)h+='<button class="qn-back-top" onclick="go(-1)" type="button">\u2190 Back</button>';
     h+='<div class="qp-pills">';s.opts.forEach(function(o){var sl=D[s.field]===o.v?' sel':'';h+='<div class="qp-pill'+sl+'" data-v="'+o.v+'" data-f="'+s.field+'"><div class="qp-pill-ico">'+o.ico+'</div><div><div class="qp-pill-txt">'+o.t+'</div>'+(o.d?'<div class="qp-pill-desc">'+o.d+'</div>':'')+'</div></div>'});h+='</div>';
   }
   else if(s.type==='check'){
