@@ -7,7 +7,7 @@
 <meta name="description" content="$75/mover/hour. No hidden fees. Family-owned movers in Orlando & Central Florida. Licensed & insured. Same-week scheduling.">
 <meta name="robots" content="noindex,follow">
 <meta name="theme-color" content="#C8102E">
-<link rel="canonical" href="https://toromovers.net/lp2">
+<link rel="canonical" href="https://toromovers.net/lp">
 <link rel="icon" href="assets/img/toro-logo.png">
 <meta property="og:title" content="Honest Movers, Real Prices | Toro Movers">
 <meta property="og:description" content="$75/mover/hour. No hidden fees. Family-owned in Central Florida.">
@@ -408,7 +408,7 @@ function sub(){
   var btn=c.querySelector('#q-sub');if(btn){btn.disabled=true;btn.textContent='Sending...';}
   if(st)st.style.display='none';
   var est=calc();
-  fetch('/.netlify/functions/send-quote',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:D.name,email:D.email,phone:D.phone,movers:est.movers,hours:est.hours,truck:est.truck,truckFee:est.truckFee,labor:est.labor,total:est.total,packing:D.packing,bedrooms:D.bedrooms,page:'/lp2'})})
+  fetch('/.netlify/functions/send-quote',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:D.name,email:D.email,phone:D.phone,movers:est.movers,hours:est.hours,truck:est.truck,truckFee:est.truckFee,labor:est.labor,total:est.total,packing:D.packing,bedrooms:D.bedrooms,page:'/lp'})})
   .then(function(r){return r.json()})
   .then(function(res){
     if(res.success){
