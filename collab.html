@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>Vyn Studio — Collaborator onboarding</title>
+<title>Vyn Studio — Onboarding de colaborador</title>
 <style>
   *,*::before,*::after{box-sizing:border-box}
   :root{--red:#c8102e;--ink:#0a0a0a;--muted:#6b6b6b;--gray:#f5f5f5;--line:#e5e5e5;--ok:#16a34a}
@@ -68,182 +68,182 @@
 
   <div class="card" id="card">
 
-    <!-- STEP 1 -->
+    <!-- PASO 1 -->
     <section class="step active" data-step="1">
-      <p class="eyebrow">Onboarding · Step 1 of 10</p>
-      <h1>Tell us who you are.</h1>
-      <p class="sub">Takes ~4 minutes. We'll use this to scope your first sprint.</p>
-      <label class="row"><span class="lbl">Full name</span><input type="text" id="f_name" autocomplete="name" required></label>
-      <label class="row"><span class="lbl">Email</span><input type="email" id="f_email" autocomplete="email" required></label>
-      <label class="row"><span class="lbl">Telegram handle (optional)</span><input type="text" id="f_tg" placeholder="@yourhandle"></label>
-      <label class="row"><span class="lbl">Where are you based?</span><input type="text" id="f_loc" placeholder="City, country · timezone"></label>
-      <div class="err" data-err="1">Name and email are required.</div>
+      <p class="eyebrow">Onboarding · Paso 1 de 10</p>
+      <h1>Cuéntanos quién eres.</h1>
+      <p class="sub">Tarda ~4 minutos. Lo usamos para planear tu primera semana.</p>
+      <label class="row"><span class="lbl">Nombre completo</span><input type="text" id="f_name" autocomplete="name" required></label>
+      <label class="row"><span class="lbl">Correo electrónico</span><input type="email" id="f_email" autocomplete="email" required></label>
+      <label class="row"><span class="lbl">Usuario de Telegram (opcional)</span><input type="text" id="f_tg" placeholder="@tuusuario"></label>
+      <label class="row"><span class="lbl">¿Dónde vives?</span><input type="text" id="f_loc" placeholder="Ciudad, país · zona horaria"></label>
+      <div class="err" data-err="1">El nombre y el correo son obligatorios.</div>
     </section>
 
-    <!-- STEP 2 -->
+    <!-- PASO 2 -->
     <section class="step" data-step="2">
-      <p class="eyebrow">Step 2 of 10</p>
-      <h1>What do you do best?</h1>
-      <p class="sub">Pick the <strong>one</strong> role that fits you most.</p>
+      <p class="eyebrow">Paso 2 de 10</p>
+      <h1>¿En qué eres mejor?</h1>
+      <p class="sub">Elige el <strong>rol principal</strong> que mejor te describe.</p>
       <div class="pills" data-group="role">
-        <button type="button" class="pill" data-val="frontend">Frontend dev</button>
-        <button type="button" class="pill" data-val="fullstack">Full-stack dev</button>
-        <button type="button" class="pill" data-val="backend">Backend dev</button>
-        <button type="button" class="pill" data-val="designer">Designer</button>
+        <button type="button" class="pill" data-val="frontend">Dev Frontend</button>
+        <button type="button" class="pill" data-val="fullstack">Dev Full-stack</button>
+        <button type="button" class="pill" data-val="backend">Dev Backend</button>
+        <button type="button" class="pill" data-val="designer">Diseñador/a</button>
         <button type="button" class="pill" data-val="pm">PM / Producer</button>
         <button type="button" class="pill" data-val="marketing">Marketing / Ads</button>
-        <button type="button" class="pill" data-val="other">Other</button>
+        <button type="button" class="pill" data-val="other">Otro</button>
       </div>
-      <label class="row" style="margin-top:16px" id="role_other_wrap" hidden><span class="lbl">If other, describe</span><input type="text" id="f_role_other"></label>
-      <div class="err" data-err="2">Pick one role.</div>
+      <label class="row" style="margin-top:16px" id="role_other_wrap" hidden><span class="lbl">Si "otro", descríbelo</span><input type="text" id="f_role_other"></label>
+      <div class="err" data-err="2">Elige un rol.</div>
     </section>
 
-    <!-- STEP 3 -->
+    <!-- PASO 3 -->
     <section class="step" data-step="3">
-      <p class="eyebrow">Step 3 of 10</p>
-      <h1>What kind of arrangement?</h1>
-      <p class="sub">Signals how we'll plan, pay, and onboard you.</p>
+      <p class="eyebrow">Paso 3 de 10</p>
+      <h1>¿Qué tipo de colaboración buscas?</h1>
+      <p class="sub">Nos ayuda a planear tu incorporación y pago.</p>
       <div class="pills" data-group="arrangement">
-        <button type="button" class="pill" data-val="permanent">Long-term partner</button>
-        <button type="button" class="pill" data-val="contractor">Contractor (multi-project)</button>
-        <button type="button" class="pill" data-val="short-term">Short-term / single project</button>
-        <button type="button" class="pill" data-val="trial">Trial / see-if-it-fits</button>
+        <button type="button" class="pill" data-val="permanent">Socio/a a largo plazo</button>
+        <button type="button" class="pill" data-val="contractor">Freelance (varios proyectos)</button>
+        <button type="button" class="pill" data-val="short-term">Corto plazo / un solo proyecto</button>
+        <button type="button" class="pill" data-val="trial">Prueba / a ver si encaja</button>
       </div>
-      <div class="err" data-err="3">Pick one.</div>
+      <div class="err" data-err="3">Elige una opción.</div>
     </section>
 
-    <!-- STEP 4 -->
+    <!-- PASO 4 -->
     <section class="step" data-step="4">
-      <p class="eyebrow">Step 4 of 10</p>
-      <h1>How do you want to be paid?</h1>
+      <p class="eyebrow">Paso 4 de 10</p>
+      <h1>¿Cómo prefieres cobrar?</h1>
       <div class="pills" data-group="pay_model">
-        <button type="button" class="pill" data-val="hourly">Hourly</button>
-        <button type="button" class="pill" data-val="fixed_project">Fixed per project</button>
-        <button type="button" class="pill" data-val="monthly">Monthly retainer</button>
-        <button type="button" class="pill" data-val="equity">Equity / revenue-share</button>
-        <button type="button" class="pill" data-val="mix">Mix</button>
+        <button type="button" class="pill" data-val="hourly">Por hora</button>
+        <button type="button" class="pill" data-val="fixed_project">Fijo por proyecto</button>
+        <button type="button" class="pill" data-val="monthly">Mensualidad fija</button>
+        <button type="button" class="pill" data-val="equity">Equity / participación</button>
+        <button type="button" class="pill" data-val="mix">Mezcla</button>
       </div>
-      <label class="row" style="margin-top:16px"><span class="lbl">Expected rate / range (USD)</span><input type="text" id="f_rate" placeholder="e.g. $30–$50/h, or $2k/mo, or 10% equity"></label>
-      <div class="err" data-err="4">Pick a pay model.</div>
+      <label class="row" style="margin-top:16px"><span class="lbl">Tarifa o rango esperado (USD o EUR)</span><input type="text" id="f_rate" placeholder="ej. $30–$50/h, o 2.000€/mes, o 10% equity"></label>
+      <div class="err" data-err="4">Elige un modelo.</div>
     </section>
 
-    <!-- STEP 5 -->
+    <!-- PASO 5 -->
     <section class="step" data-step="5">
-      <p class="eyebrow">Step 5 of 10</p>
-      <h1>Tech comfort</h1>
-      <p class="sub">Check everything you've actually shipped with.</p>
+      <p class="eyebrow">Paso 5 de 10</p>
+      <h1>Tu stack técnico</h1>
+      <p class="sub">Marca todo con lo que ya has lanzado algo real.</p>
       <div class="checks" data-group="stack">
         <label class="check"><input type="checkbox" value="html_css"> HTML / CSS</label>
-        <label class="check"><input type="checkbox" value="js_vanilla"> Vanilla JS</label>
+        <label class="check"><input type="checkbox" value="js_vanilla"> JS vanilla</label>
         <label class="check"><input type="checkbox" value="react"> React / Next.js</label>
         <label class="check"><input type="checkbox" value="node"> Node.js</label>
         <label class="check"><input type="checkbox" value="netlify_fns"> Netlify Functions</label>
         <label class="check"><input type="checkbox" value="stripe"> Stripe</label>
         <label class="check"><input type="checkbox" value="stripe_connect"> Stripe Connect</label>
-        <label class="check"><input type="checkbox" value="telegram_bots"> Telegram bots / Mini Apps</label>
+        <label class="check"><input type="checkbox" value="telegram_bots"> Bots / Mini Apps de Telegram</label>
         <label class="check"><input type="checkbox" value="meta_ads"> Meta Ads</label>
         <label class="check"><input type="checkbox" value="google_ads"> Google Ads</label>
         <label class="check"><input type="checkbox" value="pixel_capi"> Pixel + CAPI</label>
         <label class="check"><input type="checkbox" value="ga4"> GA4</label>
-        <label class="check"><input type="checkbox" value="figma"> Figma / design</label>
+        <label class="check"><input type="checkbox" value="figma"> Figma / diseño</label>
         <label class="check"><input type="checkbox" value="copywriting"> Copywriting</label>
         <label class="check"><input type="checkbox" value="seo"> SEO</label>
         <label class="check"><input type="checkbox" value="email_marketing"> Email marketing</label>
-        <label class="check"><input type="checkbox" value="ai_coding"> Coding with AI (Claude, Cursor, etc.)</label>
+        <label class="check"><input type="checkbox" value="ai_coding"> Programar con IA (Claude, Cursor, etc.)</label>
       </div>
-      <label class="row" style="margin-top:14px"><span class="lbl">Other skills or tools</span><input type="text" id="f_stack_other" placeholder="Shopify, Webflow, Python, etc."></label>
+      <label class="row" style="margin-top:14px"><span class="lbl">Otras herramientas o skills</span><input type="text" id="f_stack_other" placeholder="Shopify, Webflow, Python, etc."></label>
     </section>
 
-    <!-- STEP 6 -->
+    <!-- PASO 6 -->
     <section class="step" data-step="6">
-      <p class="eyebrow">Step 6 of 10</p>
-      <h1>Hours per week</h1>
-      <p class="sub">Realistic availability — we'll never ask for more than you commit.</p>
+      <p class="eyebrow">Paso 6 de 10</p>
+      <h1>Horas disponibles a la semana</h1>
+      <p class="sub">Sé realista — nunca vamos a pedir más de lo que te comprometas.</p>
       <div class="pills" data-group="hours">
-        <button type="button" class="pill" data-val="0-10">Under 10</button>
+        <button type="button" class="pill" data-val="0-10">Menos de 10</button>
         <button type="button" class="pill" data-val="10-20">10–20</button>
         <button type="button" class="pill" data-val="20-35">20–35</button>
         <button type="button" class="pill" data-val="35-plus">35+</button>
-        <button type="button" class="pill" data-val="flex">Flexible / bursty</button>
+        <button type="button" class="pill" data-val="flex">Flexible / por sprints</button>
       </div>
-      <label class="row" style="margin-top:16px"><span class="lbl">Timezone + typical working hours</span><input type="text" id="f_hours_detail" placeholder="e.g. 9–5 ET, evenings only, etc."></label>
-      <div class="err" data-err="6">Pick one.</div>
+      <label class="row" style="margin-top:16px"><span class="lbl">Zona horaria + horario habitual</span><input type="text" id="f_hours_detail" placeholder="ej. 9–17 Madrid, solo tardes, etc."></label>
+      <div class="err" data-err="6">Elige una opción.</div>
     </section>
 
-    <!-- STEP 7 -->
+    <!-- PASO 7 -->
     <section class="step" data-step="7">
-      <p class="eyebrow">Step 7 of 10</p>
-      <h1>Work samples</h1>
-      <p class="sub">Paste anything that shows what you can build — portfolio, GitHub, live sites, Figma, tweets.</p>
-      <label class="row"><span class="lbl">Portfolio / website</span><input type="url" id="f_portfolio" placeholder="https://"></label>
-      <label class="row"><span class="lbl">GitHub</span><input type="text" id="f_github" placeholder="github.com/yourhandle"></label>
-      <label class="row"><span class="lbl">One project you're proud of</span><textarea id="f_proud" placeholder="Link + 1–2 sentences on what you shipped and why it's good"></textarea></label>
+      <p class="eyebrow">Paso 7 de 10</p>
+      <h1>Muestras de tu trabajo</h1>
+      <p class="sub">Cualquier cosa que demuestre lo que haces: portafolio, GitHub, webs en vivo, Figma, tuits.</p>
+      <label class="row"><span class="lbl">Portafolio / web personal</span><input type="url" id="f_portfolio" placeholder="https://"></label>
+      <label class="row"><span class="lbl">GitHub</span><input type="text" id="f_github" placeholder="github.com/tuusuario"></label>
+      <label class="row"><span class="lbl">Un proyecto del que estés orgulloso/a</span><textarea id="f_proud" placeholder="Enlace + 1–2 frases sobre qué lanzaste y por qué es bueno"></textarea></label>
     </section>
 
-    <!-- STEP 8 -->
+    <!-- PASO 8 -->
     <section class="step" data-step="8">
-      <p class="eyebrow">Step 8 of 10</p>
-      <h1>Interest in our clients</h1>
-      <p class="sub">Rank which industries you'd <em>want</em> to work on. Doesn't commit you — just signals fit.</p>
+      <p class="eyebrow">Paso 8 de 10</p>
+      <h1>Qué industrias te interesan</h1>
+      <p class="sub">Marca las que te gustaría tocar. No te compromete — solo para ver encaje.</p>
       <div class="checks" data-group="interests">
-        <label class="check"><input type="checkbox" value="movers"> Moving / local service (Toro Movers)</label>
-        <label class="check"><input type="checkbox" value="hvac"> HVAC / trades (Soligo Air)</label>
-        <label class="check"><input type="checkbox" value="food"> Restaurants / food (OMG, ConnieCakes)</label>
-        <label class="check"><input type="checkbox" value="education"> Education / lessons (Stael Fogarty)</label>
-        <label class="check"><input type="checkbox" value="wellness"> Wellness / beauty (Curabatree, Selah)</label>
-        <label class="check"><input type="checkbox" value="agency"> Agency-side ops (Vyn Studio itself)</label>
+        <label class="check"><input type="checkbox" value="movers"> Mudanzas / servicios locales (Toro Movers)</label>
+        <label class="check"><input type="checkbox" value="hvac"> HVAC / oficios (Soligo Air)</label>
+        <label class="check"><input type="checkbox" value="food"> Restaurantes / comida (OMG, ConnieCakes)</label>
+        <label class="check"><input type="checkbox" value="education"> Educación / clases (Stael Fogarty)</label>
+        <label class="check"><input type="checkbox" value="wellness"> Wellness / belleza (Curabatree, Selah)</label>
+        <label class="check"><input type="checkbox" value="agency"> Lado agencia (Vyn Studio mismo)</label>
       </div>
     </section>
 
-    <!-- STEP 9 -->
+    <!-- PASO 9 -->
     <section class="step" data-step="9">
-      <p class="eyebrow">Step 9 of 10</p>
-      <h1>Credentials + security</h1>
-      <p class="sub">How comfortable are you handling client data & secrets?</p>
+      <p class="eyebrow">Paso 9 de 10</p>
+      <h1>Credenciales y seguridad</h1>
+      <p class="sub">¿Qué tan cómodo/a eres con datos de cliente y secretos?</p>
       <div class="pills" data-group="security">
-        <button type="button" class="pill" data-val="expert">Done it for years — use 1Password / Bitwarden daily</button>
-        <button type="button" class="pill" data-val="ok">Careful + can learn our process</button>
-        <button type="button" class="pill" data-val="new">Newer to it — will need a quick onboarding</button>
+        <button type="button" class="pill" data-val="expert">Años haciéndolo — uso 1Password / Bitwarden a diario</button>
+        <button type="button" class="pill" data-val="ok">Con cuidado + puedo aprender vuestro proceso</button>
+        <button type="button" class="pill" data-val="new">Nuevo/a en esto — necesitaría onboarding rápido</button>
       </div>
-      <label class="row" style="margin-top:16px"><span class="lbl">Preferred secrets manager</span>
+      <label class="row" style="margin-top:16px"><span class="lbl">Gestor de contraseñas preferido</span>
         <select id="f_secrets">
           <option value="">—</option>
           <option value="1password">1Password</option>
           <option value="bitwarden">Bitwarden</option>
           <option value="dashlane">Dashlane</option>
-          <option value="other">Other</option>
-          <option value="none">None yet</option>
+          <option value="other">Otro</option>
+          <option value="none">Aún ninguno</option>
         </select>
       </label>
-      <div class="err" data-err="9">Pick one level.</div>
+      <div class="err" data-err="9">Elige un nivel.</div>
     </section>
 
-    <!-- STEP 10 -->
+    <!-- PASO 10 -->
     <section class="step" data-step="10">
-      <p class="eyebrow">Final · Step 10 of 10</p>
-      <h1>Anything else?</h1>
-      <p class="sub">Questions, boundaries, availability caveats, tools you hate, whatever.</p>
-      <label class="row"><span class="lbl">Notes</span><textarea id="f_notes" placeholder="Anything on your mind"></textarea></label>
-      <label class="row"><span class="lbl">How did you hear about Vyn Studio?</span><input type="text" id="f_source" placeholder="Referral name, X, IG, etc."></label>
+      <p class="eyebrow">Final · Paso 10 de 10</p>
+      <h1>¿Algo más?</h1>
+      <p class="sub">Preguntas, límites, disponibilidad, herramientas que odies, lo que sea.</p>
+      <label class="row"><span class="lbl">Notas</span><textarea id="f_notes" placeholder="Lo que tengas en mente"></textarea></label>
+      <label class="row"><span class="lbl">¿Cómo supiste de Vyn Studio?</span><input type="text" id="f_source" placeholder="Nombre de quién te recomendó, X, IG, etc."></label>
     </section>
 
-    <!-- DONE -->
+    <!-- LISTO -->
     <section class="step" data-step="done">
       <div class="done">
         <div class="check-circle">✓</div>
-        <h2>Received.</h2>
-        <p>Diler will review and reach out in 24 hours. If you're a fit, we'll set up a short call + access to repos + a first small task to test the loop.</p>
+        <h2>Recibido.</h2>
+        <p>Diler lo revisará y te contacta en 24 horas. Si hay match, montamos una llamada corta + accesos a los repos + una primera tarea pequeña para probar.</p>
       </div>
     </section>
 
     <div class="actions" id="actions">
-      <button type="button" class="nav back" id="back">Back</button>
-      <button type="button" class="nav next" id="next">Next →</button>
+      <button type="button" class="nav back" id="back">Atrás</button>
+      <button type="button" class="nav next" id="next">Siguiente →</button>
     </div>
 
   </div>
 
-  <p style="text-align:center;color:var(--muted);font-size:12px;margin:18px 0 0">Private · responses go only to Vyn Studio · no public listing</p>
+  <p style="text-align:center;color:var(--muted);font-size:12px;margin:18px 0 0">Privado · las respuestas solo llegan a Vyn Studio</p>
 </div>
 
 <script>
@@ -259,6 +259,7 @@
     interests: [],
     security: '', secrets: '',
     notes: '', source: '',
+    lang: 'es',
   }};
   const STEPS_TOTAL = 10;
   const $ = (s, r=document) => r.querySelector(s);
@@ -270,7 +271,7 @@
     const pct = n === 'done' ? 100 : Math.round((n-1)/STEPS_TOTAL*100);
     $('#prog').style.width = pct + '%';
     $('#back').style.visibility = (n === 1 || n === 'done') ? 'hidden' : 'visible';
-    $('#next').textContent = n === STEPS_TOTAL ? 'Submit' : 'Next →';
+    $('#next').textContent = n === STEPS_TOTAL ? 'Enviar' : 'Siguiente →';
     $('#actions').style.display = n === 'done' ? 'none' : 'flex';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -280,7 +281,6 @@
     if (el) el.classList.toggle('show', show);
   }
 
-  // Pill groups (single-select)
   $$('.pills').forEach(group => {
     const key = group.dataset.group;
     group.querySelectorAll('.pill').forEach(btn => {
@@ -296,7 +296,6 @@
     });
   });
 
-  // Check groups (multi-select)
   $$('.checks').forEach(group => {
     const key = group.dataset.group;
     group.querySelectorAll('input[type=checkbox]').forEach(cb => {
@@ -307,7 +306,6 @@
     });
   });
 
-  // Text inputs
   const bind = (id, key) => {
     const el = document.getElementById(id);
     if (!el) return;
@@ -338,9 +336,8 @@
   $('#next').addEventListener('click', async () => {
     if (!validate(state.step)) { showErr(state.step, true); return; }
     if (state.step < STEPS_TOTAL) { setStep(state.step + 1); return; }
-    // Submit
     const btn = $('#next');
-    btn.disabled = true; btn.textContent = 'Sending…';
+    btn.disabled = true; btn.textContent = 'Enviando…';
     try {
       const res = await fetch('/.netlify/functions/collab-onboarding', {
         method: 'POST',
@@ -348,10 +345,10 @@
         body: JSON.stringify(state.data),
       });
       if (res.ok) { setStep('done'); }
-      else { btn.disabled = false; btn.textContent = 'Submit'; alert('Something went wrong. Try again or email hello@vyn.studio'); }
+      else { btn.disabled = false; btn.textContent = 'Enviar'; alert('Algo falló. Intenta de nuevo o escribe a hello@vyn.studio'); }
     } catch (e) {
-      btn.disabled = false; btn.textContent = 'Submit';
-      alert('Network error. Try again.');
+      btn.disabled = false; btn.textContent = 'Enviar';
+      alert('Error de red. Intenta de nuevo.');
     }
   });
 
