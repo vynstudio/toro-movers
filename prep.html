@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta name="robots" content="noindex,nofollow" />
+<title>Toro Movers — Move Prep</title>
+<link rel="icon" href="/assets/img/favicon.png" />
+<style>
+  :root {
+    --red:#C8102E; --red-dark:#A50D26; --red-soft:#FFF1F3;
+    --charcoal:#1C1C1E; --charcoal-soft:#3a3a3d;
+    --sand:#FBF6E9; --white:#FFFFFF;
+    --gray-100:#F3F4F6; --gray-200:#E5E7EB; --gray-300:#D1D5DB;
+    --gray-500:#6B7280; --gray-700:#374151;
+    --radius:14px; --radius-lg:20px;
+    --shadow-md:0 4px 12px rgba(28,28,30,.08);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0;background:var(--sand);color:var(--charcoal);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;line-height:1.45;min-height:100vh;min-height:100dvh}
+  body{overflow-x:hidden}
+
+  .topbar{position:sticky;top:0;z-index:10;background:var(--sand);
+    padding:env(safe-area-inset-top) 16px 0;}
+  .topbar-inner{display:flex;align-items:center;justify-content:space-between;
+    padding:12px 0;}
+  .brand{font-weight:800;color:var(--red);font-size:16px;letter-spacing:.3px}
+  .lang{display:flex;gap:4px;background:var(--white);border-radius:999px;padding:3px;
+    box-shadow:var(--shadow-md)}
+  .lang button{border:0;background:transparent;padding:6px 12px;border-radius:999px;
+    font-weight:700;color:var(--gray-500);font-size:13px;cursor:pointer}
+  .lang button.on{background:var(--red);color:var(--white)}
+
+  .progress{height:4px;background:var(--gray-200);border-radius:4px;overflow:hidden;
+    margin:4px 0 16px}
+  .bar{height:100%;background:var(--red);width:0;transition:width .3s ease}
+  .counter{font-size:12px;color:var(--gray-500);font-variant-numeric:tabular-nums}
+
+  main{padding:8px 20px 40px;max-width:560px;margin:0 auto}
+  .screen{display:none;animation:fade .25s ease}
+  .screen.on{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  .q-num{font-size:13px;color:var(--red);font-weight:700;letter-spacing:.6px;
+    text-transform:uppercase;margin-bottom:10px}
+  h1{font-size:26px;line-height:1.2;margin:0 0 6px;font-weight:800;letter-spacing:-.01em}
+  .hint{color:var(--gray-500);font-size:14px;margin-bottom:20px}
+
+  .choices{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+  .choice{display:block;padding:16px 18px;border:2px solid var(--gray-200);
+    background:var(--white);border-radius:var(--radius);font-size:17px;font-weight:600;
+    text-align:left;cursor:pointer;transition:all .12s ease;color:var(--charcoal)}
+  .choice:hover{border-color:var(--red);transform:translateY(-1px)}
+  .choice.sel{border-color:var(--red);background:var(--red-soft)}
+  .choice .k{display:inline-block;background:var(--gray-100);border-radius:6px;
+    padding:2px 8px;font-size:12px;color:var(--gray-500);margin-left:8px;font-weight:600}
+  .choice.sel .k{background:var(--red);color:var(--white)}
+
+  input[type=text], textarea{width:100%;padding:16px 18px;border:2px solid var(--gray-200);
+    border-radius:var(--radius);font-size:17px;font-family:inherit;background:var(--white);
+    color:var(--charcoal);outline:none;transition:border-color .12s ease}
+  input[type=text]:focus, textarea:focus{border-color:var(--red)}
+  textarea{min-height:120px;resize:vertical}
+
+  .next-row{display:flex;gap:10px;margin-top:20px;align-items:center}
+  .btn{background:var(--red);color:var(--white);border:0;padding:16px 28px;
+    border-radius:999px;font-weight:700;font-size:16px;cursor:pointer;
+    box-shadow:var(--shadow-md);transition:all .12s ease}
+  .btn:hover{background:var(--red-dark);transform:translateY(-1px)}
+  .btn:disabled{background:var(--gray-300);cursor:not-allowed;box-shadow:none;transform:none}
+  .btn-ghost{background:transparent;color:var(--gray-500);box-shadow:none;padding:16px 18px}
+  .btn-ghost:hover{background:transparent;color:var(--charcoal);transform:none}
+
+  .back{position:absolute;top:16px;left:16px;background:transparent;border:0;
+    padding:8px;font-size:22px;color:var(--gray-500);cursor:pointer}
+  .back:hover{color:var(--charcoal)}
+
+  .checklist{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+  .check-item{display:flex;gap:12px;padding:14px 16px;background:var(--white);
+    border-radius:var(--radius);border:2px solid var(--gray-200);cursor:pointer;
+    align-items:flex-start;transition:all .12s ease;user-select:none}
+  .check-item.on{border-color:var(--red);background:var(--red-soft)}
+  .check-item .box{width:22px;height:22px;border:2px solid var(--gray-300);
+    border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+    margin-top:1px;transition:all .12s ease}
+  .check-item.on .box{background:var(--red);border-color:var(--red)}
+  .check-item.on .box::after{content:"✓";color:var(--white);font-weight:900;font-size:14px}
+  .check-item .label{font-size:15px;line-height:1.35;font-weight:600}
+  .check-item .label small{display:block;font-weight:400;color:var(--gray-500);
+    font-size:13px;margin-top:2px}
+
+  .summary{background:var(--white);border-radius:var(--radius-lg);padding:24px;
+    box-shadow:var(--shadow-md);margin-top:16px}
+  .summary h2{margin:0 0 12px;font-size:18px;color:var(--red)}
+  .summary-row{display:flex;justify-content:space-between;gap:16px;padding:10px 0;
+    border-top:1px solid var(--gray-200);font-size:14px}
+  .summary-row:first-of-type{border-top:0}
+  .summary-row .label{color:var(--gray-500);flex-shrink:0}
+  .summary-row .val{text-align:right;font-weight:600}
+
+  .done{text-align:center;padding:40px 20px}
+  .done .tick{width:80px;height:80px;border-radius:50%;background:var(--red);
+    color:var(--white);display:flex;align-items:center;justify-content:center;
+    font-size:44px;margin:0 auto 20px;box-shadow:var(--shadow-md)}
+  .done h1{color:var(--red)}
+
+  .nota{font-size:13px;color:var(--gray-500);margin-top:20px;padding:12px 14px;
+    background:var(--white);border-radius:var(--radius);border-left:3px solid var(--red)}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">TORO MOVERS</div>
+    <div class="lang">
+      <button data-lang="en" class="on">EN</button>
+      <button data-lang="es">ES</button>
+    </div>
+  </div>
+  <div class="progress"><div class="bar" id="bar"></div></div>
+</div>
+
+<main id="app"></main>
+
+<script>
+// ---------- content ----------
+const T = {
+  en: {
+    intro_title: "Let's prep for your move.",
+    intro_body: "Takes about 90 seconds. Your crew shows up better prepared the more we know.",
+    intro_cta: "Start",
+    of: "of",
+    next: "Next",
+    back: "Back",
+    skip: "Skip",
+    submit: "Send to crew",
+    sending: "Sending…",
+    err: "Couldn't send — try again?",
+    thanks_title: "You're set.",
+    thanks_body: "Your crew just got the rundown. If anything changes, text us at (321) 758-0094.",
+    summary_title: "Quick review",
+    edit: "Edit",
+    yes: "Yes", no: "No", unsure: "Not sure",
+    questions: [
+      {k:'name', type:'text', q:"What's your name?", ph:"First and last"},
+      {k:'phone', type:'text', q:"Best phone number?", ph:"(xxx) xxx-xxxx", inputmode:'tel'},
+      {k:'pickup', type:'text', q:"Pickup address", ph:"Street, city, ZIP"},
+      {k:'dropoff', type:'text', q:"Destination address", ph:"Street, city, ZIP"},
+      {k:'size', type:'choice', q:"Home size at pickup", opts:[
+        ['studio','Studio'],['1br','1 bedroom'],['2br','2 bedroom'],
+        ['3br','3 bedroom'],['4br','4+ bedroom / house']]},
+      {k:'stairs_pickup', type:'choice', q:"Stairs at pickup?", opts:[
+        ['none','Ground floor, no stairs'],['1','1 flight'],
+        ['2plus','2+ flights'],['elevator','Elevator available']]},
+      {k:'stairs_dropoff', type:'choice', q:"Stairs at destination?", opts:[
+        ['none','Ground floor, no stairs'],['1','1 flight'],
+        ['2plus','2+ flights'],['elevator','Elevator available']]},
+      {k:'parking', type:'choice', q:"Can the truck park close to the door?", opts:[
+        ['close','Yes, right next to it'],['tight','Tight, but workable'],
+        ['far','Long walk from parking'],['unsure','Not sure']]},
+      {k:'access', type:'text', q:"Gate / HOA / apartment codes?", ph:"Optional — leave blank if none", optional:true},
+      {k:'heavy', type:'multi', q:"Any heavy or specialty items?", hint:"Tap all that apply", opts:[
+        ['piano','Piano'],['safe','Safe (gun/home)'],['pool','Pool table'],
+        ['treadmill','Treadmill / gym'],['appliances','Large appliances (fridge, washer, dryer)'],
+        ['art','Art / mirrors over 4ft'],['none','None of these']]},
+      {k:'disassembly', type:'multi', q:"Anything we need to disassemble?", hint:"Tap all that apply", opts:[
+        ['bed','Bed frames'],['desk','Desks'],['crib','Cribs'],
+        ['wardrobe','Wardrobes / IKEA pieces'],['tv','TV mounts'],['none','Nothing']]},
+      {k:'fragile', type:'textarea', q:"Anything fragile or extra careful?", ph:"TVs, glass tables, instruments, plants… leave blank if none", optional:true},
+      {k:'pets', type:'choice', q:"Pets on site during the move?", opts:[
+        ['no','No pets'],['secured','Yes, will be secured'],['free','Yes, loose']]},
+      {k:'packed', type:'choice', q:"Everything boxed and labeled?", opts:[
+        ['yes','Yes, fully packed'],['most','Mostly — few loose items'],
+        ['some','Half-packed'],['no','Not packed yet — need help']]},
+      {k:'checklist', type:'checks', q:"Pre-move checklist", hint:"Tap each as you finish — helps the crew land smooth.", opts:[
+        ['walkways','Walkways & stairs clear','No trip hazards, rugs rolled up'],
+        ['fridge','Fridge emptied + defrosting','At least 24h before move, if taking it'],
+        ['washer','Washer / dryer disconnected','Water off, hoses drained'],
+        ['pets','Pets secured','Crate, closed room, or off-site'],
+        ['valuables','Jewelry, docs, cash with you','Goes in your car, not the truck'],
+        ['boxes','Boxes labeled by room','Saves 30+ min on the other end'],
+        ['payment','Payment method ready','Card, cash, or Zelle']]},
+      {k:'notes', type:'textarea', q:"Anything else the crew should know?", ph:"Optional — quirks, neighbors, dogs next door, anything", optional:true}
+    ]
+  },
+  es: {
+    intro_title: "Preparémonos para tu mudanza.",
+    intro_body: "Toma unos 90 segundos. Mientras más sepamos, mejor llega el equipo.",
+    intro_cta: "Empezar",
+    of: "de",
+    next: "Siguiente",
+    back: "Atrás",
+    skip: "Saltar",
+    submit: "Enviar al equipo",
+    sending: "Enviando…",
+    err: "No se envió — intenta de nuevo",
+    thanks_title: "¡Listo!",
+    thanks_body: "El equipo ya tiene los detalles. Si algo cambia, escríbenos al (321) 758-0094.",
+    summary_title: "Revisión rápida",
+    edit: "Editar",
+    yes: "Sí", no: "No", unsure: "No sé",
+    questions: [
+      {k:'name', type:'text', q:"¿Cuál es tu nombre?", ph:"Nombre y apellido"},
+      {k:'phone', type:'text', q:"¿Mejor número de teléfono?", ph:"(xxx) xxx-xxxx", inputmode:'tel'},
+      {k:'pickup', type:'text', q:"Dirección de recogida", ph:"Calle, ciudad, ZIP"},
+      {k:'dropoff', type:'text', q:"Dirección de destino", ph:"Calle, ciudad, ZIP"},
+      {k:'size', type:'choice', q:"Tamaño del hogar (recogida)", opts:[
+        ['studio','Estudio'],['1br','1 habitación'],['2br','2 habitaciones'],
+        ['3br','3 habitaciones'],['4br','4+ / casa completa']]},
+      {k:'stairs_pickup', type:'choice', q:"¿Escaleras en la recogida?", opts:[
+        ['none','Planta baja, sin escaleras'],['1','1 piso'],
+        ['2plus','2+ pisos'],['elevator','Hay ascensor']]},
+      {k:'stairs_dropoff', type:'choice', q:"¿Escaleras en el destino?", opts:[
+        ['none','Planta baja, sin escaleras'],['1','1 piso'],
+        ['2plus','2+ pisos'],['elevator','Hay ascensor']]},
+      {k:'parking', type:'choice', q:"¿El camión puede estacionar cerca de la puerta?", opts:[
+        ['close','Sí, justo al lado'],['tight','Apretado pero posible'],
+        ['far','Lejos del estacionamiento'],['unsure','No estoy seguro']]},
+      {k:'access', type:'text', q:"¿Códigos de portón / HOA / edificio?", ph:"Opcional — deja en blanco si no aplica", optional:true},
+      {k:'heavy', type:'multi', q:"¿Artículos pesados o especiales?", hint:"Marca todos los que apliquen", opts:[
+        ['piano','Piano'],['safe','Caja fuerte'],['pool','Mesa de billar'],
+        ['treadmill','Caminadora / gimnasio'],['appliances','Electrodomésticos grandes (nevera, lavadora, secadora)'],
+        ['art','Arte / espejos grandes'],['none','Ninguno']]},
+      {k:'disassembly', type:'multi', q:"¿Algo que haya que desarmar?", hint:"Marca todos los que apliquen", opts:[
+        ['bed','Camas'],['desk','Escritorios'],['crib','Cunas'],
+        ['wardrobe','Closets / muebles IKEA'],['tv','Soportes de TV'],['none','Nada']]},
+      {k:'fragile', type:'textarea', q:"¿Algo frágil o de cuidado especial?", ph:"TVs, mesas de vidrio, instrumentos, plantas…", optional:true},
+      {k:'pets', type:'choice', q:"¿Mascotas en casa durante la mudanza?", opts:[
+        ['no','Sin mascotas'],['secured','Sí, estarán aseguradas'],['free','Sí, sueltas']]},
+      {k:'packed', type:'choice', q:"¿Todo empacado y etiquetado?", opts:[
+        ['yes','Sí, totalmente empacado'],['most','Casi todo — faltan pocas cosas'],
+        ['some','Mitad empacado'],['no','No empacado — necesito ayuda']]},
+      {k:'checklist', type:'checks', q:"Checklist antes de la mudanza", hint:"Marca cada paso al terminarlo.", opts:[
+        ['walkways','Pasillos y escaleras despejados','Sin tapetes sueltos ni obstáculos'],
+        ['fridge','Nevera vacía y descongelándose','Al menos 24h antes, si la llevas'],
+        ['washer','Lavadora / secadora desconectadas','Agua cerrada, mangueras vacías'],
+        ['pets','Mascotas aseguradas','Jaula, cuarto cerrado o fuera de casa'],
+        ['valuables','Joyas, documentos, efectivo contigo','Van en tu carro, no en el camión'],
+        ['boxes','Cajas etiquetadas por cuarto','Ahorra 30+ min al descargar'],
+        ['payment','Método de pago listo','Tarjeta, efectivo o Zelle']]},
+      {k:'notes', type:'textarea', q:"¿Algo más que el equipo deba saber?", ph:"Opcional — vecinos, perros, detalles…", optional:true}
+    ]
+  }
+};
+
+// ---------- state ----------
+const params = new URLSearchParams(location.search);
+const jobId = params.get('job') || '';
+const LS_KEY = 'toro_prep_' + (jobId || 'default');
+let lang = localStorage.getItem('toro_prep_lang') || (navigator.language||'en').toLowerCase().startsWith('es') ? 'es' : 'en';
+if (!T[lang]) lang = 'en';
+const saved = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
+const data = saved.data || {};
+let idx = typeof saved.idx === 'number' ? saved.idx : -1; // -1 = intro, questions.length = summary, +1 = done
+
+function save(){ localStorage.setItem(LS_KEY, JSON.stringify({data, idx})); }
+function t(){ return T[lang]; }
+
+// ---------- render ----------
+const app = document.getElementById('app');
+const bar = document.getElementById('bar');
+
+function render(){
+  const qs = t().questions;
+  const total = qs.length;
+  const pct = idx < 0 ? 0 : idx >= total ? 100 : Math.round(((idx+1)/total)*100);
+  bar.style.width = pct + '%';
+
+  if (idx === -1) return renderIntro();
+  if (idx >= total+1) return renderDone();
+  if (idx === total) return renderSummary();
+  renderQ(qs[idx], idx, total);
+}
+
+function renderIntro(){
+  app.innerHTML = `
+    <div class="screen on" style="padding-top:40px">
+      <h1>${t().intro_title}</h1>
+      <p class="hint">${t().intro_body}</p>
+      ${jobId ? `<p class="nota">Job ID: <code>${escapeHTML(jobId)}</code></p>` : ''}
+      <div class="next-row">
+        <button class="btn" id="go">${t().intro_cta} →</button>
+      </div>
+    </div>`;
+  document.getElementById('go').onclick = () => { idx = 0; save(); render(); };
+}
+
+function renderQ(q, i, total){
+  const label = `<div class="q-num">${i+1} ${t().of} ${total}</div>`;
+  let body = '';
+
+  if (q.type === 'text'){
+    const v = escapeAttr(data[q.k] || '');
+    body = `<input type="text" id="f" value="${v}" placeholder="${escapeAttr(q.ph||'')}"${q.inputmode?` inputmode="${q.inputmode}"`:''} autofocus autocomplete="off" />`;
+  } else if (q.type === 'textarea'){
+    const v = escapeHTML(data[q.k] || '');
+    body = `<textarea id="f" placeholder="${escapeAttr(q.ph||'')}">${v}</textarea>`;
+  } else if (q.type === 'choice'){
+    body = `<div class="choices">` + q.opts.map(([val,lbl],n) =>
+      `<button class="choice ${data[q.k]===val?'sel':''}" data-val="${escapeAttr(val)}">${escapeHTML(lbl)} <span class="k">${n+1}</span></button>`
+    ).join('') + `</div>`;
+  } else if (q.type === 'multi'){
+    const cur = new Set(data[q.k] || []);
+    body = `<div class="choices">` + q.opts.map(([val,lbl]) =>
+      `<button class="choice ${cur.has(val)?'sel':''}" data-val="${escapeAttr(val)}">${escapeHTML(lbl)}</button>`
+    ).join('') + `</div>`;
+  } else if (q.type === 'checks'){
+    const cur = new Set(data[q.k] || []);
+    body = `<div class="checklist">` + q.opts.map(([val,title,sub]) =>
+      `<div class="check-item ${cur.has(val)?'on':''}" data-val="${escapeAttr(val)}">
+        <div class="box"></div>
+        <div class="label">${escapeHTML(title)}<small>${escapeHTML(sub||'')}</small></div>
+      </div>`
+    ).join('') + `</div>`;
+  }
+
+  const showNext = q.type !== 'choice';
+  const showSkip = q.optional;
+  app.innerHTML = `
+    <div class="screen on">
+      ${i>0 ? `<button class="back" id="bk" aria-label="back">←</button>` : ''}
+      ${label}
+      <h1>${escapeHTML(q.q)}</h1>
+      ${q.hint ? `<p class="hint">${escapeHTML(q.hint)}</p>` : ''}
+      ${body}
+      <div class="next-row">
+        ${showNext ? `<button class="btn" id="nx">${t().next} →</button>` : ''}
+        ${showSkip ? `<button class="btn btn-ghost" id="sk">${t().skip}</button>` : ''}
+      </div>
+    </div>`;
+
+  if (i>0) document.getElementById('bk').onclick = () => { idx--; save(); render(); };
+  if (showSkip) document.getElementById('sk').onclick = () => advance();
+  if (showNext) document.getElementById('nx').onclick = () => saveCurrentThenAdvance(q);
+
+  if (q.type === 'text' || q.type === 'textarea'){
+    const f = document.getElementById('f');
+    f.addEventListener('input', () => { data[q.k] = f.value.trim(); save(); });
+    f.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && q.type === 'text'){ e.preventDefault(); saveCurrentThenAdvance(q); }
+    });
+    setTimeout(() => f.focus(), 50);
+  } else if (q.type === 'choice'){
+    app.querySelectorAll('.choice').forEach(btn => {
+      btn.onclick = () => {
+        data[q.k] = btn.dataset.val;
+        app.querySelectorAll('.choice').forEach(b => b.classList.toggle('sel', b===btn));
+        save();
+        setTimeout(advance, 150);
+      };
+    });
+  } else if (q.type === 'multi'){
+    app.querySelectorAll('.choice').forEach(btn => {
+      btn.onclick = () => {
+        const set = new Set(data[q.k] || []);
+        const v = btn.dataset.val;
+        if (v === 'none'){ set.clear(); set.add('none'); }
+        else { set.delete('none'); set.has(v) ? set.delete(v) : set.add(v); }
+        data[q.k] = [...set];
+        app.querySelectorAll('.choice').forEach(b => b.classList.toggle('sel', (data[q.k]||[]).includes(b.dataset.val)));
+        save();
+      };
+    });
+  } else if (q.type === 'checks'){
+    app.querySelectorAll('.check-item').forEach(row => {
+      row.onclick = () => {
+        const set = new Set(data[q.k] || []);
+        const v = row.dataset.val;
+        set.has(v) ? set.delete(v) : set.add(v);
+        data[q.k] = [...set];
+        row.classList.toggle('on');
+        save();
+      };
+    });
+  }
+}
+
+function saveCurrentThenAdvance(q){
+  const f = document.getElementById('f');
+  if (f) data[q.k] = f.value.trim();
+  if (!q.optional && (q.type === 'text' || q.type === 'textarea') && !data[q.k]){
+    f.style.borderColor = 'var(--red)';
+    f.focus();
+    return;
+  }
+  save();
+  advance();
+}
+
+function advance(){
+  idx++;
+  save();
+  window.scrollTo({top:0, behavior:'smooth'});
+  render();
+}
+
+function renderSummary(){
+  const qs = t().questions;
+  const rows = qs.map((q,i) => {
+    const v = data[q.k];
+    let s = '—';
+    if (v == null || v === '' || (Array.isArray(v) && !v.length)) s = '—';
+    else if (q.type === 'choice'){
+      const hit = q.opts.find(([k]) => k===v);
+      s = hit ? hit[1] : v;
+    } else if (q.type === 'multi' || q.type === 'checks'){
+      s = (v||[]).map(val => {
+        const hit = q.opts.find(([k]) => k===val);
+        return hit ? hit[1] : val;
+      }).join(', ') || '—';
+    } else s = v;
+    return `<div class="summary-row"><div class="label">${escapeHTML(q.q)}</div><div class="val">${escapeHTML(String(s))}</div></div>`;
+  }).join('');
+
+  app.innerHTML = `
+    <div class="screen on">
+      <button class="back" id="bk" aria-label="back">←</button>
+      <div class="q-num">${t().summary_title}</div>
+      <h1>${lang==='es'?'Revisa antes de enviar':'Double-check and send'}</h1>
+      <div class="summary">${rows}</div>
+      <div class="next-row">
+        <button class="btn" id="submit">${t().submit} →</button>
+      </div>
+      <div class="nota" id="err" style="display:none;border-left-color:var(--red);color:var(--red)"></div>
+    </div>`;
+  document.getElementById('bk').onclick = () => { idx--; save(); render(); };
+  document.getElementById('submit').onclick = submit;
+}
+
+async function submit(){
+  const btn = document.getElementById('submit');
+  const err = document.getElementById('err');
+  btn.disabled = true; btn.textContent = t().sending;
+  err.style.display = 'none';
+  try {
+    const res = await fetch('/.netlify/functions/prep-submit', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        job: jobId || null,
+        lang,
+        submittedAt: new Date().toISOString(),
+        data
+      })
+    });
+    if (!res.ok) throw new Error('HTTP '+res.status);
+    idx++;
+    save();
+    render();
+  } catch(e){
+    btn.disabled = false; btn.textContent = t().submit + ' →';
+    err.textContent = t().err;
+    err.style.display = 'block';
+  }
+}
+
+function renderDone(){
+  app.innerHTML = `
+    <div class="done">
+      <div class="tick">✓</div>
+      <h1>${t().thanks_title}</h1>
+      <p class="hint">${t().thanks_body}</p>
+    </div>`;
+  try { localStorage.removeItem(LS_KEY); } catch(e){}
+}
+
+// ---------- utils + boot ----------
+function escapeHTML(s){ return String(s||'').replace(/[&<>"']/g, c =>
+  ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
+function escapeAttr(s){ return escapeHTML(s); }
+
+document.querySelectorAll('.lang button').forEach(b => {
+  b.onclick = () => {
+    lang = b.dataset.lang;
+    localStorage.setItem('toro_prep_lang', lang);
+    document.querySelectorAll('.lang button').forEach(x =>
+      x.classList.toggle('on', x.dataset.lang===lang));
+    document.documentElement.lang = lang;
+    render();
+  };
+});
+document.querySelectorAll('.lang button').forEach(x =>
+  x.classList.toggle('on', x.dataset.lang===lang));
+document.documentElement.lang = lang;
+
+// number-key shortcuts on choice screens
+document.addEventListener('keydown', (e) => {
+  if (e.target.matches('input,textarea')) return;
+  const n = parseInt(e.key, 10);
+  if (!n) return;
+  const btn = app.querySelectorAll('.choice')[n-1];
+  if (btn) btn.click();
+});
+
+render();
+</script>
+</body>
+</html>
