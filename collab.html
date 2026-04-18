@@ -1,19 +1,22 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>Vyn Studio — Onboarding de colaborador</title>
+<title>Vyn Studio — Collaborator onboarding</title>
 <style>
   *,*::before,*::after{box-sizing:border-box}
   :root{--red:#c8102e;--ink:#0a0a0a;--muted:#6b6b6b;--gray:#f5f5f5;--line:#e5e5e5;--ok:#16a34a}
   html,body{margin:0;padding:0;background:#fafafa;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
   body{min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:24px 16px}
   .shell{width:100%;max-width:640px}
-  header{display:flex;align-items:center;gap:10px;margin-bottom:24px}
+  header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:24px}
   header .logo{font-weight:800;letter-spacing:-.01em;font-size:20px}
   header .accent{color:var(--red)}
+  .lang-toggle{display:inline-flex;border:1.5px solid var(--line);border-radius:999px;overflow:hidden;background:#fff}
+  .lang-toggle button{border:none;background:transparent;padding:6px 14px;font-size:13px;font-weight:700;cursor:pointer;color:var(--muted);transition:all .15s}
+  .lang-toggle button.active{background:var(--ink);color:#fff}
   .progress{height:4px;background:var(--line);border-radius:999px;overflow:hidden;margin-bottom:32px}
   .progress > div{height:100%;background:var(--red);width:0;transition:width .3s ease}
   .card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:28px 24px;box-shadow:0 1px 3px rgba(0,0,0,.03)}
@@ -48,12 +51,10 @@
   .step{display:none}
   .step.active{display:block;animation:fadein .25s ease}
   @keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-  .step-count{font-size:12px;color:var(--muted);text-align:right;margin-bottom:10px}
   .done{text-align:center;padding:20px 0}
   .done .check-circle{width:56px;height:56px;border-radius:50%;background:var(--ok);color:#fff;display:grid;place-items:center;margin:0 auto 18px;font-size:28px;font-weight:700}
   .done h2{margin:0 0 8px;font-size:22px}
   .done p{margin:0;color:var(--muted);font-size:14.5px;line-height:1.5}
-  small.hint{display:block;margin-top:6px;color:var(--muted);font-size:12.5px}
   .err{color:var(--red);font-size:13px;margin-top:6px;display:none}
   .err.show{display:block}
 </style>
@@ -62,208 +63,262 @@
 <div class="shell">
   <header>
     <span class="logo">VYN <span class="accent">STUDIO</span></span>
+    <div class="lang-toggle" role="group" aria-label="Language">
+      <button type="button" data-lang="en">EN</button>
+      <button type="button" data-lang="es">ES</button>
+    </div>
   </header>
 
   <div class="progress" aria-hidden="true"><div id="prog"></div></div>
 
   <div class="card" id="card">
-
-    <!-- PASO 1 -->
+    <!-- STEP 1 -->
     <section class="step active" data-step="1">
-      <p class="eyebrow">Onboarding · Paso 1 de 10</p>
-      <h1>Cuéntanos quién eres.</h1>
-      <p class="sub">Tarda ~4 minutos. Lo usamos para planear tu primera semana.</p>
-      <label class="row"><span class="lbl">Nombre completo</span><input type="text" id="f_name" autocomplete="name" required></label>
-      <label class="row"><span class="lbl">Correo electrónico</span><input type="email" id="f_email" autocomplete="email" required></label>
-      <label class="row"><span class="lbl">Usuario de Telegram (opcional)</span><input type="text" id="f_tg" placeholder="@tuusuario"></label>
-      <label class="row"><span class="lbl">¿Dónde vives?</span><input type="text" id="f_loc" placeholder="Ciudad, país · zona horaria"></label>
-      <div class="err" data-err="1">El nombre y el correo son obligatorios.</div>
+      <p class="eyebrow" data-i18n="s1.eyebrow"></p>
+      <h1 data-i18n="s1.h1"></h1>
+      <p class="sub" data-i18n="s1.sub"></p>
+      <label class="row"><span class="lbl" data-i18n="s1.name"></span><input type="text" id="f_name" autocomplete="name" required></label>
+      <label class="row"><span class="lbl" data-i18n="s1.email"></span><input type="email" id="f_email" autocomplete="email" required></label>
+      <label class="row"><span class="lbl" data-i18n="s1.tg"></span><input type="text" id="f_tg" data-i18n-ph="s1.tg_ph"></label>
+      <label class="row"><span class="lbl" data-i18n="s1.loc"></span><input type="text" id="f_loc" data-i18n-ph="s1.loc_ph"></label>
+      <div class="err" data-err="1" data-i18n="s1.err"></div>
     </section>
 
-    <!-- PASO 2 -->
+    <!-- STEP 2 -->
     <section class="step" data-step="2">
-      <p class="eyebrow">Paso 2 de 10</p>
-      <h1>¿En qué eres mejor?</h1>
-      <p class="sub">Elige el <strong>rol principal</strong> que mejor te describe.</p>
+      <p class="eyebrow" data-i18n="s2.eyebrow"></p>
+      <h1 data-i18n="s2.h1"></h1>
+      <p class="sub" data-i18n="s2.sub"></p>
       <div class="pills" data-group="role">
-        <button type="button" class="pill" data-val="frontend">Dev Frontend</button>
-        <button type="button" class="pill" data-val="fullstack">Dev Full-stack</button>
-        <button type="button" class="pill" data-val="backend">Dev Backend</button>
-        <button type="button" class="pill" data-val="designer">Diseñador/a</button>
-        <button type="button" class="pill" data-val="pm">PM / Producer</button>
-        <button type="button" class="pill" data-val="marketing">Marketing / Ads</button>
-        <button type="button" class="pill" data-val="other">Otro</button>
+        <button type="button" class="pill" data-val="frontend" data-i18n="role.frontend"></button>
+        <button type="button" class="pill" data-val="fullstack" data-i18n="role.fullstack"></button>
+        <button type="button" class="pill" data-val="backend" data-i18n="role.backend"></button>
+        <button type="button" class="pill" data-val="designer" data-i18n="role.designer"></button>
+        <button type="button" class="pill" data-val="pm" data-i18n="role.pm"></button>
+        <button type="button" class="pill" data-val="marketing" data-i18n="role.marketing"></button>
+        <button type="button" class="pill" data-val="other" data-i18n="role.other"></button>
       </div>
-      <label class="row" style="margin-top:16px" id="role_other_wrap" hidden><span class="lbl">Si "otro", descríbelo</span><input type="text" id="f_role_other"></label>
-      <div class="err" data-err="2">Elige un rol.</div>
+      <label class="row" style="margin-top:16px" id="role_other_wrap" hidden><span class="lbl" data-i18n="s2.other"></span><input type="text" id="f_role_other"></label>
+      <div class="err" data-err="2" data-i18n="s2.err"></div>
     </section>
 
-    <!-- PASO 3 -->
+    <!-- STEP 3 -->
     <section class="step" data-step="3">
-      <p class="eyebrow">Paso 3 de 10</p>
-      <h1>¿Qué tipo de colaboración buscas?</h1>
-      <p class="sub">Nos ayuda a planear tu incorporación y pago.</p>
+      <p class="eyebrow" data-i18n="s3.eyebrow"></p>
+      <h1 data-i18n="s3.h1"></h1>
+      <p class="sub" data-i18n="s3.sub"></p>
       <div class="pills" data-group="arrangement">
-        <button type="button" class="pill" data-val="permanent">Socio/a a largo plazo</button>
-        <button type="button" class="pill" data-val="contractor">Freelance (varios proyectos)</button>
-        <button type="button" class="pill" data-val="short-term">Corto plazo / un solo proyecto</button>
-        <button type="button" class="pill" data-val="trial">Prueba / a ver si encaja</button>
+        <button type="button" class="pill" data-val="permanent" data-i18n="arr.permanent"></button>
+        <button type="button" class="pill" data-val="contractor" data-i18n="arr.contractor"></button>
+        <button type="button" class="pill" data-val="short-term" data-i18n="arr.short"></button>
+        <button type="button" class="pill" data-val="trial" data-i18n="arr.trial"></button>
       </div>
-      <div class="err" data-err="3">Elige una opción.</div>
+      <div class="err" data-err="3" data-i18n="s3.err"></div>
     </section>
 
-    <!-- PASO 4 -->
+    <!-- STEP 4 -->
     <section class="step" data-step="4">
-      <p class="eyebrow">Paso 4 de 10</p>
-      <h1>¿Cómo prefieres cobrar?</h1>
+      <p class="eyebrow" data-i18n="s4.eyebrow"></p>
+      <h1 data-i18n="s4.h1"></h1>
       <div class="pills" data-group="pay_model">
-        <button type="button" class="pill" data-val="hourly">Por hora</button>
-        <button type="button" class="pill" data-val="fixed_project">Fijo por proyecto</button>
-        <button type="button" class="pill" data-val="monthly">Mensualidad fija</button>
-        <button type="button" class="pill" data-val="equity">Equity / participación</button>
-        <button type="button" class="pill" data-val="mix">Mezcla</button>
+        <button type="button" class="pill" data-val="hourly" data-i18n="pay.hourly"></button>
+        <button type="button" class="pill" data-val="fixed_project" data-i18n="pay.fixed"></button>
+        <button type="button" class="pill" data-val="monthly" data-i18n="pay.monthly"></button>
+        <button type="button" class="pill" data-val="equity" data-i18n="pay.equity"></button>
+        <button type="button" class="pill" data-val="mix" data-i18n="pay.mix"></button>
       </div>
-      <label class="row" style="margin-top:16px"><span class="lbl">Tarifa o rango esperado (USD o EUR)</span><input type="text" id="f_rate" placeholder="ej. $30–$50/h, o 2.000€/mes, o 10% equity"></label>
-      <div class="err" data-err="4">Elige un modelo.</div>
+      <label class="row" style="margin-top:16px"><span class="lbl" data-i18n="s4.rate"></span><input type="text" id="f_rate" data-i18n-ph="s4.rate_ph"></label>
+      <div class="err" data-err="4" data-i18n="s4.err"></div>
     </section>
 
-    <!-- PASO 5 -->
+    <!-- STEP 5 -->
     <section class="step" data-step="5">
-      <p class="eyebrow">Paso 5 de 10</p>
-      <h1>Tu stack técnico</h1>
-      <p class="sub">Marca todo con lo que ya has lanzado algo real.</p>
+      <p class="eyebrow" data-i18n="s5.eyebrow"></p>
+      <h1 data-i18n="s5.h1"></h1>
+      <p class="sub" data-i18n="s5.sub"></p>
       <div class="checks" data-group="stack">
         <label class="check"><input type="checkbox" value="html_css"> HTML / CSS</label>
-        <label class="check"><input type="checkbox" value="js_vanilla"> JS vanilla</label>
+        <label class="check"><input type="checkbox" value="js_vanilla"> <span data-i18n="stack.js_vanilla"></span></label>
         <label class="check"><input type="checkbox" value="react"> React / Next.js</label>
         <label class="check"><input type="checkbox" value="node"> Node.js</label>
         <label class="check"><input type="checkbox" value="netlify_fns"> Netlify Functions</label>
         <label class="check"><input type="checkbox" value="stripe"> Stripe</label>
         <label class="check"><input type="checkbox" value="stripe_connect"> Stripe Connect</label>
-        <label class="check"><input type="checkbox" value="telegram_bots"> Bots / Mini Apps de Telegram</label>
+        <label class="check"><input type="checkbox" value="telegram_bots"> <span data-i18n="stack.tg"></span></label>
         <label class="check"><input type="checkbox" value="meta_ads"> Meta Ads</label>
         <label class="check"><input type="checkbox" value="google_ads"> Google Ads</label>
         <label class="check"><input type="checkbox" value="pixel_capi"> Pixel + CAPI</label>
         <label class="check"><input type="checkbox" value="ga4"> GA4</label>
-        <label class="check"><input type="checkbox" value="figma"> Figma / diseño</label>
-        <label class="check"><input type="checkbox" value="copywriting"> Copywriting</label>
+        <label class="check"><input type="checkbox" value="figma"> <span data-i18n="stack.figma"></span></label>
+        <label class="check"><input type="checkbox" value="copywriting"> <span data-i18n="stack.copy"></span></label>
         <label class="check"><input type="checkbox" value="seo"> SEO</label>
-        <label class="check"><input type="checkbox" value="email_marketing"> Email marketing</label>
-        <label class="check"><input type="checkbox" value="ai_coding"> Programar con IA (Claude, Cursor, etc.)</label>
+        <label class="check"><input type="checkbox" value="email_marketing"> <span data-i18n="stack.email"></span></label>
+        <label class="check"><input type="checkbox" value="ai_coding"> <span data-i18n="stack.ai"></span></label>
       </div>
-      <label class="row" style="margin-top:14px"><span class="lbl">Otras herramientas o skills</span><input type="text" id="f_stack_other" placeholder="Shopify, Webflow, Python, etc."></label>
+      <label class="row" style="margin-top:14px"><span class="lbl" data-i18n="s5.other"></span><input type="text" id="f_stack_other" data-i18n-ph="s5.other_ph"></label>
     </section>
 
-    <!-- PASO 6 -->
+    <!-- STEP 6 -->
     <section class="step" data-step="6">
-      <p class="eyebrow">Paso 6 de 10</p>
-      <h1>Horas disponibles a la semana</h1>
-      <p class="sub">Sé realista — nunca vamos a pedir más de lo que te comprometas.</p>
+      <p class="eyebrow" data-i18n="s6.eyebrow"></p>
+      <h1 data-i18n="s6.h1"></h1>
+      <p class="sub" data-i18n="s6.sub"></p>
       <div class="pills" data-group="hours">
-        <button type="button" class="pill" data-val="0-10">Menos de 10</button>
+        <button type="button" class="pill" data-val="0-10" data-i18n="hrs.0_10"></button>
         <button type="button" class="pill" data-val="10-20">10–20</button>
         <button type="button" class="pill" data-val="20-35">20–35</button>
         <button type="button" class="pill" data-val="35-plus">35+</button>
-        <button type="button" class="pill" data-val="flex">Flexible / por sprints</button>
+        <button type="button" class="pill" data-val="flex" data-i18n="hrs.flex"></button>
       </div>
-      <label class="row" style="margin-top:16px"><span class="lbl">Zona horaria + horario habitual</span><input type="text" id="f_hours_detail" placeholder="ej. 9–17 Madrid, solo tardes, etc."></label>
-      <div class="err" data-err="6">Elige una opción.</div>
+      <label class="row" style="margin-top:16px"><span class="lbl" data-i18n="s6.tz"></span><input type="text" id="f_hours_detail" data-i18n-ph="s6.tz_ph"></label>
+      <div class="err" data-err="6" data-i18n="s6.err"></div>
     </section>
 
-    <!-- PASO 7 -->
+    <!-- STEP 7 -->
     <section class="step" data-step="7">
-      <p class="eyebrow">Paso 7 de 10</p>
-      <h1>Muestras de tu trabajo</h1>
-      <p class="sub">Cualquier cosa que demuestre lo que haces: portafolio, GitHub, webs en vivo, Figma, tuits.</p>
-      <label class="row"><span class="lbl">Portafolio / web personal</span><input type="url" id="f_portfolio" placeholder="https://"></label>
-      <label class="row"><span class="lbl">GitHub</span><input type="text" id="f_github" placeholder="github.com/tuusuario"></label>
-      <label class="row"><span class="lbl">Un proyecto del que estés orgulloso/a</span><textarea id="f_proud" placeholder="Enlace + 1–2 frases sobre qué lanzaste y por qué es bueno"></textarea></label>
+      <p class="eyebrow" data-i18n="s7.eyebrow"></p>
+      <h1 data-i18n="s7.h1"></h1>
+      <p class="sub" data-i18n="s7.sub"></p>
+      <label class="row"><span class="lbl" data-i18n="s7.portfolio"></span><input type="url" id="f_portfolio" placeholder="https://"></label>
+      <label class="row"><span class="lbl">GitHub</span><input type="text" id="f_github" placeholder="github.com/…"></label>
+      <label class="row"><span class="lbl" data-i18n="s7.proud"></span><textarea id="f_proud" data-i18n-ph="s7.proud_ph"></textarea></label>
     </section>
 
-    <!-- PASO 8 -->
+    <!-- STEP 8 -->
     <section class="step" data-step="8">
-      <p class="eyebrow">Paso 8 de 10</p>
-      <h1>Qué industrias te interesan</h1>
-      <p class="sub">Marca las que te gustaría tocar. No te compromete — solo para ver encaje.</p>
+      <p class="eyebrow" data-i18n="s8.eyebrow"></p>
+      <h1 data-i18n="s8.h1"></h1>
+      <p class="sub" data-i18n="s8.sub"></p>
       <div class="checks" data-group="interests">
-        <label class="check"><input type="checkbox" value="movers"> Mudanzas / servicios locales (Toro Movers)</label>
-        <label class="check"><input type="checkbox" value="hvac"> HVAC / oficios (Soligo Air)</label>
-        <label class="check"><input type="checkbox" value="food"> Restaurantes / comida (OMG, ConnieCakes)</label>
-        <label class="check"><input type="checkbox" value="education"> Educación / clases (Stael Fogarty)</label>
-        <label class="check"><input type="checkbox" value="wellness"> Wellness / belleza (Curabatree, Selah)</label>
-        <label class="check"><input type="checkbox" value="agency"> Lado agencia (Vyn Studio mismo)</label>
+        <label class="check"><input type="checkbox" value="movers"> <span data-i18n="int.movers"></span></label>
+        <label class="check"><input type="checkbox" value="hvac"> <span data-i18n="int.hvac"></span></label>
+        <label class="check"><input type="checkbox" value="food"> <span data-i18n="int.food"></span></label>
+        <label class="check"><input type="checkbox" value="education"> <span data-i18n="int.edu"></span></label>
+        <label class="check"><input type="checkbox" value="wellness"> <span data-i18n="int.wellness"></span></label>
+        <label class="check"><input type="checkbox" value="agency"> <span data-i18n="int.agency"></span></label>
       </div>
     </section>
 
-    <!-- PASO 9 -->
+    <!-- STEP 9 -->
     <section class="step" data-step="9">
-      <p class="eyebrow">Paso 9 de 10</p>
-      <h1>Credenciales y seguridad</h1>
-      <p class="sub">¿Qué tan cómodo/a eres con datos de cliente y secretos?</p>
+      <p class="eyebrow" data-i18n="s9.eyebrow"></p>
+      <h1 data-i18n="s9.h1"></h1>
+      <p class="sub" data-i18n="s9.sub"></p>
       <div class="pills" data-group="security">
-        <button type="button" class="pill" data-val="expert">Años haciéndolo — uso 1Password / Bitwarden a diario</button>
-        <button type="button" class="pill" data-val="ok">Con cuidado + puedo aprender vuestro proceso</button>
-        <button type="button" class="pill" data-val="new">Nuevo/a en esto — necesitaría onboarding rápido</button>
+        <button type="button" class="pill" data-val="expert" data-i18n="sec.expert"></button>
+        <button type="button" class="pill" data-val="ok" data-i18n="sec.ok"></button>
+        <button type="button" class="pill" data-val="new" data-i18n="sec.new"></button>
       </div>
-      <label class="row" style="margin-top:16px"><span class="lbl">Gestor de contraseñas preferido</span>
+      <label class="row" style="margin-top:16px"><span class="lbl" data-i18n="s9.mgr"></span>
         <select id="f_secrets">
           <option value="">—</option>
           <option value="1password">1Password</option>
           <option value="bitwarden">Bitwarden</option>
           <option value="dashlane">Dashlane</option>
-          <option value="other">Otro</option>
-          <option value="none">Aún ninguno</option>
+          <option value="other" data-i18n="sec.other"></option>
+          <option value="none" data-i18n="sec.none"></option>
         </select>
       </label>
-      <div class="err" data-err="9">Elige un nivel.</div>
+      <div class="err" data-err="9" data-i18n="s9.err"></div>
     </section>
 
-    <!-- PASO 10 -->
+    <!-- STEP 10 -->
     <section class="step" data-step="10">
-      <p class="eyebrow">Final · Paso 10 de 10</p>
-      <h1>¿Algo más?</h1>
-      <p class="sub">Preguntas, límites, disponibilidad, herramientas que odies, lo que sea.</p>
-      <label class="row"><span class="lbl">Notas</span><textarea id="f_notes" placeholder="Lo que tengas en mente"></textarea></label>
-      <label class="row"><span class="lbl">¿Cómo supiste de Vyn Studio?</span><input type="text" id="f_source" placeholder="Nombre de quién te recomendó, X, IG, etc."></label>
+      <p class="eyebrow" data-i18n="s10.eyebrow"></p>
+      <h1 data-i18n="s10.h1"></h1>
+      <p class="sub" data-i18n="s10.sub"></p>
+      <label class="row"><span class="lbl" data-i18n="s10.notes"></span><textarea id="f_notes" data-i18n-ph="s10.notes_ph"></textarea></label>
+      <label class="row"><span class="lbl" data-i18n="s10.source"></span><input type="text" id="f_source" data-i18n-ph="s10.source_ph"></label>
     </section>
 
-    <!-- LISTO -->
+    <!-- DONE -->
     <section class="step" data-step="done">
       <div class="done">
         <div class="check-circle">✓</div>
-        <h2>Recibido.</h2>
-        <p>Diler lo revisará y te contacta en 24 horas. Si hay match, montamos una llamada corta + accesos a los repos + una primera tarea pequeña para probar.</p>
+        <h2 data-i18n="done.h2"></h2>
+        <p data-i18n="done.p"></p>
       </div>
     </section>
 
     <div class="actions" id="actions">
-      <button type="button" class="nav back" id="back">Atrás</button>
-      <button type="button" class="nav next" id="next">Siguiente →</button>
+      <button type="button" class="nav back" id="back" data-i18n="nav.back"></button>
+      <button type="button" class="nav next" id="next" data-i18n="nav.next"></button>
     </div>
-
   </div>
 
-  <p style="text-align:center;color:var(--muted);font-size:12px;margin:18px 0 0">Privado · las respuestas solo llegan a Vyn Studio</p>
+  <p style="text-align:center;color:var(--muted);font-size:12px;margin:18px 0 0" data-i18n="footer"></p>
 </div>
 
 <script>
 (function(){
-  const state = { step: 1, data: {
-    name: '', email: '', tg: '', loc: '',
-    role: '', role_other: '',
-    arrangement: '',
-    pay_model: '', rate: '',
-    stack: [], stack_other: '',
-    hours: '', hours_detail: '',
-    portfolio: '', github: '', proud: '',
-    interests: [],
-    security: '', secrets: '',
-    notes: '', source: '',
-    lang: 'es',
+  const I18N = {
+    en: {
+      'nav.back':'Back','nav.next':'Next →','nav.submit':'Submit','nav.sending':'Sending…',
+      footer:'Private · responses go only to Vyn Studio',
+      's1.eyebrow':'Onboarding · Step 1 of 10','s1.h1':'Tell us who you are.','s1.sub':'Takes ~4 minutes. We use this to scope your first sprint.','s1.name':'Full name','s1.email':'Email','s1.tg':'Telegram handle (optional)','s1.tg_ph':'@yourhandle','s1.loc':'Where are you based?','s1.loc_ph':'City, country · timezone','s1.err':'Name and a valid email are required.',
+      's2.eyebrow':'Step 2 of 10','s2.h1':'What do you do best?','s2.sub':'Pick the one role that fits you most.','s2.other':'If other, describe','s2.err':'Pick one role.',
+      'role.frontend':'Frontend dev','role.fullstack':'Full-stack dev','role.backend':'Backend dev','role.designer':'Designer','role.pm':'PM / Producer','role.marketing':'Marketing / Ads','role.other':'Other',
+      's3.eyebrow':'Step 3 of 10','s3.h1':'What kind of arrangement?','s3.sub':'Signals how we plan and pay.','s3.err':'Pick one.',
+      'arr.permanent':'Long-term partner','arr.contractor':'Contractor (multi-project)','arr.short':'Short-term / single project','arr.trial':'Trial / see-if-it-fits',
+      's4.eyebrow':'Step 4 of 10','s4.h1':'How do you want to be paid?','s4.rate':'Expected rate / range','s4.rate_ph':'e.g. $30–$50/h, or $2k/mo, or 10% equity','s4.err':'Pick a pay model.',
+      'pay.hourly':'Hourly','pay.fixed':'Fixed per project','pay.monthly':'Monthly retainer','pay.equity':'Equity / revenue-share','pay.mix':'Mix',
+      's5.eyebrow':'Step 5 of 10','s5.h1':'Tech comfort','s5.sub':'Check everything you have actually shipped with.','s5.other':'Other tools or skills','s5.other_ph':'Shopify, Webflow, Python, etc.',
+      'stack.js_vanilla':'Vanilla JS','stack.tg':'Telegram bots / Mini Apps','stack.figma':'Figma / design','stack.copy':'Copywriting','stack.email':'Email marketing','stack.ai':'Coding with AI (Claude, Cursor, etc.)',
+      's6.eyebrow':'Step 6 of 10','s6.h1':'Hours per week','s6.sub':'Realistic availability — we will never ask for more than you commit.','s6.tz':'Timezone + typical working hours','s6.tz_ph':'e.g. 9–5 ET, evenings only, etc.','s6.err':'Pick one.','hrs.0_10':'Under 10','hrs.flex':'Flexible / bursty',
+      's7.eyebrow':'Step 7 of 10','s7.h1':'Work samples','s7.sub':'Anything that shows what you can build — portfolio, GitHub, live sites, Figma, tweets.','s7.portfolio':'Portfolio / website','s7.proud':'One project you are proud of','s7.proud_ph':'Link + 1–2 sentences on what you shipped and why it is good',
+      's8.eyebrow':'Step 8 of 10','s8.h1':'Which industries interest you?','s8.sub':'Pick what you would want to work on. Does not commit you — signals fit.',
+      'int.movers':'Moving / local services','int.hvac':'HVAC / home services','int.food':'Restaurants / food & beverage','int.edu':'Education / lessons / coaching','int.wellness':'Wellness / beauty / lifestyle','int.agency':'Agency-side ops (internal tools, automation)',
+      's9.eyebrow':'Step 9 of 10','s9.h1':'Credentials + security','s9.sub':'How comfortable are you handling client data & secrets?','s9.mgr':'Preferred secrets manager','s9.err':'Pick one level.','sec.expert':'Years of practice — use 1Password / Bitwarden daily','sec.ok':'Careful + can learn our process','sec.new':'Newer to it — would need onboarding','sec.other':'Other','sec.none':'None yet',
+      's10.eyebrow':'Final · Step 10 of 10','s10.h1':'Anything else?','s10.sub':'Questions, boundaries, availability, tools you hate, whatever.','s10.notes':'Notes','s10.notes_ph':'Anything on your mind','s10.source':'How did you hear about Vyn Studio?','s10.source_ph':'Referral name, X, IG, etc.',
+      'done.h2':'Received.','done.p':'Diler will review and reach out within 24 hours. If you are a fit, we will set up a short call + repo access + a first small task to test the loop.',
+      'alert.err':'Something went wrong. Try again or email hello@vyn.studio','alert.net':'Network error. Try again.',
+    },
+    es: {
+      'nav.back':'Atrás','nav.next':'Siguiente →','nav.submit':'Enviar','nav.sending':'Enviando…',
+      footer:'Privado · las respuestas solo llegan a Vyn Studio',
+      's1.eyebrow':'Onboarding · Paso 1 de 10','s1.h1':'Cuéntanos quién eres.','s1.sub':'Tarda ~4 minutos. Lo usamos para planear tu primera semana.','s1.name':'Nombre completo','s1.email':'Correo electrónico','s1.tg':'Usuario de Telegram (opcional)','s1.tg_ph':'@tuusuario','s1.loc':'¿Dónde vives?','s1.loc_ph':'Ciudad, país · zona horaria','s1.err':'El nombre y un correo válido son obligatorios.',
+      's2.eyebrow':'Paso 2 de 10','s2.h1':'¿En qué eres mejor?','s2.sub':'Elige el rol principal que mejor te describe.','s2.other':'Si "otro", descríbelo','s2.err':'Elige un rol.',
+      'role.frontend':'Dev Frontend','role.fullstack':'Dev Full-stack','role.backend':'Dev Backend','role.designer':'Diseñador/a','role.pm':'PM / Producer','role.marketing':'Marketing / Ads','role.other':'Otro',
+      's3.eyebrow':'Paso 3 de 10','s3.h1':'¿Qué tipo de colaboración buscas?','s3.sub':'Nos ayuda a planear tu incorporación y pago.','s3.err':'Elige una opción.',
+      'arr.permanent':'Socio/a a largo plazo','arr.contractor':'Freelance (varios proyectos)','arr.short':'Corto plazo / un solo proyecto','arr.trial':'Prueba / a ver si encaja',
+      's4.eyebrow':'Paso 4 de 10','s4.h1':'¿Cómo prefieres cobrar?','s4.rate':'Tarifa o rango esperado','s4.rate_ph':'ej. $30–$50/h, o 2.000€/mes, o 10% equity','s4.err':'Elige un modelo.',
+      'pay.hourly':'Por hora','pay.fixed':'Fijo por proyecto','pay.monthly':'Mensualidad fija','pay.equity':'Equity / participación','pay.mix':'Mezcla',
+      's5.eyebrow':'Paso 5 de 10','s5.h1':'Tu stack técnico','s5.sub':'Marca todo con lo que ya has lanzado algo real.','s5.other':'Otras herramientas o skills','s5.other_ph':'Shopify, Webflow, Python, etc.',
+      'stack.js_vanilla':'JS vanilla','stack.tg':'Bots / Mini Apps de Telegram','stack.figma':'Figma / diseño','stack.copy':'Copywriting','stack.email':'Email marketing','stack.ai':'Programar con IA (Claude, Cursor, etc.)',
+      's6.eyebrow':'Paso 6 de 10','s6.h1':'Horas disponibles a la semana','s6.sub':'Sé realista — nunca vamos a pedir más de lo que te comprometas.','s6.tz':'Zona horaria + horario habitual','s6.tz_ph':'ej. 9–17 Madrid, solo tardes, etc.','s6.err':'Elige una opción.','hrs.0_10':'Menos de 10','hrs.flex':'Flexible / por sprints',
+      's7.eyebrow':'Paso 7 de 10','s7.h1':'Muestras de tu trabajo','s7.sub':'Cualquier cosa que demuestre lo que haces: portafolio, GitHub, webs en vivo, Figma, tuits.','s7.portfolio':'Portafolio / web personal','s7.proud':'Un proyecto del que estés orgulloso/a','s7.proud_ph':'Enlace + 1–2 frases sobre qué lanzaste y por qué es bueno',
+      's8.eyebrow':'Paso 8 de 10','s8.h1':'¿Qué industrias te interesan?','s8.sub':'Marca las que te gustaría tocar. No te compromete — solo para ver encaje.',
+      'int.movers':'Mudanzas / servicios locales','int.hvac':'HVAC / servicios para el hogar','int.food':'Restaurantes / comida y bebida','int.edu':'Educación / clases / coaching','int.wellness':'Wellness / belleza / estilo de vida','int.agency':'Lado agencia (herramientas internas, automatización)',
+      's9.eyebrow':'Paso 9 de 10','s9.h1':'Credenciales y seguridad','s9.sub':'¿Qué tan cómodo/a eres con datos de cliente y secretos?','s9.mgr':'Gestor de contraseñas preferido','s9.err':'Elige un nivel.','sec.expert':'Años haciéndolo — uso 1Password / Bitwarden a diario','sec.ok':'Con cuidado + puedo aprender vuestro proceso','sec.new':'Nuevo/a en esto — necesitaría onboarding rápido','sec.other':'Otro','sec.none':'Aún ninguno',
+      's10.eyebrow':'Final · Paso 10 de 10','s10.h1':'¿Algo más?','s10.sub':'Preguntas, límites, disponibilidad, herramientas que odies, lo que sea.','s10.notes':'Notas','s10.notes_ph':'Lo que tengas en mente','s10.source':'¿Cómo supiste de Vyn Studio?','s10.source_ph':'Nombre de quien te recomendó, X, IG, etc.',
+      'done.h2':'Recibido.','done.p':'Diler lo revisará y te contacta en 24 horas. Si hay match, montamos una llamada corta + accesos a los repos + una primera tarea pequeña para probar.',
+      'alert.err':'Algo falló. Intenta de nuevo o escribe a hello@vyn.studio','alert.net':'Error de red. Intenta de nuevo.',
+    },
+  };
+
+  const state = { step: 1, lang: 'en', data: {
+    name:'',email:'',tg:'',loc:'',role:'',role_other:'',arrangement:'',pay_model:'',rate:'',
+    stack:[],stack_other:'',hours:'',hours_detail:'',portfolio:'',github:'',proud:'',
+    interests:[],security:'',secrets:'',notes:'',source:'',lang:'en',
   }};
   const STEPS_TOTAL = 10;
   const $ = (s, r=document) => r.querySelector(s);
   const $$ = (s, r=document) => [...r.querySelectorAll(s)];
+
+  function applyLang(lang){
+    state.lang = lang;
+    state.data.lang = lang;
+    document.documentElement.lang = lang;
+    const dict = I18N[lang];
+    $$('[data-i18n]').forEach(el => { const k = el.dataset.i18n; if (dict[k] != null) el.textContent = dict[k]; });
+    $$('[data-i18n-ph]').forEach(el => { const k = el.dataset.i18nPh; if (dict[k] != null) el.placeholder = dict[k]; });
+    // Nav button text depends on current step
+    $('#next').textContent = state.step === STEPS_TOTAL ? dict['nav.submit'] : dict['nav.next'];
+    $('#back').textContent = dict['nav.back'];
+    // Lang toggle state
+    $$('.lang-toggle button').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+    try { localStorage.setItem('vyn_collab_lang', lang); } catch(_){}
+  }
 
   function setStep(n){
     state.step = n;
@@ -271,7 +326,7 @@
     const pct = n === 'done' ? 100 : Math.round((n-1)/STEPS_TOTAL*100);
     $('#prog').style.width = pct + '%';
     $('#back').style.visibility = (n === 1 || n === 'done') ? 'hidden' : 'visible';
-    $('#next').textContent = n === STEPS_TOTAL ? 'Enviar' : 'Siguiente →';
+    $('#next').textContent = n === STEPS_TOTAL ? I18N[state.lang]['nav.submit'] : I18N[state.lang]['nav.next'];
     $('#actions').style.display = n === 'done' ? 'none' : 'flex';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -288,9 +343,7 @@
         group.querySelectorAll('.pill').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         state.data[key] = btn.dataset.val;
-        if (key === 'role') {
-          $('#role_other_wrap').hidden = btn.dataset.val !== 'other';
-        }
+        if (key === 'role') { $('#role_other_wrap').hidden = btn.dataset.val !== 'other'; }
         showErr(state.step, false);
       });
     });
@@ -312,12 +365,9 @@
     el.addEventListener('input', () => { state.data[key] = el.value.trim(); });
   };
   bind('f_name','name'); bind('f_email','email'); bind('f_tg','tg'); bind('f_loc','loc');
-  bind('f_role_other','role_other');
-  bind('f_rate','rate');
-  bind('f_stack_other','stack_other');
-  bind('f_hours_detail','hours_detail');
-  bind('f_portfolio','portfolio'); bind('f_github','github'); bind('f_proud','proud');
-  bind('f_notes','notes'); bind('f_source','source');
+  bind('f_role_other','role_other'); bind('f_rate','rate'); bind('f_stack_other','stack_other');
+  bind('f_hours_detail','hours_detail'); bind('f_portfolio','portfolio'); bind('f_github','github');
+  bind('f_proud','proud'); bind('f_notes','notes'); bind('f_source','source');
   $('#f_secrets').addEventListener('change', e => { state.data.secrets = e.target.value; });
 
   function validate(step){
@@ -337,23 +387,34 @@
     if (!validate(state.step)) { showErr(state.step, true); return; }
     if (state.step < STEPS_TOTAL) { setStep(state.step + 1); return; }
     const btn = $('#next');
-    btn.disabled = true; btn.textContent = 'Enviando…';
+    btn.disabled = true; btn.textContent = I18N[state.lang]['nav.sending'];
     try {
       const res = await fetch('/.netlify/functions/collab-onboarding', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(state.data),
       });
       if (res.ok) { setStep('done'); }
-      else { btn.disabled = false; btn.textContent = 'Enviar'; alert('Algo falló. Intenta de nuevo o escribe a hello@vyn.studio'); }
+      else { btn.disabled = false; btn.textContent = I18N[state.lang]['nav.submit']; alert(I18N[state.lang]['alert.err']); }
     } catch (e) {
-      btn.disabled = false; btn.textContent = 'Enviar';
-      alert('Error de red. Intenta de nuevo.');
+      btn.disabled = false; btn.textContent = I18N[state.lang]['nav.submit'];
+      alert(I18N[state.lang]['alert.net']);
     }
   });
 
   $('#back').addEventListener('click', () => { if (state.step > 1) setStep(state.step - 1); });
 
+  $$('.lang-toggle button').forEach(b => {
+    b.addEventListener('click', () => applyLang(b.dataset.lang));
+  });
+
+  // Initial language: localStorage > browser hint > fallback EN
+  let initial = 'en';
+  try { initial = localStorage.getItem('vyn_collab_lang') || initial; } catch(_){}
+  if (!I18N[initial]) initial = 'en';
+  if (!localStorage.getItem || !localStorage.getItem('vyn_collab_lang')) {
+    if ((navigator.language || '').toLowerCase().startsWith('es')) initial = 'es';
+  }
+  applyLang(initial);
   setStep(1);
 })();
 </script>
