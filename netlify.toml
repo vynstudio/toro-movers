@@ -20,6 +20,11 @@
 [functions."morning-briefing"]
   schedule = "0 10 * * *"
 
+# Vyn Studio ops bot daily brief at 8am Eastern (12:00 UTC EDT)
+# Cross-client status + open action items to @Vynstudio_bot
+[functions."vyn-bot-daily"]
+  schedule = "0 12 * * *"
+
 [build.environment]
   NODE_VERSION = "20"
 
