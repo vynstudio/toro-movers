@@ -207,9 +207,23 @@ module.exports.sendReviewRequest = sendReviewRequest;
 async function handleTextMessage(msg){
   const chatId = msg.chat?.id;
   const text = (msg.text || '').trim();
+  const isAdmin = ALLOWED_CHAT && String(chatId) === String(ALLOWED_CHAT);
 
-  // Allowlist — only the designated chat ID may run commands
-  if (ALLOWED_CHAT && String(chatId) !== String(ALLOWED_CHAT)) {
+  // Public-friendly commands: /start and /quote work for anyone
+  // and simply open the Mini App so customers can self-serve.
+  const firstCmd = text.match(/^\/(\w+)/);
+  const firstCmdLower = firstCmd ? firstCmd[1].toLowerCase() : '';
+  if (firstCmdLower === 'start' && !isAdmin) {
+    await cmdPublicWelcome(chatId);
+    return { statusCode: 200, body: 'ok' };
+  }
+  if (firstCmdLower === 'quote') {
+    await cmdQuoteLink(chatId);
+    return { statusCode: 200, body: 'ok' };
+  }
+
+  // All other commands require the admin allowlist
+  if (ALLOWED_CHAT && !isAdmin) {
     await tg('sendMessage', { chat_id: chatId, text: '🚫 Not authorized.' });
     return { statusCode: 200, body: 'ok' };
   }
@@ -230,7 +244,8 @@ async function handleTextMessage(msg){
   const args = (match[2] || '').trim();
 
   try {
-    if (cmd === 'help' || cmd === 'start') await cmdHelp(chatId);
+    if (cmd === 'help') await cmdHelp(chatId);
+    else if (cmd === 'start') await cmdHelp(chatId); // admin /start shows full command menu
     else if (cmd === 'today')    await cmdDayJobs(chatId, 0, 'Today');
     else if (cmd === 'tomorrow') await cmdDayJobs(chatId, 1, 'Tomorrow');
     else if (cmd === 'week')     await cmdWeek(chatId);
@@ -302,6 +317,43 @@ function fmtLeadLine(l){
   const t = l.move_time ? ' '+l.move_time : '';
   const est = l.estimate_total ? ` · $${l.estimate_total}` : '';
   return `\`${l.id}\` · *${esc(l.name||'(no name)')}* · ${when}${t}${est}`;
+}
+
+// Customer-facing /start — welcomes non-admin users and offers the Mini App.
+async function cmdPublicWelcome(chatId){
+  const text = [
+    '👋 *Welcome to Toro Movers.*',
+    '',
+    'Get an instant quote and reserve your move in under 60 seconds — right here in Telegram.',
+    '',
+    '$75/mover/hour · 2-hr minimum · no surprise fees.',
+  ].join('\n');
+  await tg('sendMessage', {
+    chat_id: chatId,
+    text,
+    parse_mode: 'Markdown',
+    disable_web_page_preview: true,
+    reply_markup: {
+      inline_keyboard: [[
+        { text: '🚚 Quote & Reserve', web_app: { url: 'https://toromovers.net/mini/toro' } },
+      ], [
+        { text: '📞 Call (321) 758-0094', url: 'tel:+13217580094' },
+      ]],
+    },
+  });
+}
+
+// /quote — works for both admin (test link) and customers (open app).
+async function cmdQuoteLink(chatId){
+  await tg('sendMessage', {
+    chat_id: chatId,
+    text: 'Tap to quote your move and reserve with a deposit.',
+    reply_markup: {
+      inline_keyboard: [[
+        { text: '🚚 Quote & Reserve', web_app: { url: 'https://toromovers.net/mini/toro' } },
+      ]],
+    },
+  });
 }
 
 async function cmdHelp(chatId){
