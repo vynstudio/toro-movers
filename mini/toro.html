@@ -160,8 +160,10 @@
 
 <div class="done" id="done" style="display:none">
   <div class="done-check">✓</div>
-  <h2>Reserved!</h2>
+  <h2>Ready to pay deposit</h2>
   <p id="done-msg"></p>
+  <button type="button" class="foot-btn" id="pay-btn" style="margin-top:20px;max-width:340px">Open Stripe — Pay deposit</button>
+  <p class="foot-note" id="pay-url" style="margin-top:14px;word-break:break-all;font-size:11px"></p>
 </div>
 
 <div class="foot-cta" id="foot-cta">
@@ -265,9 +267,9 @@
       });
       const data = await res.json();
       if (res.ok && data.checkoutUrl) {
-        // Open Stripe Checkout outside the mini app (Telegram can't host Stripe iframes)
-        if (tg && tg.openLink) tg.openLink(data.checkoutUrl);
-        else window.open(data.checkoutUrl, '_blank');
+        // Store URL on success screen — do NOT auto-open. Telegram's Mini App
+        // runtime breaks openLink if it follows an async fetch (not a direct
+        // user gesture). Instead, render a tap-to-pay button the user clicks.
         showDone(data);
       } else {
         throw new Error(data.error || 'reserve failed');
@@ -284,9 +286,31 @@
     $('#app').style.display = 'none';
     $('#foot-cta').style.display = 'none';
     $('#done').style.display = 'block';
-    $('#done-msg').textContent = `Stripe checkout opened in your browser. Complete the $${deposit()} deposit and we'll confirm your ${state.movers}-mover move for ${state.date || 'your selected date'}. You can close this app.`;
+    $('#done-msg').textContent = `Your reservation is held for ${state.movers} movers${state.truck > 0 ? ' + truck' : ''}${state.date ? ' on ' + state.date : ''}. Tap below to pay the $${deposit()} deposit in a secure Stripe checkout.`;
+
+    const payBtn = $('#pay-btn');
+    const payUrl = $('#pay-url');
+    payBtn.textContent = `Open Stripe — Pay $${deposit()} deposit`;
+    payUrl.textContent = 'Or open in a browser: ' + data.checkoutUrl;
+    payBtn.onclick = () => {
+      // Direct user tap → Telegram will honor openLink
+      if (tg && tg.openLink) tg.openLink(data.checkoutUrl, { try_instant_view: false });
+      else window.open(data.checkoutUrl, '_blank');
+    };
+
     if (tg) {
-      if (tg.MainButton) tg.MainButton.hide();
+      // Swap MainButton to also trigger the pay link (user-initiated)
+      if (tg.MainButton) {
+        tg.MainButton.hideProgress();
+        tg.MainButton.setText(`Pay $${deposit()} deposit`);
+        tg.MainButton.offClick && tg.MainButton.offClick(reserve);
+        tg.MainButton.onClick(() => {
+          if (tg.openLink) tg.openLink(data.checkoutUrl, { try_instant_view: false });
+          else window.open(data.checkoutUrl, '_blank');
+        });
+        tg.MainButton.enable();
+        tg.MainButton.show();
+      }
       if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
     }
   }
@@ -295,17 +319,36 @@
   if (tg) {
     tg.ready();
     tg.expand();
-    const u = tg.initDataUnsafe && tg.initDataUnsafe.user;
-    if (u) {
-      const first = u.first_name || '';
-      const last = u.last_name || '';
-      state.name = [first, last].filter(Boolean).join(' ');
-      if (state.name) {
+
+    // Resolve user from initDataUnsafe OR parse the raw initData string
+    let tgUser = (tg.initDataUnsafe && tg.initDataUnsafe.user) || null;
+    if (!tgUser && tg.initData) {
+      try {
+        const params = new URLSearchParams(tg.initData);
+        const u = params.get('user');
+        if (u) tgUser = JSON.parse(u);
+      } catch(_) {}
+    }
+
+    if (tgUser) {
+      const first = tgUser.first_name || '';
+      const last = tgUser.last_name || '';
+      const fullName = [first, last].filter(Boolean).join(' ').trim();
+      if (fullName) {
+        state.name = fullName;
         const nameEl = document.getElementById('f_name');
-        if (nameEl && !nameEl.value) nameEl.value = state.name;
+        if (nameEl) {
+          nameEl.value = fullName;
+          // Trigger input event so any listener / state binding picks it up
+          nameEl.dispatchEvent(new Event('input', { bubbles: true }));
+        }
       }
       const hello = document.getElementById('hello');
       if (hello && first) hello.textContent = `Hi ${first}`;
+    } else {
+      // Surface a hint so we can see if Telegram didn't pass user data
+      const hello = document.getElementById('hello');
+      if (hello) hello.textContent = '(no Telegram user data)';
     }
     if (tg.MainButton) {
       document.body.setAttribute('data-tg-mainbtn', '1');
