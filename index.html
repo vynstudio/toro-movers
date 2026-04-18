@@ -952,38 +952,50 @@ section.section { padding: 100px 24px; }
 /* ── FAQ ───────────────────────────────────────────────────── */
 .faq-section { background: var(--white); }
 .faq-list {
-  max-width: 720px;
+  max-width: 1000px;
   margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 16px;
+  align-items: start;
 }
 .faq-item {
   background: var(--gray-50);
   border: 1px solid var(--gray-100);
   border-radius: var(--radius-md);
-  margin-bottom: 12px;
   overflow: hidden;
+  transition: background 0.2s var(--ease);
 }
+.faq-item:hover { background: var(--white); border-color: var(--gray-200, #e5e7eb); }
+.faq-item[open] { background: var(--white); border-color: var(--red); }
 .faq-item summary {
-  padding: 22px 24px;
+  padding: 16px 20px;
   cursor: pointer;
-  font-weight: 600; font-size: 16px;
+  font-weight: 600; font-size: 15px;
   color: var(--charcoal);
   list-style: none;
   display: flex; justify-content: space-between; align-items: center;
+  gap: 12px;
 }
 .faq-item summary::-webkit-details-marker { display: none; }
 .faq-item summary::after {
   content: '+';
-  font-size: 24px;
+  font-size: 20px;
   color: var(--red);
   font-weight: 400;
+  flex-shrink: 0;
   transition: transform 0.3s var(--ease);
 }
 .faq-item[open] summary::after { transform: rotate(45deg); }
 .faq-item .answer {
-  padding: 0 24px 24px;
+  padding: 0 20px 18px;
+  margin: 0;
   color: var(--charcoal-soft);
-  font-size: 15px;
-  line-height: 1.65;
+  font-size: 14px;
+  line-height: 1.6;
+}
+@media (max-width: 720px) {
+  .faq-list { grid-template-columns: 1fr; }
 }
 
 /* ── BOOKING CALCULATOR MODAL ─────────────────────────────── */
