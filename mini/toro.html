@@ -71,6 +71,8 @@
 </style>
 </head>
 <body>
+<div id="debug" style="background:#fff6f7;border:1px solid #c8102e;color:#0a0a0a;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11px;line-height:1.35;padding:8px 10px;border-radius:8px;margin-bottom:10px;word-break:break-all;white-space:pre-wrap">booting…</div>
+
 <header>
   <div class="logo-wrap">
     <img src="/assets/img/toro-logo.svg" alt="Toro">
@@ -314,6 +316,24 @@
       if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
     }
   }
+
+  // --- DEBUG STRIP ---
+  const dbg = document.getElementById('debug');
+  function logDbg(lines){
+    if (!dbg) return;
+    dbg.textContent = 'v0.2 · ' + new Date().toISOString().slice(11,19) + '\n' + lines.join('\n');
+  }
+  try {
+    const info = [
+      'tg present: ' + (!!tg),
+      tg ? 'platform: ' + tg.platform + ' · version: ' + tg.version : '',
+      tg ? 'initData length: ' + (tg.initData ? tg.initData.length : 0) : '',
+      tg ? 'initDataUnsafe keys: ' + (tg.initDataUnsafe ? Object.keys(tg.initDataUnsafe).join(',') : '—') : '',
+      tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? 'user: ' + JSON.stringify(tg.initDataUnsafe.user) : 'user: (none)',
+    ].filter(Boolean);
+    logDbg(info);
+  } catch (e) { logDbg(['DEBUG ERROR: ' + e.message]); }
+  // --- /DEBUG STRIP ---
 
   // Telegram WebApp wiring
   if (tg) {
