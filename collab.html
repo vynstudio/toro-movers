@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Vyn Studio — Collaborator onboarding</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box}
+  :root{--red:#c8102e;--ink:#0a0a0a;--muted:#6b6b6b;--gray:#f5f5f5;--line:#e5e5e5;--ok:#16a34a}
+  html,body{margin:0;padding:0;background:#fafafa;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  body{min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:24px 16px}
+  .shell{width:100%;max-width:640px}
+  header{display:flex;align-items:center;gap:10px;margin-bottom:24px}
+  header .logo{font-weight:800;letter-spacing:-.01em;font-size:20px}
+  header .accent{color:var(--red)}
+  .progress{height:4px;background:var(--line);border-radius:999px;overflow:hidden;margin-bottom:32px}
+  .progress > div{height:100%;background:var(--red);width:0;transition:width .3s ease}
+  .card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:28px 24px;box-shadow:0 1px 3px rgba(0,0,0,.03)}
+  .eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:10px}
+  h1{margin:0 0 8px;font-size:26px;line-height:1.2;letter-spacing:-.02em}
+  p.sub{margin:0 0 20px;color:var(--muted);font-size:14.5px;line-height:1.55}
+  label.row{display:block;margin-bottom:14px}
+  label.row .lbl{display:block;font-weight:600;font-size:14px;margin-bottom:6px}
+  input[type=text],input[type=email],input[type=url],input[type=number],textarea,select{
+    width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:10px;font-size:15px;
+    font-family:inherit;color:var(--ink);background:#fff;transition:border-color .15s
+  }
+  textarea{min-height:92px;resize:vertical}
+  input:focus,textarea:focus,select:focus{outline:none;border-color:var(--red)}
+  .pills{display:flex;flex-wrap:wrap;gap:8px}
+  .pill{padding:10px 14px;border:1.5px solid var(--line);border-radius:999px;background:#fff;cursor:pointer;font-size:14px;font-weight:600;transition:all .15s;user-select:none}
+  .pill:hover{border-color:var(--red)}
+  .pill.active{background:var(--red);color:#fff;border-color:var(--red)}
+  .checks{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  @media (max-width:480px){.checks{grid-template-columns:1fr}}
+  .check{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;cursor:pointer;font-size:14px;font-weight:500;transition:all .15s}
+  .check:hover{border-color:var(--red)}
+  .check input{accent-color:var(--red);width:16px;height:16px}
+  .check.active{background:#fff6f7;border-color:var(--red)}
+  .actions{display:flex;justify-content:space-between;gap:10px;margin-top:24px}
+  button.nav{padding:13px 22px;border:none;border-radius:999px;font-size:15px;font-weight:700;cursor:pointer;transition:all .15s}
+  button.next{background:var(--red);color:#fff;margin-left:auto}
+  button.next:hover{background:#0a0a0a;transform:translateY(-1px)}
+  button.back{background:transparent;color:var(--muted)}
+  button.back:hover{color:var(--ink)}
+  button[disabled]{opacity:.5;cursor:not-allowed;transform:none}
+  .step{display:none}
+  .step.active{display:block;animation:fadein .25s ease}
+  @keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .step-count{font-size:12px;color:var(--muted);text-align:right;margin-bottom:10px}
+  .done{text-align:center;padding:20px 0}
+  .done .check-circle{width:56px;height:56px;border-radius:50%;background:var(--ok);color:#fff;display:grid;place-items:center;margin:0 auto 18px;font-size:28px;font-weight:700}
+  .done h2{margin:0 0 8px;font-size:22px}
+  .done p{margin:0;color:var(--muted);font-size:14.5px;line-height:1.5}
+  small.hint{display:block;margin-top:6px;color:var(--muted);font-size:12.5px}
+  .err{color:var(--red);font-size:13px;margin-top:6px;display:none}
+  .err.show{display:block}
+</style>
+</head>
+<body>
+<div class="shell">
+  <header>
+    <span class="logo">VYN <span class="accent">STUDIO</span></span>
+  </header>
+
+  <div class="progress" aria-hidden="true"><div id="prog"></div></div>
+
+  <div class="card" id="card">
+
+    <!-- STEP 1 -->
+    <section class="step active" data-step="1">
+      <p class="eyebrow">Onboarding · Step 1 of 10</p>
+      <h1>Tell us who you are.</h1>
+      <p class="sub">Takes ~4 minutes. We'll use this to scope your first sprint.</p>
+      <label class="row"><span class="lbl">Full name</span><input type="text" id="f_name" autocomplete="name" required></label>
+      <label class="row"><span class="lbl">Email</span><input type="email" id="f_email" autocomplete="email" required></label>
+      <label class="row"><span class="lbl">Telegram handle (optional)</span><input type="text" id="f_tg" placeholder="@yourhandle"></label>
+      <label class="row"><span class="lbl">Where are you based?</span><input type="text" id="f_loc" placeholder="City, country · timezone"></label>
+      <div class="err" data-err="1">Name and email are required.</div>
+    </section>
+
+    <!-- STEP 2 -->
+    <section class="step" data-step="2">
+      <p class="eyebrow">Step 2 of 10</p>
+      <h1>What do you do best?</h1>
+      <p class="sub">Pick the <strong>one</strong> role that fits you most.</p>
+      <div class="pills" data-group="role">
+        <button type="button" class="pill" data-val="frontend">Frontend dev</button>
+        <button type="button" class="pill" data-val="fullstack">Full-stack dev</button>
+        <button type="button" class="pill" data-val="backend">Backend dev</button>
+        <button type="button" class="pill" data-val="designer">Designer</button>
+        <button type="button" class="pill" data-val="pm">PM / Producer</button>
+        <button type="button" class="pill" data-val="marketing">Marketing / Ads</button>
+        <button type="button" class="pill" data-val="other">Other</button>
+      </div>
+      <label class="row" style="margin-top:16px" id="role_other_wrap" hidden><span class="lbl">If other, describe</span><input type="text" id="f_role_other"></label>
+      <div class="err" data-err="2">Pick one role.</div>
+    </section>
+
+    <!-- STEP 3 -->
+    <section class="step" data-step="3">
+      <p class="eyebrow">Step 3 of 10</p>
+      <h1>What kind of arrangement?</h1>
+      <p class="sub">Signals how we'll plan, pay, and onboard you.</p>
+      <div class="pills" data-group="arrangement">
+        <button type="button" class="pill" data-val="permanent">Long-term partner</button>
+        <button type="button" class="pill" data-val="contractor">Contractor (multi-project)</button>
+        <button type="button" class="pill" data-val="short-term">Short-term / single project</button>
+        <button type="button" class="pill" data-val="trial">Trial / see-if-it-fits</button>
+      </div>
+      <div class="err" data-err="3">Pick one.</div>
+    </section>
+
+    <!-- STEP 4 -->
+    <section class="step" data-step="4">
+      <p class="eyebrow">Step 4 of 10</p>
+      <h1>How do you want to be paid?</h1>
+      <div class="pills" data-group="pay_model">
+        <button type="button" class="pill" data-val="hourly">Hourly</button>
+        <button type="button" class="pill" data-val="fixed_project">Fixed per project</button>
+        <button type="button" class="pill" data-val="monthly">Monthly retainer</button>
+        <button type="button" class="pill" data-val="equity">Equity / revenue-share</button>
+        <button type="button" class="pill" data-val="mix">Mix</button>
+      </div>
+      <label class="row" style="margin-top:16px"><span class="lbl">Expected rate / range (USD)</span><input type="text" id="f_rate" placeholder="e.g. $30–$50/h, or $2k/mo, or 10% equity"></label>
+      <div class="err" data-err="4">Pick a pay model.</div>
+    </section>
+
+    <!-- STEP 5 -->
+    <section class="step" data-step="5">
+      <p class="eyebrow">Step 5 of 10</p>
+      <h1>Tech comfort</h1>
+      <p class="sub">Check everything you've actually shipped with.</p>
+      <div class="checks" data-group="stack">
+        <label class="check"><input type="checkbox" value="html_css"> HTML / CSS</label>
+        <label class="check"><input type="checkbox" value="js_vanilla"> Vanilla JS</label>
+        <label class="check"><input type="checkbox" value="react"> React / Next.js</label>
+        <label class="check"><input type="checkbox" value="node"> Node.js</label>
+        <label class="check"><input type="checkbox" value="netlify_fns"> Netlify Functions</label>
+        <label class="check"><input type="checkbox" value="stripe"> Stripe</label>
+        <label class="check"><input type="checkbox" value="stripe_connect"> Stripe Connect</label>
+        <label class="check"><input type="checkbox" value="telegram_bots"> Telegram bots / Mini Apps</label>
+        <label class="check"><input type="checkbox" value="meta_ads"> Meta Ads</label>
+        <label class="check"><input type="checkbox" value="google_ads"> Google Ads</label>
+        <label class="check"><input type="checkbox" value="pixel_capi"> Pixel + CAPI</label>
+        <label class="check"><input type="checkbox" value="ga4"> GA4</label>
+        <label class="check"><input type="checkbox" value="figma"> Figma / design</label>
+        <label class="check"><input type="checkbox" value="copywriting"> Copywriting</label>
+        <label class="check"><input type="checkbox" value="seo"> SEO</label>
+        <label class="check"><input type="checkbox" value="email_marketing"> Email marketing</label>
+        <label class="check"><input type="checkbox" value="ai_coding"> Coding with AI (Claude, Cursor, etc.)</label>
+      </div>
+      <label class="row" style="margin-top:14px"><span class="lbl">Other skills or tools</span><input type="text" id="f_stack_other" placeholder="Shopify, Webflow, Python, etc."></label>
+    </section>
+
+    <!-- STEP 6 -->
+    <section class="step" data-step="6">
+      <p class="eyebrow">Step 6 of 10</p>
+      <h1>Hours per week</h1>
+      <p class="sub">Realistic availability — we'll never ask for more than you commit.</p>
+      <div class="pills" data-group="hours">
+        <button type="button" class="pill" data-val="0-10">Under 10</button>
+        <button type="button" class="pill" data-val="10-20">10–20</button>
+        <button type="button" class="pill" data-val="20-35">20–35</button>
+        <button type="button" class="pill" data-val="35-plus">35+</button>
+        <button type="button" class="pill" data-val="flex">Flexible / bursty</button>
+      </div>
+      <label class="row" style="margin-top:16px"><span class="lbl">Timezone + typical working hours</span><input type="text" id="f_hours_detail" placeholder="e.g. 9–5 ET, evenings only, etc."></label>
+      <div class="err" data-err="6">Pick one.</div>
+    </section>
+
+    <!-- STEP 7 -->
+    <section class="step" data-step="7">
+      <p class="eyebrow">Step 7 of 10</p>
+      <h1>Work samples</h1>
+      <p class="sub">Paste anything that shows what you can build — portfolio, GitHub, live sites, Figma, tweets.</p>
+      <label class="row"><span class="lbl">Portfolio / website</span><input type="url" id="f_portfolio" placeholder="https://"></label>
+      <label class="row"><span class="lbl">GitHub</span><input type="text" id="f_github" placeholder="github.com/yourhandle"></label>
+      <label class="row"><span class="lbl">One project you're proud of</span><textarea id="f_proud" placeholder="Link + 1–2 sentences on what you shipped and why it's good"></textarea></label>
+    </section>
+
+    <!-- STEP 8 -->
+    <section class="step" data-step="8">
+      <p class="eyebrow">Step 8 of 10</p>
+      <h1>Interest in our clients</h1>
+      <p class="sub">Rank which industries you'd <em>want</em> to work on. Doesn't commit you — just signals fit.</p>
+      <div class="checks" data-group="interests">
+        <label class="check"><input type="checkbox" value="movers"> Moving / local service (Toro Movers)</label>
+        <label class="check"><input type="checkbox" value="hvac"> HVAC / trades (Soligo Air)</label>
+        <label class="check"><input type="checkbox" value="food"> Restaurants / food (OMG, ConnieCakes)</label>
+        <label class="check"><input type="checkbox" value="education"> Education / lessons (Stael Fogarty)</label>
+        <label class="check"><input type="checkbox" value="wellness"> Wellness / beauty (Curabatree, Selah)</label>
+        <label class="check"><input type="checkbox" value="agency"> Agency-side ops (Vyn Studio itself)</label>
+      </div>
+    </section>
+
+    <!-- STEP 9 -->
+    <section class="step" data-step="9">
+      <p class="eyebrow">Step 9 of 10</p>
+      <h1>Credentials + security</h1>
+      <p class="sub">How comfortable are you handling client data & secrets?</p>
+      <div class="pills" data-group="security">
+        <button type="button" class="pill" data-val="expert">Done it for years — use 1Password / Bitwarden daily</button>
+        <button type="button" class="pill" data-val="ok">Careful + can learn our process</button>
+        <button type="button" class="pill" data-val="new">Newer to it — will need a quick onboarding</button>
+      </div>
+      <label class="row" style="margin-top:16px"><span class="lbl">Preferred secrets manager</span>
+        <select id="f_secrets">
+          <option value="">—</option>
+          <option value="1password">1Password</option>
+          <option value="bitwarden">Bitwarden</option>
+          <option value="dashlane">Dashlane</option>
+          <option value="other">Other</option>
+          <option value="none">None yet</option>
+        </select>
+      </label>
+      <div class="err" data-err="9">Pick one level.</div>
+    </section>
+
+    <!-- STEP 10 -->
+    <section class="step" data-step="10">
+      <p class="eyebrow">Final · Step 10 of 10</p>
+      <h1>Anything else?</h1>
+      <p class="sub">Questions, boundaries, availability caveats, tools you hate, whatever.</p>
+      <label class="row"><span class="lbl">Notes</span><textarea id="f_notes" placeholder="Anything on your mind"></textarea></label>
+      <label class="row"><span class="lbl">How did you hear about Vyn Studio?</span><input type="text" id="f_source" placeholder="Referral name, X, IG, etc."></label>
+    </section>
+
+    <!-- DONE -->
+    <section class="step" data-step="done">
+      <div class="done">
+        <div class="check-circle">✓</div>
+        <h2>Received.</h2>
+        <p>Diler will review and reach out in 24 hours. If you're a fit, we'll set up a short call + access to repos + a first small task to test the loop.</p>
+      </div>
+    </section>
+
+    <div class="actions" id="actions">
+      <button type="button" class="nav back" id="back">Back</button>
+      <button type="button" class="nav next" id="next">Next →</button>
+    </div>
+
+  </div>
+
+  <p style="text-align:center;color:var(--muted);font-size:12px;margin:18px 0 0">Private · responses go only to Vyn Studio · no public listing</p>
+</div>
+
+<script>
+(function(){
+  const state = { step: 1, data: {
+    name: '', email: '', tg: '', loc: '',
+    role: '', role_other: '',
+    arrangement: '',
+    pay_model: '', rate: '',
+    stack: [], stack_other: '',
+    hours: '', hours_detail: '',
+    portfolio: '', github: '', proud: '',
+    interests: [],
+    security: '', secrets: '',
+    notes: '', source: '',
+  }};
+  const STEPS_TOTAL = 10;
+  const $ = (s, r=document) => r.querySelector(s);
+  const $$ = (s, r=document) => [...r.querySelectorAll(s)];
+
+  function setStep(n){
+    state.step = n;
+    $$('.step').forEach(el => el.classList.toggle('active', el.dataset.step === String(n)));
+    const pct = n === 'done' ? 100 : Math.round((n-1)/STEPS_TOTAL*100);
+    $('#prog').style.width = pct + '%';
+    $('#back').style.visibility = (n === 1 || n === 'done') ? 'hidden' : 'visible';
+    $('#next').textContent = n === STEPS_TOTAL ? 'Submit' : 'Next →';
+    $('#actions').style.display = n === 'done' ? 'none' : 'flex';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function showErr(step, show){
+    const el = document.querySelector(`[data-err="${step}"]`);
+    if (el) el.classList.toggle('show', show);
+  }
+
+  // Pill groups (single-select)
+  $$('.pills').forEach(group => {
+    const key = group.dataset.group;
+    group.querySelectorAll('.pill').forEach(btn => {
+      btn.addEventListener('click', () => {
+        group.querySelectorAll('.pill').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.data[key] = btn.dataset.val;
+        if (key === 'role') {
+          $('#role_other_wrap').hidden = btn.dataset.val !== 'other';
+        }
+        showErr(state.step, false);
+      });
+    });
+  });
+
+  // Check groups (multi-select)
+  $$('.checks').forEach(group => {
+    const key = group.dataset.group;
+    group.querySelectorAll('input[type=checkbox]').forEach(cb => {
+      cb.addEventListener('change', () => {
+        cb.closest('.check').classList.toggle('active', cb.checked);
+        state.data[key] = [...group.querySelectorAll('input:checked')].map(x => x.value);
+      });
+    });
+  });
+
+  // Text inputs
+  const bind = (id, key) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('input', () => { state.data[key] = el.value.trim(); });
+  };
+  bind('f_name','name'); bind('f_email','email'); bind('f_tg','tg'); bind('f_loc','loc');
+  bind('f_role_other','role_other');
+  bind('f_rate','rate');
+  bind('f_stack_other','stack_other');
+  bind('f_hours_detail','hours_detail');
+  bind('f_portfolio','portfolio'); bind('f_github','github'); bind('f_proud','proud');
+  bind('f_notes','notes'); bind('f_source','source');
+  $('#f_secrets').addEventListener('change', e => { state.data.secrets = e.target.value; });
+
+  function validate(step){
+    if (step === 1) {
+      if (!state.data.name || !state.data.email) return false;
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(state.data.email)) return false;
+    }
+    if (step === 2 && !state.data.role) return false;
+    if (step === 3 && !state.data.arrangement) return false;
+    if (step === 4 && !state.data.pay_model) return false;
+    if (step === 6 && !state.data.hours) return false;
+    if (step === 9 && !state.data.security) return false;
+    return true;
+  }
+
+  $('#next').addEventListener('click', async () => {
+    if (!validate(state.step)) { showErr(state.step, true); return; }
+    if (state.step < STEPS_TOTAL) { setStep(state.step + 1); return; }
+    // Submit
+    const btn = $('#next');
+    btn.disabled = true; btn.textContent = 'Sending…';
+    try {
+      const res = await fetch('/.netlify/functions/collab-onboarding', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(state.data),
+      });
+      if (res.ok) { setStep('done'); }
+      else { btn.disabled = false; btn.textContent = 'Submit'; alert('Something went wrong. Try again or email hello@vyn.studio'); }
+    } catch (e) {
+      btn.disabled = false; btn.textContent = 'Submit';
+      alert('Network error. Try again.');
+    }
+  });
+
+  $('#back').addEventListener('click', () => { if (state.step > 1) setStep(state.step - 1); });
+
+  setStep(1);
+})();
+</script>
+</body>
+</html>
