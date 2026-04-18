@@ -25,6 +25,13 @@
 [functions."vyn-bot-daily"]
   schedule = "0 12 * * *"
 
+# Escalating move-day reminders — every 15 min
+# T-3h first, then every 30m to T-1h, then every 15m in the final hour.
+# Idempotent via lead.reminders_sent[]. Fires only for booked leads with
+# a valid move_date + move_time (ET).
+[functions."move-reminders"]
+  schedule = "*/15 * * * *"
+
 [build.environment]
   NODE_VERSION = "20"
 
