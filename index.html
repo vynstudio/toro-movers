@@ -124,7 +124,7 @@
   "aggregateRating": {
     "@type": "AggregateRating",
     "ratingValue": "4.9",
-    "reviewCount": "29",
+    "reviewCount": "31",
     "bestRating": "5",
     "worstRating": "1"
   }
@@ -386,9 +386,30 @@ body[data-menu="true"] .menu-toggle .close-icon{display:block}
 .area{display:grid;grid-template-columns:1fr;gap:24px;align-items:start}
 .area__photo{border-radius:var(--radius-lg);overflow:hidden;aspect-ratio:16/10;background:var(--bg-2);box-shadow:var(--shadow)}
 .area__photo img{width:100%;height:100%;object-fit:cover}
-.area__cities{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
+.area__cities{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px;list-style:none;padding:0}
+.area__cities li{list-style:none}
 .city-pill{display:inline-flex;align-items:center;padding:7px 13px;font-size:12.5px;font-weight:600;color:var(--ink-2);background:#fff;border:1px solid var(--line);border-radius:999px;transition:border-color .15s var(--ease),color .15s var(--ease)}
 .city-pill:hover{border-color:var(--red);color:var(--red)}
+
+/* Reassurance block filling the space below the city pills */
+.area__stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:24px;padding-top:20px;border-top:1px solid var(--line-2)}
+.area__stats li{list-style:none;display:flex;flex-direction:column;gap:2px}
+.area__stats strong{font-size:1.6rem;font-weight:800;letter-spacing:-.02em;color:var(--ink);line-height:1}
+.area__stats span{font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.02em}
+.area__notfound{
+  display:flex;gap:14px;align-items:center;margin-top:20px;padding:16px 18px;
+  background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+}
+.area__notfound svg{color:var(--red);width:24px;height:24px;flex-shrink:0}
+.area__notfound-body{flex:1;display:flex;flex-direction:column;gap:2px}
+.area__notfound strong{font-size:14px;color:var(--ink);font-weight:700}
+.area__notfound small{font-size:12.5px;color:var(--ink-2);font-weight:500}
+.area__notfound a{font-size:13px;font-weight:700;color:var(--red);white-space:nowrap}
+.area__notfound a:hover{color:var(--red-dark)}
+@media (max-width:600px){
+  .area__notfound{flex-direction:column;align-items:flex-start;gap:10px}
+  .area__notfound a{align-self:stretch;text-align:center;padding:10px;background:var(--red-soft);border-radius:8px}
+}
 @media (min-width:900px){.area{grid-template-columns:1fr 1.1fr;gap:48px}}
 
 /* 12. Blog preview ────────────────────────────────────── */
@@ -446,8 +467,49 @@ body[data-menu="true"] .menu-toggle .close-icon{display:block}
 .calc__total{display:flex;justify-content:space-between;align-items:baseline;padding:16px 0 4px;margin-top:8px;border-top:2px solid var(--ink)}
 .calc__total span{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .calc__total strong{font-size:2rem;font-weight:800;letter-spacing:-.03em}
+.calc__total--teaser{align-items:center;gap:14px}
+.calc__total--teaser div{display:flex;flex-direction:column;gap:3px}
+.calc__total--teaser span{color:var(--ink)}
+.calc__total--teaser small{font-size:12.5px;font-weight:500;letter-spacing:0;text-transform:none;color:var(--muted)}
+.calc__lock{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--red-soft);color:var(--red);flex-shrink:0}
+.calc__lock svg{width:20px;height:20px}
+
+/* Creative fill on the left: included list + testimonial + trust badges */
+.calc__included{margin-top:20px;padding-top:20px;border-top:1px solid var(--line-2)}
+.calc__included h3{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+.calc__included ul{list-style:none;display:grid;grid-template-columns:1fr;gap:8px}
+.calc__included li{display:flex;gap:8px;align-items:flex-start;font-size:14px;color:var(--ink)}
+.calc__included svg{color:var(--red);flex-shrink:0;margin-top:3px;width:14px;height:14px}
+@media (min-width:700px){.calc__included ul{grid-template-columns:1fr 1fr;gap:8px 20px}}
+
+.calc__quote{
+  margin-top:22px;padding:18px 20px;background:var(--bg-2);border:1px solid var(--line-2);
+  border-radius:var(--radius-lg);border-left:3px solid var(--red);
+}
+.calc__quote-stars{color:#E8A317;letter-spacing:1px;font-size:14px;margin-bottom:6px}
+.calc__quote blockquote{font-size:14.5px;color:var(--ink);font-weight:500;line-height:1.5;margin-bottom:10px;font-style:italic}
+.calc__quote figcaption{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--muted)}
+.calc__quote-avatar{width:30px;height:30px;border-radius:50%;background:var(--red);color:#fff;display:grid;place-items:center;font-weight:800;font-size:11px;flex-shrink:0}
+.calc__quote figcaption b{color:var(--ink);font-weight:700}
+
+.calc__badges{display:flex;flex-wrap:wrap;gap:10px 16px;margin-top:20px}
+.calc__badges span{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--ink-2)}
+.calc__badges svg{color:var(--red);width:15px;height:15px;flex-shrink:0}
 .calc__note{font-size:12px;color:var(--muted);margin-top:4px}
-.calc__cta{width:100%;margin-top:14px}
+.calc__lead{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.calc__lead input{
+  background:#fff;border:1px solid var(--line);color:var(--ink);
+  padding:12px 14px;border-radius:10px;font-size:15px;letter-spacing:-.01em;width:100%;
+  transition:border-color .15s var(--ease);
+}
+.calc__lead input:focus{outline:none;border-color:var(--red)}
+.calc__lead input::placeholder{color:var(--muted)}
+.calc__cta{width:100%;margin-top:2px}
+.calc__status{font-size:13px;margin-top:4px;padding:10px 12px;border-radius:10px;text-align:center}
+.calc__status[data-type="ok"]{background:#edf7ee;color:#1e6b2e;border:1px solid #c7e6cc}
+.calc__status[data-type="err"]{background:#fdecec;color:#8a1d1d;border:1px solid #f5c2c2}
+.calc__secondary{display:block;text-align:center;font-size:13px;font-weight:600;color:var(--muted);margin-top:12px;padding:10px;border-radius:8px;transition:color .15s var(--ease)}
+.calc__secondary:hover{color:var(--red)}
 @media (min-width:900px){.calc{grid-template-columns:1fr 1.1fr;gap:48px}}
 
 /* 11b. FAQ ──────────────────────────────────────────── */
@@ -462,6 +524,17 @@ body[data-menu="true"] .menu-toggle .close-icon{display:block}
 .faq__item summary::after{content:"+";font-weight:400;font-size:22px;color:var(--red);transition:transform .2s var(--ease);flex-shrink:0;line-height:1}
 .faq__item[open] summary::after{transform:rotate(45deg)}
 .faq__item .answer{padding:0 16px 14px;font-size:14px;color:var(--ink-2);line-height:1.5}
+.faq__help{
+  padding:20px 22px;background:linear-gradient(180deg,var(--red-soft),#fff 90%);
+  border:1px solid #ffd4da;border-radius:var(--radius);
+  display:flex;flex-direction:column;gap:8px;justify-content:center;
+}
+.faq__help .eyebrow{margin-bottom:0}
+.faq__help h3{font-size:1.1rem;font-weight:800;letter-spacing:-.02em}
+.faq__help p{font-size:13.5px;color:var(--ink-2);line-height:1.5}
+.faq__help-ctas{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+.faq__help-email{font-size:13px;font-weight:600;color:var(--red);align-self:flex-start}
+.faq__help-email:hover{color:var(--red-dark)}
 @media (min-width:900px){.faq{grid-template-columns:1fr 1fr;gap:12px}}
 
 /* 13. Booking form (light card) ───────────────────────── */
@@ -493,7 +566,32 @@ body[data-menu="true"] .menu-toggle .close-icon{display:block}
 .booking__aside a{color:var(--ink);font-weight:600;display:inline-flex;align-items:center;gap:10px;font-size:14px}
 .booking__aside a:hover{color:var(--red)}
 .booking__aside svg{color:var(--red);width:16px;height:16px}
-.booking__hours{font-size:12.5px;color:var(--muted);line-height:1.5;margin-top:4px}
+.booking__hours{font-size:12.5px;color:var(--muted);line-height:1.5;margin-top:4px;padding-bottom:4px}
+.booking__promise{
+  display:flex;gap:10px;align-items:flex-start;padding:12px 14px;
+  background:var(--red-soft);border:1px solid #ffd4da;border-radius:12px;margin-top:8px;
+}
+.booking__promise svg{color:var(--red);width:20px;height:20px;flex-shrink:0;margin-top:1px}
+.booking__promise div{display:flex;flex-direction:column;gap:1px}
+.booking__promise strong{font-size:13px;color:var(--ink);font-weight:700}
+.booking__promise span{font-size:12px;color:var(--ink-2);font-weight:500}
+.booking__quote{
+  padding:14px 16px;background:var(--bg-2);border:1px solid var(--line-2);
+  border-radius:12px;border-left:3px solid var(--red);margin-top:8px;
+  display:flex;flex-direction:column;gap:8px;
+}
+.booking__quote .stars{color:#E8A317;letter-spacing:1px;font-size:13px}
+.booking__quote blockquote{font-size:13.5px;color:var(--ink);font-weight:500;line-height:1.5;font-style:italic}
+.booking__quote figcaption{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
+.booking__quote .avatar{width:26px;height:26px;border-radius:50%;background:var(--red);color:#fff;display:grid;place-items:center;font-weight:800;font-size:10px;flex-shrink:0}
+.booking__quote figcaption b{color:var(--ink);font-weight:700}
+.booking__stats{
+  list-style:none;display:grid;grid-template-columns:1fr;gap:10px;
+  padding:14px 0 4px;margin-top:4px;border-top:1px solid var(--line-2);
+}
+.booking__stats li{display:flex;align-items:baseline;gap:10px}
+.booking__stats strong{font-size:13px;font-weight:800;letter-spacing:.02em;color:var(--red);text-transform:uppercase;flex-shrink:0;min-width:90px}
+.booking__stats span{font-size:12.5px;color:var(--ink-2);font-weight:500;line-height:1.35}
 @media (min-width:900px){
   .booking{display:grid;grid-template-columns:1.25fr .75fr;gap:40px;padding:40px}
   .booking__grid{grid-template-columns:1fr 1fr}
@@ -590,9 +688,9 @@ body[data-menu="true"] .menu-toggle .close-icon{display:block}
   <section class="hero" aria-labelledby="hero-title">
     <div class="wrap hero__grid">
       <div class="hero__body">
-        <p class="hero__rating"><span class="stars" aria-hidden="true">★★★★★</span> <span>4.9 · 29 Google reviews</span></p>
+        <p class="hero__rating"><span class="stars" aria-hidden="true">★★★★★</span> <span>Top-rated movers on Google · Central Florida</span></p>
         <h1 id="hero-title" class="hero__title">Family-owned movers.<br><span class="accent">Honest pricing.</span><br>Strong hands.</h1>
-        <p class="hero__lede">Loading, unloading, packing and full-service moves across Orlando and Central Florida. $75 per mover, per hour — no hidden fees.</p>
+        <p class="hero__lede">Licensed and insured moving company offering loading, unloading, packing, and long-distance service across Orlando and Central Florida. Transparent $75 per-mover hourly rate — no hidden fees, no fuel surcharges.</p>
 
         <div class="hero__ctas">
           <a href="#quick-form" class="btn btn-red">Get a free quote →</a>
@@ -677,8 +775,8 @@ body[data-menu="true"] .menu-toggle .close-icon{display:block}
       <div class="about__body">
         <p class="eyebrow">About Toro Movers</p>
         <h2 id="about-title">Family-owned. Central Florida born.</h2>
-        <p>We're a small family crew — not a franchise, not a call center. Every job gets the same careful hands, whether it's a studio across town or a four-bedroom across the state.</p>
-        <p>Our promise is simple: $75 per mover per hour, 2-hour minimum, and the clock stops the moment we do. No surprise fees, no fuel surcharges, no "stairs charge" at the end of a long day.</p>
+        <p>Toro Movers is a family-owned, Florida-licensed moving company based in Orlando. Every booking is handled directly by the owners — no call centers, no franchise hand-offs.</p>
+        <p>Transparent pricing: $75 per mover, per hour, with a two-hour minimum. The clock stops when the job ends. No fuel surcharges, no stairs fees, no weekend premiums.</p>
         <p class="about__sig">— <b>The Toro family</b> · Orlando, FL · Licensed & insured</p>
       </div>
     </div>
@@ -691,40 +789,40 @@ body[data-menu="true"] .menu-toggle .close-icon{display:block}
     <div class="wrap">
       <header class="section__head">
         <p class="eyebrow">What we do</p>
-        <h2 id="services-title">Everything you need to move easy.</h2>
-        <p>From a couple hours of muscle to a full-house move with truck — we handle all of it.</p>
+        <h2 id="services-title">Professional moving services in Orlando &amp; Central Florida.</h2>
+        <p>Local and long-distance moves, packing, loading help, and furniture handling — all at a transparent $75/mover hourly rate.</p>
       </header>
 
       <div class="services">
         <article class="service-card">
           <div class="service-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div>
-          <h3>Loading help</h3>
-          <p>You rented a U-Haul, we'll load it. Two strong movers, two-hour minimum, no fuss.</p>
+          <h3>Loading &amp; unloading</h3>
+          <p>Professional labor-only service for rental trucks (U-Haul, Penske, Budget). Two-mover crews, two-hour minimum.</p>
         </article>
         <article class="service-card">
           <div class="service-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div>
-          <h3>Full move with truck</h3>
-          <p>We bring the truck, the muscle, and the dollies. Loading, drive, unloading — done.</p>
+          <h3>Full-service move with truck</h3>
+          <p>End-to-end residential move including 26-ft truck, crew, dollies, straps, and blankets. Loading, transport, and unloading handled by our team.</p>
         </article>
         <article class="service-card">
           <div class="service-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></div>
-          <h3>Packing & unpacking</h3>
-          <p>Box up your whole house or just the kitchen. Same hourly rate. Boxes, paper, tape on request.</p>
+          <h3>Packing &amp; unpacking services</h3>
+          <p>Full-home or partial packing at the same $75/mover hourly rate. Boxes, packing paper, and tape available on request.</p>
         </article>
         <article class="service-card">
           <div class="service-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
-          <h3>Long-distance & storage</h3>
-          <p>Across Florida or out of state. Storage units in or out. Same hourly crew, custom truck quote.</p>
+          <h3>Long-distance &amp; storage-unit moves</h3>
+          <p>Statewide and out-of-state moves, plus storage-unit pickup and delivery. Custom truck quote; same hourly crew rate.</p>
         </article>
         <article class="service-card">
           <div class="service-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
-          <h3>Apartments & stairs</h3>
-          <p>Tight stairs, elevators, third-floor walk-ups — we've done thousands. No stairs upcharge, ever.</p>
+          <h3>Apartments, condos &amp; walk-ups</h3>
+          <p>Experienced with tight stairs, elevators, third-floor walk-ups, and HOA-gated buildings. No stairs or elevator surcharge.</p>
         </article>
         <article class="service-card">
           <div class="service-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></div>
-          <h3>Furniture wrapping</h3>
-          <p>Free with every move. Blankets, pads, plastic wrap. We treat your stuff like our own.</p>
+          <h3>Furniture wrapping &amp; protection</h3>
+          <p>Complimentary with every move: moving blankets, furniture pads, plastic wrap, and corner guards for fragile pieces.</p>
         </article>
       </div>
     </div>
@@ -737,7 +835,7 @@ body[data-menu="true"] .menu-toggle .close-icon{display:block}
     <div class="wrap">
       <header class="section__head">
         <p class="eyebrow">Transparent pricing</p>
-        <h2 id="packages-title">Three ways to move.</h2>
+        <h2 id="packages-title">Transparent moving packages &amp; hourly rates.</h2>
         <p>Fixed-price bundles for common moves — or build your own in under a minute.</p>
       </header>
 
@@ -785,13 +883,34 @@ body[data-menu="true"] .menu-toggle .close-icon{display:block}
     <div class="wrap calc">
       <div class="calc__intro">
         <p class="eyebrow">Build your own</p>
-        <h2 id="calc-title">Custom move. Live price.</h2>
-        <p>Pick how many movers, how many hours, and whether you need a truck. The price updates instantly.</p>
-        <ul class="perks">
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>$75/mover/hour, every job</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>Truck add-on: $275 flat</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>No hidden fees, 2-hour minimum</li>
-        </ul>
+        <h2 id="calc-title">Custom move. Custom price.</h2>
+        <p>Pick how many movers, how many hours, and whether you need a truck. We'll send your exact quote to your inbox.</p>
+
+        <div class="calc__included">
+          <h3>Every price includes</h3>
+          <ul>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>Dollies, straps, moving blankets</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>Furniture wrapping &amp; protection</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>Basic disassembly + reassembly</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>Stairs, elevators, tight corners</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>No fuel, mileage or weekend fees</li>
+          </ul>
+        </div>
+
+        <figure class="calc__quote">
+          <div class="calc__quote-stars" aria-label="5 out of 5 stars">★★★★★</div>
+          <blockquote>"Showed up on time, treated everything like it was their own. Cleanest move we've ever done."</blockquote>
+          <figcaption>
+            <div class="calc__quote-avatar" aria-hidden="true">SP</div>
+            <span><b>Sarang P.</b> · Lake Mary · 3-BR</span>
+          </figcaption>
+        </figure>
+
+        <div class="calc__badges">
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Licensed &amp; insured in Florida</span>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 2"/></svg>Same-week availability</span>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Top-rated on Google</span>
+        </div>
       </div>
 
       <div class="calc__box" role="form" aria-labelledby="calc-title">
@@ -827,12 +946,29 @@ body[data-menu="true"] .menu-toggle .close-icon{display:block}
             <button type="button" data-calc="truck" data-val="1" aria-pressed="true">+ Truck</button>
           </div>
         </div>
-        <div class="calc__total">
-          <span>Estimated total</span>
-          <strong id="calc-total">$875</strong>
+        <div class="calc__total calc__total--teaser">
+          <div>
+            <span>Your exact quote</span>
+            <small>Itemized price + breakdown — emailed in seconds.</small>
+          </div>
+          <span class="calc__lock" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+          </span>
         </div>
-        <p class="calc__note">Estimate based on $75/mover/hour · 2-hour minimum · $275 truck fee.</p>
-        <a href="#book" class="btn btn-red calc__cta" id="calc-reserve">Reserve this move →</a>
+        <!-- Running total computed server-side, not displayed. -->
+        <strong id="calc-total" hidden></strong>
+
+        <!-- Primary: email this quote (lead magnet). Text-me coming soon. -->
+        <form class="calc__lead" id="calc-lead-form" novalidate>
+          <input type="text" name="name" required autocomplete="name" placeholder="Your name">
+          <input type="email" name="email" required autocomplete="email" placeholder="Email — we'll send your quote" inputmode="email">
+          <input type="tel" name="phone" required autocomplete="tel" placeholder="Phone (for text updates — coming soon)" inputmode="tel">
+          <button type="submit" class="btn btn-red calc__cta" id="calc-send">Email me my quote →</button>
+          <p class="calc__status" id="calc-status" hidden></p>
+        </form>
+
+        <!-- Secondary: reserve immediately with a deposit -->
+        <a href="/quote" class="calc__secondary" id="calc-reserve">Ready now? Reserve with deposit →</a>
       </div>
     </div>
   </section>
@@ -844,8 +980,8 @@ body[data-menu="true"] .menu-toggle .close-icon{display:block}
     <div class="wrap">
       <header class="section__head">
         <p class="eyebrow">Recent moves</p>
-        <h2 id="moves-title">Real jobs. Real Toro crew.</h2>
-        <p>A small sample from this month — same honest hourly rate, every move.</p>
+        <h2 id="moves-title">Recent moves across Central Florida.</h2>
+        <p>Every job — from studio apartments to 3-bedroom homes — billed at the same transparent $75/mover hourly rate.</p>
       </header>
 
       <div class="gallery">
@@ -884,7 +1020,7 @@ body[data-menu="true"] .menu-toggle .close-icon{display:block}
     <div class="wrap">
       <header class="section__head">
         <p class="eyebrow">What customers say</p>
-        <h2 id="reviews-title">4.9 across 29 Google reviews.</h2>
+        <h2 id="reviews-title">Trusted by Central Florida homeowners.</h2>
       </header>
 
       <div class="reviews">
@@ -915,8 +1051,8 @@ body[data-menu="true"] .menu-toggle .close-icon{display:block}
       <div>
         <header class="section__head">
           <p class="eyebrow">Service area</p>
-          <h2 id="area-title">Central Florida — we come to you.</h2>
-          <p>Orlando is home base. We serve every town across Central Florida, and we travel statewide for long-distance jobs.</p>
+          <h2 id="area-title">Serving Orlando and all of Central Florida.</h2>
+          <p>Toro Movers provides residential moving services across 20+ Central Florida cities. Long-distance moves available statewide.</p>
         </header>
 
         <ul class="area__cities" aria-label="Cities we serve">
@@ -955,7 +1091,7 @@ body[data-menu="true"] .menu-toggle .close-icon{display:block}
     <div class="wrap">
       <header class="section__head" style="margin-bottom:16px">
         <p class="eyebrow">FAQ</p>
-        <h2 id="faq-title">Common questions, honest answers.</h2>
+        <h2 id="faq-title">Moving FAQ — answered by Central Florida professionals.</h2>
       </header>
 
       <div class="faq">
@@ -995,6 +1131,17 @@ body[data-menu="true"] .menu-toggle .close-icon{display:block}
           <summary>How do I pay?</summary>
           <p class="answer">A small deposit holds your slot when you book. The balance is paid after the job by card, Cash App, or Zelle. No payment up front for the full amount.</p>
         </details>
+
+        <!-- Balance the 2-col grid: 10th slot is a CTA card, not a question -->
+        <aside class="faq__help">
+          <p class="eyebrow">Still stuck?</p>
+          <h3>Ask us anything.</h3>
+          <p>Not seeing your question? We answer calls, texts, and emails from a real human — usually in under an hour.</p>
+          <div class="faq__help-ctas">
+            <a href="tel:3217580094" class="btn btn-red" data-track-contact="phone">Call (321) 758-0094</a>
+            <a href="mailto:hello@toromovers.net" class="faq__help-email" data-track-contact="email">hello@toromovers.net →</a>
+          </div>
+        </aside>
       </div>
     </div>
   </section>
@@ -1006,8 +1153,8 @@ body[data-menu="true"] .menu-toggle .close-icon{display:block}
     <div class="wrap">
       <header class="section__head">
         <p class="eyebrow">From the blog</p>
-        <h2 id="blog-title">Moving tips & stories.</h2>
-        <p>Honest advice from people who load trucks every day.</p>
+        <h2 id="blog-title">Moving guides for Central Florida homeowners.</h2>
+        <p>Professional advice on pricing, packing, and planning a residential move.</p>
       </header>
 
       <div class="blog">
@@ -1050,8 +1197,8 @@ body[data-menu="true"] .menu-toggle .close-icon{display:block}
       <form class="booking js-booking-form" name="booking" id="booking-form" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/thanks">
         <div>
           <p class="eyebrow">Free quote · 30 seconds</p>
-          <h2 id="book-title" style="margin-top:6px">Tell us about the move.</h2>
-          <p>A few taps — we'll reply with a price in under an hour.</p>
+          <h2 id="book-title" style="margin-top:6px">Request a moving quote.</h2>
+          <p>A professional mover will respond with a precise estimate within one hour.</p>
 
           <input type="hidden" name="form-name" value="booking">
           <p class="booking__honeypot"><label>Don't fill this out: <input name="bot-field"></label></p>
@@ -1131,10 +1278,35 @@ body[data-menu="true"] .menu-toggle .close-icon{display:block}
             hello@toromovers.net
           </a>
           <p class="booking__hours">
-            Mon–Sun · 7am – 8pm<br>
-            Serving Orlando & all of Central FL.<br>
-            Licensed & insured in Florida.
+            Mon–Sun · 7am – 8pm · Central FL.<br>
+            Licensed &amp; insured in Florida.
           </p>
+
+          <!-- Response promise — removes the "will they even reply?" doubt -->
+          <div class="booking__promise">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 2"/></svg>
+            <div>
+              <strong>Reply in under an hour.</strong>
+              <span>Real human — not a call center.</span>
+            </div>
+          </div>
+
+          <!-- Testimonial — different quote from the calculator to keep it fresh -->
+          <figure class="booking__quote">
+            <div class="stars" aria-label="5 out of 5 stars">★★★★★</div>
+            <blockquote>"Finished a full 2-BR in under three hours. Friendly team, fair price — what more can you ask for?"</blockquote>
+            <figcaption>
+              <div class="avatar" aria-hidden="true">MC</div>
+              <span><b>Maggie C.</b> · Orlando · 2-BR</span>
+            </figcaption>
+          </figure>
+
+          <!-- Credential row -->
+          <ul class="booking__stats">
+            <li><strong>Licensed</strong><span>Florida moving company</span></li>
+            <li><strong>Insured</strong><span>Cargo &amp; general liability</span></li>
+            <li><strong>Transparent</strong><span>Hourly rate, no surprise fees</span></li>
+          </ul>
         </aside>
       </form>
     </div>
@@ -1274,7 +1446,8 @@ body[data-menu="true"] .menu-toggle .close-icon{display:block}
       movers.textContent = state.movers;
       hours.textContent = state.hours;
       var sum = state.movers * state.hours * RATES.hourly + (state.truck ? RATES.truck : 0);
-      total.textContent = '$' + sum.toLocaleString();
+      // Total stored for submit payload but not shown — keeps the price gated behind lead capture.
+      if (total) total.textContent = sum;
       document.querySelectorAll('[data-calc="truck"]').forEach(function(b){
         b.setAttribute('aria-pressed', b.getAttribute('data-val') === String(state.truck) ? 'true' : 'false');
       });
@@ -1301,6 +1474,68 @@ body[data-menu="true"] .menu-toggle .close-icon{display:block}
       render();
     });
     render();
+
+    // Lead magnet: email me my quote → hits send-quote.js (Resend + Telegram + CRM lead)
+    var leadForm = document.getElementById('calc-lead-form');
+    var status = document.getElementById('calc-status');
+    if (leadForm) {
+      leadForm.addEventListener('submit', function(e){
+        e.preventDefault();
+        var name = leadForm.name.value.trim();
+        var email = leadForm.email.value.trim();
+        var phone = leadForm.phone.value.trim();
+        if (!name || !email || !phone) {
+          status.hidden = false;
+          status.textContent = 'Please enter your name, phone, and email.';
+          status.setAttribute('data-type','err');
+          return;
+        }
+        var btn = document.getElementById('calc-send');
+        btn.disabled = true;
+        btn.textContent = 'Sending…';
+        status.hidden = true;
+
+        var hasTruck = state.truck > 0;
+        var labor = state.movers * state.hours * RATES.hourly;
+        var total = labor + (hasTruck ? RATES.truck : 0);
+
+        // Fire Lead event (Pixel + GA4 + CAPI Lead)
+        try {
+          if (window.ToroTrack && window.ToroTrack.lead) {
+            window.ToroTrack.lead({ name: name, email: email, phone: phone });
+          }
+          sessionStorage.setItem('toro_lead_fired','1');
+        } catch(_) {}
+
+        fetch('/.netlify/functions/send-quote', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: name, email: email, phone: phone,
+            movers: state.movers, hours: state.hours,
+            truck: hasTruck, truckFee: hasTruck ? RATES.truck : 0,
+            labor: labor, total: total,
+            page: location.pathname,
+            source: 'home-calculator'
+          })
+        })
+          .then(function(r){
+            if (!r.ok) throw new Error('bad status');
+            status.hidden = false;
+            status.textContent = '✓ Quote on its way to ' + email + '. We\'ll also text you soon.';
+            status.setAttribute('data-type','ok');
+            btn.textContent = 'Sent ✓';
+            leadForm.reset();
+          })
+          .catch(function(){
+            status.hidden = false;
+            status.textContent = 'Something went wrong. Call (321) 758-0094 and we\'ll quote you directly.';
+            status.setAttribute('data-type','err');
+            btn.disabled = false;
+            btn.textContent = 'Email me my quote →';
+          });
+      });
+    }
   })();
 
   // Contact tracking for tel: / mailto: clicks
