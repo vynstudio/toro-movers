@@ -962,7 +962,7 @@ body[data-menu="true"] .menu-toggle .close-icon{display:block}
         <form class="calc__lead" id="calc-lead-form" novalidate>
           <input type="text" name="name" required autocomplete="name" placeholder="Your name">
           <input type="email" name="email" required autocomplete="email" placeholder="Email — we'll send your quote" inputmode="email">
-          <input type="tel" name="phone" required autocomplete="tel" placeholder="Phone (for text updates — coming soon)" inputmode="tel">
+          <input type="tel" name="phone" required autocomplete="tel" placeholder="Phone" inputmode="tel">
           <button type="submit" class="btn btn-red calc__cta" id="calc-send">Email me my quote →</button>
           <p class="calc__status" id="calc-status" hidden></p>
         </form>
@@ -1522,7 +1522,7 @@ body[data-menu="true"] .menu-toggle .close-icon{display:block}
           .then(function(r){
             if (!r.ok) throw new Error('bad status');
             status.hidden = false;
-            status.textContent = '✓ Quote on its way to ' + email + '. We\'ll also text you soon.';
+            status.textContent = '✓ Quote on its way to ' + email + '.';
             status.setAttribute('data-type','ok');
             btn.textContent = 'Sent ✓';
             leadForm.reset();
