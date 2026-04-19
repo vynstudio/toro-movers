@@ -6,7 +6,7 @@
 <title>Toro Movers — Family-Owned Movers in Orlando & Central Florida | Packing, Loading, Long-Distance</title>
 <meta name="description" content="Family-owned movers in Orlando & Central Florida. Loading, unloading, packing, unpacking — local & long-distance. $75/mover/hour. Licensed & insured.">
 <meta name="theme-color" content="#C8102E">
-<link rel="preload" as="image" type="image/webp" href="assets/img/photos/team-family-portrait.webp">
+<link rel="preload" as="image" type="image/webp" href="assets/img/photos/team-mover-boxes.webp" fetchpriority="high">
 <link rel="canonical" href="https://toromovers.net/">
 <link rel="icon" href="assets/img/toro-logo.svg">
 
@@ -464,40 +464,41 @@ body[data-menu="true"] .menu-toggle .close-icon{display:block}
 .faq__item[open] summary::after{transform:rotate(45deg)}
 .faq__item .answer{padding:0 18px 16px;font-size:14.5px;color:var(--ink-2)}
 
-/* 13. Booking form ────────────────────────────────────── */
-.booking{background:var(--bg-dark);color:#fff;border-radius:var(--radius-lg);padding:28px 22px}
-.booking h2{color:#fff}
-.booking p{color:#c7c9cf;font-size:14px}
+/* 13. Booking form (light card) ───────────────────────── */
+.booking{background:#fff;color:var(--ink);border:1px solid var(--line);border-radius:var(--radius-lg);padding:28px 22px;box-shadow:var(--shadow)}
+.booking h2{color:var(--ink)}
+.booking p{color:var(--ink-2);font-size:14px}
 .booking__grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:18px}
-.booking label{display:flex;flex-direction:column;gap:5px;font-size:11px;font-weight:700;color:#c7c9cf;letter-spacing:.08em;text-transform:uppercase}
+.booking label{display:flex;flex-direction:column;gap:5px;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
 .booking input,.booking select,.booking textarea{
-  background:#1c1d22;border:1px solid #2a2b31;color:#fff;
+  background:#fff;border:1px solid var(--line);color:var(--ink);
   padding:13px 14px;border-radius:10px;font-size:15px;letter-spacing:-.01em;
   transition:border-color .15s var(--ease);
   width:100%;
 }
-.booking input:focus,.booking select:focus,.booking textarea:focus{outline:none;border-color:var(--red);background:#22232a}
-.booking input::placeholder{color:#6b6e76}
+.booking input:focus,.booking select:focus,.booking textarea:focus{outline:none;border-color:var(--red);background:#fff}
+.booking input::placeholder{color:var(--muted)}
 .booking select{
   appearance:none;-webkit-appearance:none;-moz-appearance:none;
-  background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23c7c9cf' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='5 8 10 13 15 8'/%3E%3C/svg%3E");
+  background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%236b6e76' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='5 8 10 13 15 8'/%3E%3C/svg%3E");
   background-repeat:no-repeat;background-position:right 12px center;background-size:16px 16px;
   padding-right:38px;cursor:pointer;
 }
-.booking select:invalid,.booking select option[value=""]{color:#8a8d95}
+.booking select:invalid,.booking select option[value=""]{color:var(--muted)}
 .booking textarea{min-height:84px;resize:vertical}
 .booking__honeypot{position:absolute;left:-9999px}
 .booking__submit{width:100%;margin-top:6px}
-.booking__aside{margin-top:22px;padding-top:22px;border-top:1px solid #2a2b31;display:flex;flex-direction:column;gap:12px}
-.booking__aside h3{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#ffb3bd;font-weight:700}
-.booking__aside a{color:#fff;font-weight:600;display:inline-flex;align-items:center;gap:10px;font-size:14px}
+.booking__aside{margin-top:22px;padding-top:22px;border-top:1px solid var(--line-2);display:flex;flex-direction:column;gap:12px}
+.booking__aside h3{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--red);font-weight:700}
+.booking__aside a{color:var(--ink);font-weight:600;display:inline-flex;align-items:center;gap:10px;font-size:14px}
+.booking__aside a:hover{color:var(--red)}
 .booking__aside svg{color:var(--red);width:16px;height:16px}
-.booking__hours{font-size:12.5px;color:#8a8d95;line-height:1.5;margin-top:4px}
+.booking__hours{font-size:12.5px;color:var(--muted);line-height:1.5;margin-top:4px}
 @media (min-width:900px){
   .booking{display:grid;grid-template-columns:1.25fr .75fr;gap:40px;padding:40px}
   .booking__grid{grid-template-columns:1fr 1fr}
   .booking label[data-full],.booking__submit{grid-column:1/-1}
-  .booking__aside{margin-top:0;padding-top:0;border-top:0;border-left:1px solid #2a2b31;padding-left:32px}
+  .booking__aside{margin-top:0;padding-top:0;border-top:0;border-left:1px solid var(--line-2);padding-left:32px}
 }
 
 /* 14. Footer ──────────────────────────────────────────── */
@@ -660,15 +661,14 @@ body[data-menu="true"] .menu-toggle .close-icon{display:block}
       </form>
     </div>
 
-    <!-- Team strip keeps the family photo visible without eating the hero -->
+    <!-- Team strip — mover with Toro-branded boxes -->
     <div class="wrap">
-      <figure class="team-strip">
+      <div class="team-strip">
         <picture>
-          <source type="image/webp" srcset="assets/img/photos/team-family-portrait.webp">
-          <img src="assets/img/photos/team-family-portrait.jpg" alt="The Toro Movers family team on a Central Florida dock" width="1600" height="700" fetchpriority="high">
+          <source type="image/webp" srcset="assets/img/photos/team-mover-boxes.webp">
+          <img src="assets/img/photos/team-mover-boxes.jpg" alt="Toro Movers crew member carrying branded boxes" width="1400" height="620" fetchpriority="high">
         </picture>
-        <figcaption class="team-strip__caption">Meet the team</figcaption>
-      </figure>
+      </div>
     </div>
   </section>
 
@@ -1058,7 +1058,7 @@ body[data-menu="true"] .menu-toggle .close-icon{display:block}
     <div class="wrap">
       <form class="booking js-booking-form" name="booking" id="booking-form" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/thanks">
         <div>
-          <p class="eyebrow" style="color:#ffb3bd">Free quote · 30 seconds</p>
+          <p class="eyebrow">Free quote · 30 seconds</p>
           <h2 id="book-title" style="margin-top:6px">Tell us about the move.</h2>
           <p>A few taps — we'll reply with a price in under an hour.</p>
 
@@ -1125,7 +1125,7 @@ body[data-menu="true"] .menu-toggle .close-icon{display:block}
             <label>Phone<input type="tel" name="phone" required autocomplete="tel" placeholder="(321) 555-0100" inputmode="tel"></label>
             <label data-full>Email<input type="email" name="email" required autocomplete="email" placeholder="you@email.com" inputmode="email"></label>
             <button type="submit" class="btn btn-red booking__submit">Get my free quote →</button>
-            <p data-full style="font-size:12px;color:#8a8d95;margin-top:-2px">No spam. We only use your info to get back to you with a price.</p>
+            <p data-full style="font-size:12px;color:var(--muted);margin-top:-2px">No spam. We only use your info to get back to you with a price.</p>
           </div>
         </div>
 
