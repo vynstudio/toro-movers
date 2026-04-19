@@ -18,7 +18,7 @@ const CHAT_ID = process.env.VYN_BOT_CHAT_ID;
 // remove when genuinely resolved. If an item is "waiting on someone
 // else," prefix with the person/system.
 const OPEN_ITEMS = [
-  '*Stripe consolidation* — swap Toro /quote STRIPE_SECRET_KEY to Vyn Studio platform key + add `statement_descriptor: "TORO MOVERS"`; then close old Toro + Diler Dynamics Stripe accounts.',
+  '*Stripe consolidation* — swap Toro /quote `STRIPE_SECRET_KEY` to Vyn Studio platform key + add `statement_descriptor: "TORO MOVERS"`; then close old Toro + Diler Dynamics Stripe accounts.',
   '*OMG Connect test* — place a real €5 order at ohmygrillbrasas.com, verify 95% lands in OMG\'s Stripe and 5% in Vyn Studio platform.',
   '*Stael Connect test* — book a small service at staelfogarty.com, verify 80/20 split + 3% processing fee pass-through.',
   '*Jobber integration (deferred)* — paused pending plan upgrade. Currently entering clients manually in Jobber UI.',
