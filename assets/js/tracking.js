@@ -110,14 +110,20 @@
     }
   }
 
+  // Only relay high-value conversion events to CAPI server-side.
+  // PageView + ViewContent stay browser-pixel-only — dedup isn't needed for
+  // non-conversion signals, and relaying every pageview burns Netlify function
+  // invocations linearly with ad traffic.
+  var CAPI_EVENTS = { Lead: 1, Contact: 1, Purchase: 1 };
+
   function track(eventName, gaParams, customData, userData) {
     var eventId = uuid();
     // Pixel (browser)
     try { fbq('track', eventName, customData || {}, { eventID: eventId }); } catch (e) {}
     // GA4
     try { gtag('event', eventName, Object.assign({}, gaParams || {})); } catch (e) {}
-    // CAPI (server)
-    sendCapi(eventName, eventId, userData, customData);
+    // CAPI (server) — conversion events only
+    if (CAPI_EVENTS[eventName]) sendCapi(eventName, eventId, userData, customData);
   }
 
   // ---------- public API ----------

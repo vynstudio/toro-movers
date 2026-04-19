@@ -29,8 +29,11 @@
 # T-3h first, then every 30m to T-1h, then every 15m in the final hour.
 # Idempotent via lead.reminders_sent[]. Fires only for booked leads with
 # a valid move_date + move_time (ET).
+# Every 30 min (was */15 — halved to cut Netlify function invocations by 1,440/mo).
+# Trade-off: the T-0:15 and T-0:45 slots in move-reminders.js are skipped;
+# crew still gets T-3h, T-2:30, T-2, T-1:30, T-1, T-0:30, and T-0.
 [functions."move-reminders"]
-  schedule = "*/15 * * * *"
+  schedule = "*/30 * * * *"
 
 [build.environment]
   NODE_VERSION = "20"
