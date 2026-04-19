@@ -1,10 +1,13 @@
-// One-click booking endpoint — called from email "Book Now" CTA.
-// Accepts GET query params, creates a Stripe Checkout session for the
-// deposit, and 302-redirects to the Stripe hosted checkout URL.
+// One-click booking endpoint — called from email "Book Now" CTA and from
+// the homepage package cards ("Choose"). Accepts GET query params, creates
+// a Stripe Checkout session for the deposit, and 302-redirects to Stripe.
 //
-// Query params expected (all strings):
-//   hours, total, movers, name, email, phone, zip_from, zip_to, size,
-//   stairs, date
+// Query params (all strings):
+//   package   — "loading" | "intown" | "big" | "custom"  (optional)
+//   deposit   — "50" | "125"  (optional; auto-derived from package if omitted)
+//   total     — estimated total ($)
+//   movers, hours, name, email, phone, zip_from, zip_to, size, stairs, date
+//   source    — short tag for attribution (e.g. "home-package", "email_book_now")
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
@@ -30,17 +33,29 @@ exports.handler = async (event) => {
   const size    = q.size     || '';
   const stairs  = q.stairs   || '';
   const date    = q.date     || '';
+  const pkg     = q.package  || '';
+  const source  = q.source   || 'email_book_now';
 
-  const DEPOSIT = 50; // flat $50 refundable deposit
-  const depositCents = DEPOSIT * 100;
+  // Deposit: $125 when a truck is included (in-town / big), $50 otherwise.
+  // Accepts explicit ?deposit= override, else derives from ?package=.
+  const TRUCK_PKGS = { intown: true, big: true };
+  const derivedDeposit = TRUCK_PKGS[pkg] ? 125 : 50;
+  const parsedDeposit = parseInt(q.deposit, 10);
+  const deposit = (parsedDeposit === 50 || parsedDeposit === 125) ? parsedDeposit : derivedDeposit;
+  const depositCents = deposit * 100;
+
+  const pkgLabel = pkg === 'loading' ? 'Loading help'
+                 : pkg === 'intown'  ? 'In-town move'
+                 : pkg === 'big'     ? 'Big move'
+                 : 'Custom move';
 
   const description = [
-    `${size || 'Custom move'}`,
-    `${movers} movers × ${hours} hrs`,
+    pkgLabel + (size ? ` · ${size}` : ''),
+    movers && hours ? `${movers} movers × ${hours} hrs` : '',
     zipFrom && zipTo ? `${zipFrom} → ${zipTo}` : '',
     stairs ? stairs : '',
     date ? `Date: ${date}` : '',
-    `Est. total: $${total}`,
+    total ? `Est. total: $${total}` : '',
   ].filter(Boolean).join(' · ');
 
   try {
@@ -61,8 +76,11 @@ exports.handler = async (event) => {
         },
       ],
       customer_email: email || undefined,
+      phone_number_collection: { enabled: true },
       metadata: {
-        source: 'email_book_now',
+        source: source,
+        package: pkg,
+        deposit: String(deposit),
         estimate_total: total,
         movers: movers,
         hours: hours,
