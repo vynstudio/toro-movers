@@ -366,6 +366,40 @@
   status = 301
   force = true
 
+# ── Block public access to internal strategy docs + old design proposals ──
+# These files exist in the repo for internal use but should not be served publicly.
+# `force = true` ensures they 404 even though the static files exist.
+[[redirects]]
+  from = "/ads-google.md"
+  to = "/404.html"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/ads-meta.md"
+  to = "/404.html"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/analytics-dashboard.md"
+  to = "/404.html"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/brand-identity.md"
+  to = "/404.html"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/personas.md"
+  to = "/404.html"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/proposals/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
 # 404 fallback (last)
 [[redirects]]
   from = "/*"

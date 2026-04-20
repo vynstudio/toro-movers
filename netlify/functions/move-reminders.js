@@ -15,6 +15,7 @@
 
 const { getStore } = require('@netlify/blobs');
 const { listLeads } = require('./_lib/leads');
+const { sendSms } = require('./_lib/sms');
 
 const TG_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TG_CHAT  = process.env.TELEGRAM_CHAT_ID;
@@ -143,7 +144,52 @@ exports.handler = async () => {
   const now = nowNaiveET();
   const s = leadStore();
   const actions = [];
+  const crewAlerts = [];
 
+  // ═══ Pass 1 — CREW NOT ASSIGNED early-warning (fires once, T-48h → T-3h) ═══
+  // Catches booked moves where crew_assigned is empty. George Roig's move
+  // 2026-04-19 exposed the gap: the only alert for "not assigned" was at T-3h,
+  // too late to scramble. Now we alert up to 48h ahead, once per lead.
+  for (const entry of index) {
+    if (entry.status !== 'booked') continue;
+    if (!entry.move_date) continue;
+
+    const timeHHMM = parseMoveTime(entry.move_time) || '09:00';
+    const moveAt = moveNaiveET(entry.move_date, timeHHMM);
+    const diffMin = (moveAt - now) / 60000;
+
+    // Early-warning window: between T-48h and T-3h
+    if (diffMin > 48 * 60 || diffMin < 180) continue;
+
+    const raw = await s.get(entry.id);
+    if (!raw) continue;
+    const lead = JSON.parse(raw);
+
+    // Already assigned, or alert already fired? skip
+    const hasAssigned = Array.isArray(lead.crew_assigned) && lead.crew_assigned.length > 0;
+    if (hasAssigned) continue;
+    if (lead.assigned_alert_sent) continue;
+
+    const hours = Math.round(diffMin / 60);
+    const alert =
+      `🚨 <b>CREW NOT ASSIGNED</b>\n` +
+      `<b>${esc(lead.name || 'Lead')}</b> · ${esc(lead.move_date)} · ${esc(timeHHMM)}\n` +
+      `T-${hours}h · ${esc(lead.movers || '?')} movers` +
+      (lead.truck ? ' + 🚚' : '') + `\n` +
+      `<a href="https://toromovers.net/crm#lead/${lead.id}">Open in CRM →</a>`;
+
+    const r = await sendTG(alert);
+    if (r.ok) {
+      lead.assigned_alert_sent = true;
+      lead.updatedAt = new Date().toISOString();
+      await s.set(lead.id, JSON.stringify(lead));
+      crewAlerts.push({ id: lead.id, name: lead.name, hours });
+    } else {
+      crewAlerts.push({ id: lead.id, name: lead.name, hours, error: r });
+    }
+  }
+
+  // ═══ Pass 2 — regular T-3h → T-0 reminders ═══
   for (const entry of index) {
     if (entry.status !== 'booked') continue;
     if (!entry.move_date) continue;
@@ -193,11 +239,25 @@ exports.handler = async () => {
     await s.set(lead.id, JSON.stringify(lead));
 
     actions.push({ id: lead.id, name: lead.name, slot: current.key, sent: true });
+
+    // Customer SMS — only at T-3h (heads-up) and T-0:30 (imminent arrival).
+    // No-op until Twilio env vars are set.
+    if ((current.key === 'T-3:00' || current.key === 'T-0:30') && lead.phone) {
+      const sms = current.key === 'T-3:00'
+        ? `Toro Movers — your crew is on schedule for ${lead.move_date} at ${timeHHMM}. We'll call if anything changes. Reply to this text with questions.`
+        : `Toro Movers — your crew will arrive in ~30 min. Call (321) 758-0094 if you need us.`;
+      const r = await sendSms(lead.phone, sms);
+      actions.push({ id: lead.id, sms_slot: current.key, sms_ok: r.ok, sms_reason: r.reason || null });
+    }
   }
 
   return {
     statusCode: 200,
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ ran_at: new Date().toISOString(), count: actions.length, actions }, null, 2),
+    body: JSON.stringify({
+      ran_at: new Date().toISOString(),
+      reminders: { count: actions.length, actions },
+      crew_alerts: { count: crewAlerts.length, alerts: crewAlerts },
+    }, null, 2),
   };
 };

@@ -6,6 +6,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { getStore } = require('@netlify/blobs'); // surface for Netlify scanner
 const { listLeads, updateLead, notifyTelegram, getLead } = require('./_lib/leads');
 const { sendBookingConfirmation } = require('./_lib/emails');
+const { sendSms } = require('./_lib/sms');
 
 exports.handler = async (event) => {
   const sig = event.headers['stripe-signature'];
@@ -89,6 +90,20 @@ exports.handler = async (event) => {
           try {
             await sendBookingConfirmation(updated, amount);
           } catch(e) { console.error('booking confirmation email failed:', e); }
+        }
+
+        // Send SMS confirmation — no-op until TWILIO_* env vars are set
+        if (updated?.phone) {
+          try {
+            const moveDate = updated.move_date || '';
+            const moveTime = updated.move_time || '';
+            const when = [moveDate, moveTime].filter(Boolean).join(' at ');
+            const sms =
+              `Toro Movers — booking confirmed${when ? ' for ' + when : ''}. ` +
+              `Deposit $${amount} received. Confirmation emailed. ` +
+              `Call (321) 758-0094 if you need to change anything.`;
+            await sendSms(updated.phone, sms);
+          } catch(e) { console.error('booking confirmation SMS failed:', e); }
         }
 
         // NOTE: Review request is now fired when job is marked Done in Telegram
