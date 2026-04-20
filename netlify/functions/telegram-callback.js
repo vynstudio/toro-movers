@@ -188,6 +188,27 @@ async function sendReviewRequest(lead, opts = {}){
     <p style="margin:0 0 16px;color:#3a3a3a;font-size:15px;line-height:1.6">A quick Google review is the best way to say thanks. Literally 30 seconds — click, star, type, done.</p>
     <p style="margin:18px 0;color:#6b7280;font-size:13px">If this is the last thing you want to deal with right now, no worries — we won't keep asking.</p>`;
 
+  if (cadence === 'supplement') {
+    // Assumes the default flow (immediate + 3d) already fired via Done tap.
+    // Adds tomorrow 10am + 5d + 7d to complete an every-2-days drip.
+    const sends = [
+      mk(`Quick follow-up from Toro Movers`,
+         shell(`Hope everything landed safely, ${esc(firstName)}`,
+               bodyNudge(`Yesterday's move went well on our end — hope it went well on yours too.`)),
+         at10amET(1)),
+      mk(`One more ask from the Toro Movers crew`,
+         shell(`${esc(firstName)}, one quick thing`,
+               bodyNudge(`Reviews are how small family businesses like ours get found. If we earned it, a 30-second review goes a long way.`)),
+         at10amET(5)),
+      mk(`Last note — thank you for moving with us`,
+         shell(`Thanks again, ${esc(firstName)}`,
+               bodyNudge(`This is the last email from our side. If you've already left a review — thank you. If not and we earned one, here's the link one more time.`)),
+         at10amET(7)),
+    ];
+    const results = await Promise.all(sends.map(s => resend.emails.send(s)));
+    return { cadence: 'supplement', ids: results.map(r => r?.data?.id) };
+  }
+
   if (cadence === 'escalate') {
     // 5-email drip: now, tomorrow 10am ET, +3d, +5d, +7d
     const sends = [
@@ -281,6 +302,7 @@ async function handleTextMessage(msg){
     else if (cmd === 'send_confirmation' || cmd === 'send-confirmation' || cmd === 'confirm') await cmdSendConfirmation(chatId, args);
     else if (cmd === 'send_review' || cmd === 'send-review' || cmd === 'review')               await cmdSendReview(chatId, args);
     else if (cmd === 'review_escalate' || cmd === 'review-escalate' || cmd === 'escalate')     await cmdReviewEscalate(chatId, args);
+    else if (cmd === 'review_supplement' || cmd === 'review-supplement' || cmd === 'supplement') await cmdReviewSupplement(chatId, args);
     else if (cmd === 'new_lead' || cmd === 'new-lead' || cmd === 'new')                         await cmdNewLeadStart(chatId);
     else if (cmd === 'cancel') {
       await clearWizardState(chatId);
@@ -403,6 +425,7 @@ async function cmdHelp(chatId){
     '/send-confirmation `<id>` — send booking confirmation',
     '/send-review `<id>` — send Google review request (now + 3d)',
     '/review-escalate `<id>` — 5-email drip (now, tmrw 10am, every 2d)',
+    '/review-supplement `<id>` — +3 emails after Done tap (tmrw 10am, +5d, +7d)',
     '',
     '/help — this menu',
     '',
@@ -552,6 +575,24 @@ async function cmdSendReview(chatId, id){
   try {
     await sendReviewRequest(lead);
     await tg('sendMessage', { chat_id: chatId, text: `⭐ Review request sent to ${esc(lead.email)}\n+3 day follow-up scheduled.`, parse_mode: 'Markdown' });
+  } catch(e) {
+    await tg('sendMessage', { chat_id: chatId, text: `⚠️ Send failed: ${e.message}` });
+  }
+}
+
+async function cmdReviewSupplement(chatId, id){
+  if (!id) return tg('sendMessage', { chat_id: chatId, text: 'Usage: /review-supplement `<id>`\nUse AFTER Done button fired. Adds tomorrow 10am + 5d + 7d emails.', parse_mode: 'Markdown' });
+  const lead = await getLead(id.trim());
+  if (!lead) return tg('sendMessage', { chat_id: chatId, text: `❌ Lead \`${esc(id)}\` not found.`, parse_mode: 'Markdown' });
+  if (!lead.email) return tg('sendMessage', { chat_id: chatId, text: `❌ ${esc(lead.name)} has no email on file.`, parse_mode: 'Markdown' });
+  try {
+    const r = await sendReviewRequest(lead, { cadence: 'supplement' });
+    const count = (r.ids || []).filter(Boolean).length;
+    await tg('sendMessage', {
+      chat_id: chatId,
+      text: `📨 Supplemental drip queued for *${esc(lead.name)}*\n${count}/3 emails → ${esc(lead.email)}\n\nAdds: tomorrow 10am · +5d · +7d\n(Default +3d already queued from Done tap)`,
+      parse_mode: 'Markdown',
+    });
   } catch(e) {
     await tg('sendMessage', { chat_id: chatId, text: `⚠️ Send failed: ${e.message}` });
   }
