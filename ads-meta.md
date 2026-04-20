@@ -50,8 +50,10 @@ Don't create lookalikes until you have at least 50 conversions, ideally 100+. Un
 | 3 | TM-Cold-Frank-FamilyMove | Family Frank | $50-100 | Affluent suburbs (see below) |
 | 4 | TM-Cold-Dolores-Downsizing | Downsizing Dolores | $40-80 | Senior community ZIPs + adult-child lookalikes |
 | 5 | TM-Cold-Vanessa-VR | Vacation-Rental Vanessa | $30-60 | Out-of-state targeting (NE US, Toronto, UK) |
+| 6 | TM-Cold-ES-Hispanic | Spanish-speaking Central FL | $30-50 | Kissimmee / Orange / Osceola Hispanic ZIPs |
+| 7 | TM-Cold-PT-Brazilian | Portuguese-speaking Central FL | $25-40 | Kissimmee / Davenport / Orlando BR clusters |
 
-**Total daily spend (recommended start):** $190-360/day. Scale up the campaigns that show CPA below $40 first.
+**Total daily spend (recommended start):** $245-450/day. Scale up the campaigns that show CPA below $40 first.
 
 ---
 
@@ -264,6 +266,90 @@ This campaign has **two ad sets targeting different audiences**: Dolores herself
 
 ---
 
+## Campaign 6 — Spanish-speaking Central FL (`/mudanza`)
+
+Dedicated Spanish-language landing page: **`/mudanza`** (noindex, paid-only, homepage quick-form, tracking parity with main site).
+
+### Audience
+- **Location:** Kissimmee (34741, 34743, 34744, 34758), Buenaventura Lakes (34743), Poinciana (34759), Hunters Creek (32837), Orlando Hispanic ZIPs (32822, 32824, 32825), St. Cloud (34769, 34771)
+- **Age:** 25-55
+- **Gender:** All
+- **Languages:** **Spanish** (required — set in Ad Set → Languages)
+- **Detailed targeting:**
+  - Demographics → Hispanic (US) — All, Bilingual, or Spanish-dominant segments
+  - Interests → Telemundo, Univision, Spanish-language news, El Sentinel Orlando
+  - Interests → Apartment, Renting, Moving, Real estate
+  - Life events → Recently moved, Newly engaged
+- **Exclusions:**
+  - TM-Lead-Submitters
+  - Anyone outside FL
+
+### Placements
+- Facebook Feed
+- Instagram Feed
+- Instagram Stories
+- Facebook Marketplace
+
+### Creative
+
+**Ad Set 1 — Image: family-owned angle**
+- Headline: **"Mudanzas honestas. $75 por trabajador, por hora."**
+- Primary text: *"Empresa familiar con licencia y seguro en Florida Central. Sin cargos ocultos, sin recargos de gasolina, sin costos por escaleras. Cotización gratis en 30 segundos."*
+- CTA: **Get Quote** (Obtener cotización)
+- Image: Toro family portrait + Spanish price overlay
+
+**Ad Set 2 — Image: transparent-pricing angle**
+- Headline: **"$875. Camión incluido. Dos trabajadores, cuatro horas."**
+- Primary text: *"El precio que ves es el precio que pagas. Mudanza local completa: 2 trabajadores, 4 horas, camión incluido. $875 total. Sin sorpresas."*
+- CTA: **Get Quote**
+- Image: Truck + furniture + "$875" overlay
+
+**Landing page:** `https://toromovers.net/mudanza?utm_source=meta&utm_medium=cpc&utm_campaign=tm-cold-es-hispanic&utm_content={{ad.id}}`
+
+---
+
+## Campaign 7 — Portuguese-speaking (Brazilian) Central FL (`/mudanca`)
+
+Dedicated Brazilian Portuguese landing page: **`/mudanca`** (pt-BR, noindex, paid-only).
+
+### Audience
+- **Location:** Kissimmee (34741, 34744, 34758), Davenport (33837, 33896), Winter Garden (34787), Ocoee (34761), Orlando BR clusters (32819, 32821), Lake Nona (32827, 32832)
+- **Age:** 25-55
+- **Gender:** All
+- **Languages:** **Portuguese** (required — set in Ad Set → Languages)
+- **Detailed targeting:**
+  - Interests → Brazil, Brazilian cuisine, Globo, Rede Globo, Jornal Nacional, Carnaval, Brazilian expatriates
+  - Interests → Brasileiros em Orlando, Brasileiros nos EUA, Comunidade Brasileira
+  - Behaviors → Expats (Brazilian)
+  - Interests → Apartment, Real estate, Moving
+- **Exclusions:**
+  - TM-Lead-Submitters
+  - Anyone outside FL
+
+### Placements
+- Facebook Feed
+- Instagram Feed
+- Instagram Stories
+- WhatsApp Status (if enabled in account)
+
+### Creative
+
+**Ad Set 1 — Image: transparent-pricing angle**
+- Headline: **"Mudança sem surpresa. $75 por trabalhador por hora."**
+- Primary text: *"Empresa familiar com licença e seguro em Orlando e Flórida Central. Sem taxas escondidas, sem sobretaxa de combustível, sem cobrança por escadas. Orçamento grátis em 30 segundos."*
+- CTA: **Get Quote** (Receber orçamento)
+- Image: Toro family portrait + Portuguese price overlay
+
+**Ad Set 2 — Video: testimonial / community trust**
+- Headline: **"Atendimento direto com a família dona da empresa."**
+- Primary text: *"Família brasileira mudando para outra casa em Orlando? Nossa equipe cuida do carregamento, direção e descarga. Preço fixo por hora, sem pegadinha."*
+- CTA: **Get Quote**
+- Video: 15-sec team walkthrough with BR-PT voiceover or captions
+
+**Landing page:** `https://toromovers.net/mudanca?utm_source=meta&utm_medium=cpc&utm_campaign=tm-cold-pt-brazilian&utm_content={{ad.id}}`
+
+---
+
 ## Retargeting campaigns (after cold campaigns are running)
 
 Once cold campaigns have ~2 weeks of data and 50+ leads, add these:
@@ -272,7 +358,9 @@ Once cold campaigns have ~2 weeks of data and 50+ leads, add these:
 - **Audience:** TM-Site-Visitors-30d EXCLUDE TM-Lead-Submitters
 - **Daily budget:** $20-40
 - **Creative:** "Still moving? We're still here. Get a free quote in 60 seconds. $75 per mover, per hour."
-- **Landing page:** `/orlando-movers#book` (deep link straight to the form)
+- **Landing page:** `/moving` (short, form-first LP — better conversion than deep-linking to a city page)
+- **Spanish retargeting:** Same audience filtered to Spanish-language users → `/mudanza`
+- **Portuguese retargeting:** Same audience filtered to Portuguese-language users → `/mudanca`
 
 ### TM-Retargeting-Reviewers
 - **Audience:** Engaged with previous Toro Movers ads but didn't click
