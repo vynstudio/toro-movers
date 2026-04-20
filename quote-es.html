@@ -320,18 +320,52 @@ document.addEventListener('click', function(e){
   try { if (window.ToroTrack && window.ToroTrack.contact) window.ToroTrack.contact(a.getAttribute('data-track-contact')); } catch(_) {}
 });
 
-// Lead tracking on quick-form submit — Meta Pixel + CAPI via tracking.js
-document.getElementById('quick-form').addEventListener('submit', function(e){
-  var f = e.target;
-  try {
-    if (window.ToroTrack && window.ToroTrack.lead) {
-      window.ToroTrack.lead({
-        name: (f.name && f.name.value) || '',
-        email: (f.email && f.email.value) || '',
-        phone: (f.phone && f.phone.value) || '',
+// Booking form submit handler — mirrors index.html .js-booking-form flow:
+// 1) Lead event (Pixel + GA4 + CAPI) → 2) notify-callback (Telegram + Resend + CRM)
+// → 3) Netlify Forms POST to "/" → 4) redirect to /thanks. Prevents default so
+// the native POST to action="/thanks" (which 404s on static HTML) never fires.
+document.querySelectorAll('.js-booking-form').forEach(function(form){
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var submit = form.querySelector('button[type=submit]');
+    if (submit) { submit.disabled = true; submit.textContent = 'Enviando…'; }
+
+    var fd = new FormData(form);
+    var data = {};
+    fd.forEach(function(v,k){ data[k] = v; });
+
+    try {
+      if (window.ToroTrack && window.ToroTrack.lead) { window.ToroTrack.lead(data); }
+      sessionStorage.setItem('toro_lead_fired', '1');
+    } catch(_) {}
+
+    try {
+      fetch('/.netlify/functions/notify-callback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: data.name,
+          phone: data.phone,
+          email: data.email,
+          page: location.pathname,
+          source: data.source || 'quote-es',
+          move_when: data.move_when || '',
+          property_type: data.move_size || '',
+          move_service: data.move_service || '',
+          lang: 'es'
+        })
       });
-    }
-  } catch(_) {}
+    } catch(_) {}
+
+    var body = new URLSearchParams(fd).toString();
+    fetch('/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: body
+    })
+      .then(function(){ window.location.href = '/thanks'; })
+      .catch(function(){ form.submit(); });
+  });
 });
 </script>
 </body>
