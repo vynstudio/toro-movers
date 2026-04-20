@@ -280,8 +280,10 @@ async function handleTextMessage(msg){
     return handleWizardReply(chatId, text, wizardState);
   }
 
-  // Extract command + args
-  const match = text.match(/^\/(\w+)(?:@\w+)?(?:\s+([\s\S]+))?$/);
+  // Extract command + args. [\w-]+ so hyphenated commands like
+  // /review-supplement parse correctly (plain \w+ stopped at the hyphen
+  // and caused the whole match to fail → silent no-op).
+  const match = text.match(/^\/([\w-]+)(?:@\w+)?(?:\s+([\s\S]+))?$/);
   if (!match) {
     // Non-command text — ignore silently (future: forward to Claude chat)
     return { statusCode: 200, body: 'ok' };
