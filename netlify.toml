@@ -167,6 +167,12 @@
   to = "/quote.html"
   status = 200
 
+# /quote-es → /quote-es.html (Spanish ad landing)
+[[redirects]]
+  from = "/quote-es"
+  to = "/quote-es.html"
+  status = 200
+
 # /privacy → /privacy.html
 [[redirects]]
   from = "/privacy"
