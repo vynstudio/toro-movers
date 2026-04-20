@@ -173,6 +173,22 @@
   to = "/quote-es.html"
   status = 200
 
+# Meta ad landing pages (EN / ES / PT)
+[[redirects]]
+  from = "/moving"
+  to = "/moving.html"
+  status = 200
+
+[[redirects]]
+  from = "/mudanza"
+  to = "/mudanza.html"
+  status = 200
+
+[[redirects]]
+  from = "/mudanca"
+  to = "/mudanca.html"
+  status = 200
+
 # /privacy → /privacy.html
 [[redirects]]
   from = "/privacy"
