@@ -10,11 +10,11 @@ const ACT = 'act_971361825561389';
 
 async function fetchInsights(datePreset, level){
   const fields = level === 'ad'
-    ? 'ad_name,adset_name,campaign_name,spend,impressions,clicks,ctr,cpc,cpm,reach,frequency,actions'
+    ? 'ad_id,ad_name,adset_id,adset_name,campaign_id,campaign_name,spend,impressions,clicks,ctr,cpc,cpm,reach,frequency,actions'
     : level === 'adset'
-      ? 'adset_name,campaign_name,spend,impressions,clicks,ctr,cpc,cpm,reach,frequency,actions'
+      ? 'adset_id,adset_name,campaign_id,campaign_name,spend,impressions,clicks,ctr,cpc,cpm,reach,frequency,actions'
       : level === 'campaign'
-        ? 'campaign_name,spend,impressions,clicks,ctr,cpc,cpm,reach,frequency,actions'
+        ? 'campaign_id,campaign_name,spend,impressions,clicks,ctr,cpc,cpm,reach,frequency,actions'
         : 'spend,impressions,clicks,ctr,cpc,cpm,reach,frequency,actions';
   const url = `https://graph.facebook.com/v19.0/${ACT}/insights?fields=${fields}&date_preset=${datePreset}&level=${level}&limit=200&access_token=${META_TOKEN}`;
   const r = await fetch(url);
