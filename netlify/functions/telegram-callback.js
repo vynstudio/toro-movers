@@ -127,77 +127,102 @@ exports.handler = async (event) => {
 };
 
 // ===== REVIEW REQUEST EMAILS =====
-async function sendReviewRequest(lead){
+// cadence: 'default' = immediate + 3d follow-up (default for auto-fire on Done)
+// cadence: 'escalate' = 5-email drip (immediate, tomorrow 10am ET, +3d, +5d, +7d)
+//   — used for customers who haven't reviewed after the default pair
+async function sendReviewRequest(lead, opts = {}){
+  const cadence = opts.cadence || 'default';
   const resend = new Resend(process.env.RESEND_API_KEY);
   const fromEmail = process.env.RESEND_FROM_EMAIL || 'hello@toromovers.net';
   const firstName = (lead.name || '').split(' ')[0] || 'there';
-  // Google Review link — use env var if set, otherwise a best-guess placeholder
   const reviewUrl = process.env.GOOGLE_REVIEW_URL
     || 'https://search.google.com/local/writereview?placeid=ChIJzd_MJ2B654gRXJGWP5ydFy8';
 
   const esc = (s) => String(s == null ? '' : s)
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
-  // IMMEDIATE — fires now
-  const immediate = {
-    from: `Toro Movers <${fromEmail}>`,
-    to: [lead.email],
-    replyTo: fromEmail,
-    subject: `${firstName}, how'd your move go? 30-second favor`,
-    html: `
-      <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;max-width:560px;margin:0 auto;color:#1a1a1a">
-        <div style="background:#C8102E;color:#fff;padding:22px 24px;border-radius:12px 12px 0 0;text-align:center">
-          <div style="font-weight:900;font-size:22px;letter-spacing:-.3px">TORO <span style="opacity:.85">MOVERS</span></div>
-        </div>
-        <div style="background:#fff;padding:28px 24px;border:1px solid #e5e5e5;border-top:none;border-radius:0 0 12px 12px">
-          <h2 style="margin:0 0 14px;font-size:22px;line-height:1.2">Hey ${esc(firstName)} — did we make it easy?</h2>
-          <p style="margin:0 0 16px;color:#3a3a3a;font-size:15px;line-height:1.6">Thanks for trusting our crew with your move today. We hope everything arrived safely and on time.</p>
-          <p style="margin:0 0 16px;color:#3a3a3a;font-size:15px;line-height:1.6">If we did a solid job, <strong>a Google review takes about 30 seconds</strong> and makes a huge difference for a family-run business like ours. Every review helps another family find us.</p>
-          <div style="text-align:center;margin:28px 0">
-            <a href="${reviewUrl}" style="display:inline-block;background:#16a34a;color:#fff;padding:16px 36px;border-radius:999px;text-decoration:none;font-weight:800;font-size:15px;box-shadow:0 8px 20px rgba(22,163,74,.35)">⭐ Leave a Google review</a>
-          </div>
-          <div style="background:#fef3c7;border:1px solid #fbbf24;border-radius:10px;padding:14px 16px;margin:20px 0;font-size:13px;color:#78350f">
-            <strong>Was anything not perfect?</strong> Reply to this email first and we'll make it right before you review. Your feedback matters.
-          </div>
-          <p style="margin:18px 0 0;color:#3a3a3a;font-size:15px">Thanks again,<br>The Toro Movers Team</p>
-          <hr style="margin:28px 0 18px;border:none;border-top:1px solid #e5e5e5">
-          <div style="font-size:12px;color:#9ca3af;line-height:1.6"><strong>Toro Movers</strong> · Orlando, FL · Licensed &amp; insured<br><a href="https://toromovers.net/" style="color:#9ca3af">toromovers.net</a></div>
-        </div>
+  // "10am ET on (today + dayOffset)" as a UTC ISO string for Resend scheduledAt.
+  // Assumes EDT (UTC-4, Mar–Nov). Switch to 15:00Z in winter if this is still in use.
+  function at10amET(dayOffset){
+    const nowET = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit',
+    }).formatToParts(new Date());
+    const p = {}; nowET.forEach(x => p[x.type] = x.value);
+    const base = new Date(`${p.year}-${p.month}-${p.day}T14:00:00Z`); // 10am EDT
+    base.setUTCDate(base.getUTCDate() + dayOffset);
+    return base.toISOString();
+  }
+
+  const shell = (title, body) => `
+    <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;max-width:560px;margin:0 auto;color:#1a1a1a">
+      <div style="background:#C8102E;color:#fff;padding:22px 24px;border-radius:12px 12px 0 0;text-align:center">
+        <div style="font-weight:900;font-size:22px;letter-spacing:-.3px">TORO <span style="opacity:.85">MOVERS</span></div>
       </div>
-    `,
+      <div style="background:#fff;padding:28px 24px;border:1px solid #e5e5e5;border-top:none;border-radius:0 0 12px 12px">
+        <h2 style="margin:0 0 14px;font-size:22px;line-height:1.2">${title}</h2>
+        ${body}
+        <div style="text-align:center;margin:28px 0">
+          <a href="${reviewUrl}" style="display:inline-block;background:#16a34a;color:#fff;padding:16px 36px;border-radius:999px;text-decoration:none;font-weight:800;font-size:15px;box-shadow:0 8px 20px rgba(22,163,74,.35)">⭐ Leave a Google review</a>
+        </div>
+        <hr style="margin:28px 0 18px;border:none;border-top:1px solid #e5e5e5">
+        <div style="font-size:12px;color:#9ca3af;line-height:1.6"><strong>Toro Movers</strong> · Orlando, FL · Licensed &amp; insured<br><a href="https://toromovers.net/" style="color:#9ca3af">toromovers.net</a></div>
+      </div>
+    </div>`;
+
+  const mk = (subject, html, scheduledAt) => {
+    const msg = { from: `Toro Movers <${fromEmail}>`, to: [lead.email], replyTo: fromEmail, subject, html };
+    if (scheduledAt) msg.scheduledAt = scheduledAt;
+    return msg;
   };
 
-  // FOLLOW-UP — +3 days
-  const followUp = {
-    from: `Toro Movers <${fromEmail}>`,
-    to: [lead.email],
-    replyTo: fromEmail,
-    scheduledAt: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
-    subject: `${firstName}, got 30 seconds for a quick favor?`,
-    html: `
-      <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;max-width:560px;margin:0 auto;color:#1a1a1a">
-        <div style="background:#C8102E;color:#fff;padding:22px 24px;border-radius:12px 12px 0 0;text-align:center">
-          <div style="font-weight:900;font-size:22px;letter-spacing:-.3px">TORO <span style="opacity:.85">MOVERS</span></div>
-        </div>
-        <div style="background:#fff;padding:28px 24px;border:1px solid #e5e5e5;border-top:none;border-radius:0 0 12px 12px">
-          <h2 style="margin:0 0 14px;font-size:20px">Still unpacking, ${esc(firstName)}?</h2>
-          <p style="margin:0 0 16px;color:#3a3a3a;font-size:15px;line-height:1.6">If our crew did a good job last week, a quick Google review is the best way to say thanks. Literally 30 seconds — click, star, type, done.</p>
-          <div style="text-align:center;margin:28px 0">
-            <a href="${reviewUrl}" style="display:inline-block;background:#16a34a;color:#fff;padding:16px 36px;border-radius:999px;text-decoration:none;font-weight:800;font-size:15px">⭐ Leave a review</a>
-          </div>
-          <p style="margin:18px 0;color:#6b7280;font-size:13px;text-align:center">If this is the last thing you want to deal with right now, no worries — we won't ask again.</p>
-          <hr style="margin:28px 0 18px;border:none;border-top:1px solid #e5e5e5">
-          <div style="font-size:12px;color:#9ca3af;line-height:1.6"><strong>Toro Movers</strong> · Orlando, FL · Licensed &amp; insured<br><a href="https://toromovers.net/" style="color:#9ca3af">toromovers.net</a></div>
-        </div>
-      </div>
-    `,
-  };
+  const bodyAsk = `
+    <p style="margin:0 0 16px;color:#3a3a3a;font-size:15px;line-height:1.6">Thanks for trusting our crew with your move today. We hope everything arrived safely and on time.</p>
+    <p style="margin:0 0 16px;color:#3a3a3a;font-size:15px;line-height:1.6">If we did a solid job, <strong>a Google review takes about 30 seconds</strong> and makes a huge difference for a family-run business like ours. Every review helps another family find us.</p>
+    <div style="background:#fef3c7;border:1px solid #fbbf24;border-radius:10px;padding:14px 16px;margin:20px 0;font-size:13px;color:#78350f">
+      <strong>Was anything not perfect?</strong> Reply to this email first and we'll make it right before you review.
+    </div>
+    <p style="margin:18px 0 0;color:#3a3a3a;font-size:15px">Thanks again,<br>The Toro Movers Team</p>`;
 
-  const [now, later] = await Promise.all([
-    resend.emails.send(immediate),
-    resend.emails.send(followUp),
-  ]);
-  return { immediate: now?.data?.id, followUp: later?.data?.id };
+  const bodyNudge = (intro) => `
+    <p style="margin:0 0 16px;color:#3a3a3a;font-size:15px;line-height:1.6">${intro}</p>
+    <p style="margin:0 0 16px;color:#3a3a3a;font-size:15px;line-height:1.6">A quick Google review is the best way to say thanks. Literally 30 seconds — click, star, type, done.</p>
+    <p style="margin:18px 0;color:#6b7280;font-size:13px">If this is the last thing you want to deal with right now, no worries — we won't keep asking.</p>`;
+
+  if (cadence === 'escalate') {
+    // 5-email drip: now, tomorrow 10am ET, +3d, +5d, +7d
+    const sends = [
+      mk(`${firstName}, how'd your move go? 30-second favor`,
+         shell(`Hey ${esc(firstName)} — did we make it easy?`, bodyAsk)),
+      mk(`Quick follow-up from Toro Movers`,
+         shell(`Hope everything landed safely, ${esc(firstName)}`,
+               bodyNudge(`Yesterday's move went well on our end — hope it went well on yours too.`)),
+         at10amET(1)),
+      mk(`${firstName}, got 30 seconds for a quick favor?`,
+         shell(`Still unpacking, ${esc(firstName)}?`,
+               bodyNudge(`If our crew did a good job this week, would you mind dropping a quick Google review?`)),
+         at10amET(3)),
+      mk(`One more ask from the Toro Movers crew`,
+         shell(`${esc(firstName)}, one quick thing`,
+               bodyNudge(`Reviews are how small family businesses like ours get found. If we earned it, a 30-second review goes a long way.`)),
+         at10amET(5)),
+      mk(`Last note — thank you for moving with us`,
+         shell(`Thanks again, ${esc(firstName)}`,
+               bodyNudge(`This is the last email from our side. If you've already left a review — thank you. If not and we earned one, here's the link one more time.`)),
+         at10amET(7)),
+    ];
+    const results = await Promise.all(sends.map(s => resend.emails.send(s)));
+    return { cadence: 'escalate', ids: results.map(r => r?.data?.id) };
+  }
+
+  // Default: immediate + 3-day follow-up
+  const immediate = mk(`${firstName}, how'd your move go? 30-second favor`,
+    shell(`Hey ${esc(firstName)} — did we make it easy?`, bodyAsk));
+  const followUp = mk(`${firstName}, got 30 seconds for a quick favor?`,
+    shell(`Still unpacking, ${esc(firstName)}?`,
+          bodyNudge(`If our crew did a good job last week, a quick Google review is the best way to say thanks.`)),
+    new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString());
+  const [now, later] = await Promise.all([resend.emails.send(immediate), resend.emails.send(followUp)]);
+  return { cadence: 'default', immediate: now?.data?.id, followUp: later?.data?.id };
 }
 
 module.exports.sendReviewRequest = sendReviewRequest;
@@ -255,6 +280,7 @@ async function handleTextMessage(msg){
     else if (cmd === 'note')     await cmdNote(chatId, args);
     else if (cmd === 'send_confirmation' || cmd === 'send-confirmation' || cmd === 'confirm') await cmdSendConfirmation(chatId, args);
     else if (cmd === 'send_review' || cmd === 'send-review' || cmd === 'review')               await cmdSendReview(chatId, args);
+    else if (cmd === 'review_escalate' || cmd === 'review-escalate' || cmd === 'escalate')     await cmdReviewEscalate(chatId, args);
     else if (cmd === 'new_lead' || cmd === 'new-lead' || cmd === 'new')                         await cmdNewLeadStart(chatId);
     else if (cmd === 'cancel') {
       await clearWizardState(chatId);
@@ -375,7 +401,8 @@ async function cmdHelp(chatId){
     '',
     '*Customer messaging:*',
     '/send-confirmation `<id>` — send booking confirmation',
-    '/send-review `<id>` — send Google review request',
+    '/send-review `<id>` — send Google review request (now + 3d)',
+    '/review-escalate `<id>` — 5-email drip (now, tmrw 10am, every 2d)',
     '',
     '/help — this menu',
     '',
@@ -525,6 +552,24 @@ async function cmdSendReview(chatId, id){
   try {
     await sendReviewRequest(lead);
     await tg('sendMessage', { chat_id: chatId, text: `⭐ Review request sent to ${esc(lead.email)}\n+3 day follow-up scheduled.`, parse_mode: 'Markdown' });
+  } catch(e) {
+    await tg('sendMessage', { chat_id: chatId, text: `⚠️ Send failed: ${e.message}` });
+  }
+}
+
+async function cmdReviewEscalate(chatId, id){
+  if (!id) return tg('sendMessage', { chat_id: chatId, text: 'Usage: /review-escalate `<id>`\nFires 5-email drip: now, tomorrow 10am ET, then every 2 days.', parse_mode: 'Markdown' });
+  const lead = await getLead(id.trim());
+  if (!lead) return tg('sendMessage', { chat_id: chatId, text: `❌ Lead \`${esc(id)}\` not found.`, parse_mode: 'Markdown' });
+  if (!lead.email) return tg('sendMessage', { chat_id: chatId, text: `❌ ${esc(lead.name)} has no email on file.`, parse_mode: 'Markdown' });
+  try {
+    const r = await sendReviewRequest(lead, { cadence: 'escalate' });
+    const count = (r.ids || []).filter(Boolean).length;
+    await tg('sendMessage', {
+      chat_id: chatId,
+      text: `⭐ Escalating review drip queued for *${esc(lead.name)}*\n${count}/5 emails scheduled → ${esc(lead.email)}\n\nCadence: now · tomorrow 10am · +3d · +5d · +7d`,
+      parse_mode: 'Markdown',
+    });
   } catch(e) {
     await tg('sendMessage', { chat_id: chatId, text: `⚠️ Send failed: ${e.message}` });
   }
