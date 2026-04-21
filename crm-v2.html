@@ -3043,6 +3043,12 @@ async function toggleTask(id, done) {
 let APPS_CACHE = [];
 let APPS_FILTER = 'all';
 let CURRENT_APP = null;
+const SKILL_LABELS = {
+    loading: 'Loading', unloading: 'Unloading', driving: 'Driving',
+    directing: 'Directing', packing: 'Packing', unpacking: 'Unpacking',
+    assembly_disassembly: 'Assembly / disassembly',
+    organizing_truck: 'Organizing truck',
+};
 
 async function renderApplicationsView() {
     const tbody = document.getElementById('apps-tbody');
@@ -3135,6 +3141,10 @@ function openApplicationDetail(id) {
             <div style="font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--toro-charcoal);margin-bottom:6px">Zones</div>
             <div style="font-size:13px;color:var(--toro-charcoal-soft)">${escapeHtml(zones)}</div>
         </div>
+        <div style="margin-top:14px">
+            <div style="font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--toro-charcoal);margin-bottom:6px">Skills</div>
+            <div style="display:flex;flex-wrap:wrap;gap:4px">${(a.skills||[]).map(s => `<span style="background:var(--toro-sand);color:var(--toro-charcoal);font-size:11px;font-weight:700;padding:3px 9px;border-radius:9999px">${escapeHtml(SKILL_LABELS[s] || s)}</span>`).join('') || '<span style="color:var(--toro-gray-500);font-size:13px">—</span>'}</div>
+        </div>
         ${a.about ? `<div style="margin-top:14px"><div style="font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--toro-charcoal);margin-bottom:6px">About</div><div style="font-size:13px;color:var(--toro-charcoal-soft);white-space:pre-wrap">${escapeHtml(a.about)}</div></div>` : ''}
         ${a.references_text ? `<div style="margin-top:14px"><div style="font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--toro-charcoal);margin-bottom:6px">References</div><div style="font-size:13px;color:var(--toro-charcoal-soft);white-space:pre-wrap">${escapeHtml(a.references_text)}</div></div>` : ''}
         <div style="margin-top:14px">
@@ -3179,6 +3189,7 @@ async function approveApplication() {
             default_crew_size: a.team_size || 2,
             bilingual: !!a.bilingual,
             service_zones: a.service_zones || [],
+            skills: a.skills || [],
             notes: (a.about ? 'About: ' + a.about : '') + (a.truck_size ? '\nTruck: ' + a.truck_size : ''),
             active: true,
         });

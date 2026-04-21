@@ -149,9 +149,27 @@
     </div>
 
     <div class="section">
+      <h2>What are you best at?</h2>
+      <p class="hint">Check every skill you confidently handle on a move. <span class="req">* at least one</span></p>
+      <div class="zones-grid" id="skills-grid">
+        <label><input type="checkbox" name="skills" value="loading"> Loading</label>
+        <label><input type="checkbox" name="skills" value="unloading"> Unloading</label>
+        <label><input type="checkbox" name="skills" value="driving"> Driving</label>
+        <label><input type="checkbox" name="skills" value="directing"> Directing the team</label>
+        <label><input type="checkbox" name="skills" value="packing"> Packing</label>
+        <label><input type="checkbox" name="skills" value="unpacking"> Unpacking</label>
+        <label><input type="checkbox" name="skills" value="assembly_disassembly"> Assembly / disassembly</label>
+        <label><input type="checkbox" name="skills" value="organizing_truck"> Organizing items on truck</label>
+      </div>
+    </div>
+
+    <div class="section">
       <h2>Tell us about you</h2>
-      <div class="field"><label>What kind of moves are you best at?</label><textarea name="about" rows="3" placeholder="Apartments, pianos, long-distance, packing…"></textarea></div>
-      <div class="field"><label>References (optional)</label><textarea name="references_text" rows="2" placeholder="Past crews, companies, or customers we can call."></textarea></div>
+      <div class="field"><label>What kind of moves are you best at?</label><textarea name="about" rows="3" placeholder="Apartments, pianos, long-distance, high-value, etc."></textarea></div>
+      <div class="field">
+        <label>References <span class="req">*</span></label>
+        <textarea name="references_text" rows="3" required placeholder="At least one name + phone. Past crews, companies, or customers we can call."></textarea>
+      </div>
     </div>
 
     <div class="section">
@@ -193,9 +211,9 @@
     const fd = new FormData(form);
     const payload = {};
     for (const [k, v] of fd.entries()) {
-      if (k === 'service_zones') {
-        payload.service_zones = payload.service_zones || [];
-        payload.service_zones.push(v);
+      if (k === 'service_zones' || k === 'skills') {
+        payload[k] = payload[k] || [];
+        payload[k].push(v);
       } else {
         payload[k] = v;
       }
@@ -206,6 +224,14 @@
     payload.background_consent = form.elements['background_consent'].checked;
     if (!payload.background_consent) {
       alert('Please check the background-check consent to continue.');
+      btn.disabled = false; btn.textContent = original; return;
+    }
+    if (!payload.skills || payload.skills.length === 0) {
+      alert('Please check at least one skill you are best at.');
+      btn.disabled = false; btn.textContent = original; return;
+    }
+    if (!String(payload.references_text || '').trim()) {
+      alert('References are required — at least one name and phone.');
       btn.disabled = false; btn.textContent = original; return;
     }
 
