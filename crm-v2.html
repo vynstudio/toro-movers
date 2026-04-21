@@ -858,6 +858,10 @@
             <h4 id="navbar-title">Dashboard</h4>
             <div class="stat-strip d-none d-md-flex" id="stat-strip"></div>
             <div class="ml-auto d-flex" style="gap:8px">
+                <button class="btn btn-sm btn-outline-secondary admin-only" id="btn-backfill-deposits" onclick="runBackfillDeposits()" title="Match paid Stripe sessions to migrated leads" style="display:none">
+                    <i class="material-icons" style="font-size:16px;vertical-align:middle;margin-right:2px">sync</i>
+                    Backfill deposits
+                </button>
                 <button class="btn btn-sm btn-primary" onclick="openAddLeadModal()">
                     <i class="material-icons" style="font-size:16px;vertical-align:middle;margin-right:4px">add</i>
                     New lead
@@ -2665,6 +2669,59 @@ async function initApp() {
     document.querySelectorAll('[data-view="applications"]').forEach(el => {
         el.closest('li, .sb-nav-item, a').style.display = isDispatchOrAdmin ? '' : 'none';
     });
+    document.querySelectorAll('.admin-only').forEach(el => {
+        el.style.display = isAdmin ? '' : 'none';
+    });
+}
+
+/* Backfill deposits from Stripe (admin one-time op). First call is a dry run
+   so we can preview matches; if user confirms, we re-run with dry_run:false. */
+async function runBackfillDeposits() {
+    if (store !== supabaseStore) {
+        alert('Backfill requires Supabase mode.');
+        return;
+    }
+    const btn = document.getElementById('btn-backfill-deposits');
+    const orig = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = 'Scanning Stripe…';
+    try {
+        const { data: { session } } = await window.supabase.auth.getSession();
+        if (!session) throw new Error('Not signed in');
+        const runOnce = async (dryRun) => {
+            const r = await fetch('/.netlify/functions/backfill-deposits', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + session.access_token },
+                body: JSON.stringify({ dry_run: dryRun, since_days: 365 }),
+            });
+            if (!r.ok) throw new Error('HTTP ' + r.status + ': ' + (await r.text()));
+            return r.json();
+        };
+
+        const preview = await runOnce(true);
+        const matched = preview.matched || [];
+        const unmatched = preview.unmatched || [];
+
+        if (!matched.length) {
+            alert(`Scanned ${preview.scanned} Stripe sessions from the last ${preview.since_days} days.\nNo unrecorded deposits found.\n\nUnmatched (no lead in CRM): ${unmatched.length}`);
+            return;
+        }
+
+        const lines = matched.map(m => `  $${m.amount.toFixed(2)}  ${m.name}  <${m.email || '—'}>  via ${m.match_by}`).join('\n');
+        const unmatchedLines = unmatched.slice(0, 10).map(u => `  $${u.amount?.toFixed(2) || '?'}  ${u.name || '—'}  <${u.email || '—'}>  ${u.reason || ''}`).join('\n');
+        const summary = `Will write ${matched.length} deposits to jobs:\n\n${lines}\n\n${unmatched.length ? `Unmatched (${unmatched.length}, won't be written):\n${unmatchedLines}${unmatched.length > 10 ? `\n  …and ${unmatched.length - 10} more` : ''}\n\n` : ''}Proceed?`;
+        if (!confirm(summary)) return;
+
+        btn.innerHTML = 'Writing…';
+        const commit = await runOnce(false);
+        alert(`Done.\nWrote: ${commit.matched_count} deposits\nSkipped (already recorded): ${commit.skipped_count}\nUnmatched: ${commit.unmatched_count}`);
+        await refreshAll();
+    } catch (e) {
+        alert('Backfill failed: ' + (e.message || e));
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = orig;
+    }
 }
 
 /* ========== 11. CREWS CRUD (admin) ========== */
