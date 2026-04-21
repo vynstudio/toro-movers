@@ -42,7 +42,7 @@ function fmtTime(t) {
   return `${h}:${mm} ${ap}`;
 }
 
-function renderCrewEmail({ crew, customer, lead, job }) {
+function renderCrewEmail({ crew, customer, lead, job, responseBase }) {
   const arrival = fmtTime(job.arrival_window_start);
   const endWin = fmtTime(job.arrival_window_end);
   const offeredRate = Number(job.offered_hourly_rate || 0);
@@ -51,6 +51,7 @@ function renderCrewEmail({ crew, customer, lead, job }) {
   const minHours = 2;
   const hoursForMin = estHours || minHours;
   const payoutEst = (offeredRate * estMovers * hoursForMin).toFixed(2);
+  const rUrl = (r) => `${responseBase}&r=${r}`;
 
   return `<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light"><title>Toro dispatch</title>
@@ -97,7 +98,13 @@ function renderCrewEmail({ crew, customer, lead, job }) {
 ${lead.notes ? `<p style="margin:0 0 6px 0;font-size:13px;color:#6B7280">NOTES FROM SALES</p><p style="margin:0 0 18px 0;font-size:14px;line-height:1.5;color:#3A3A3D">${String(lead.notes).replace(/\n/g, '<br>')}</p>` : ''}
 ${job.notes ? `<p style="margin:0 0 6px 0;font-size:13px;color:#6B7280">JOB NOTES</p><p style="margin:0 0 18px 0;font-size:14px;line-height:1.5;color:#3A3A3D">${String(job.notes).replace(/\n/g, '<br>')}</p>` : ''}
 
-<p style="margin:24px 0 0 0;font-size:13px;color:#6B7280">Reply to confirm or if you can't take this one. Ops: <a href="tel:+13217580094" style="color:#C8102E">(321) 758-0094</a>.</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:18px 0 6px 0"><tr><td align="center" style="padding:10px 0">
+<a href="${rUrl('accept')}" style="display:inline-block;background:#16A34A;color:#ffffff;font-weight:800;font-size:15px;text-decoration:none;padding:13px 22px;border-radius:9999px;margin:4px 4px">Accept</a>
+<a href="${rUrl('decline')}" style="display:inline-block;background:#ffffff;color:#6B7280;font-weight:700;font-size:15px;text-decoration:none;padding:12px 22px;border-radius:9999px;border:2px solid #D1D5DB;margin:4px 4px">Can't take it</a>
+<a href="${rUrl('info')}" style="display:inline-block;background:#ffffff;color:#C8102E;font-weight:700;font-size:15px;text-decoration:none;padding:12px 22px;border-radius:9999px;border:2px solid #C8102E;margin:4px 4px">Ask for info</a>
+</td></tr></table>
+
+<p style="margin:10px 0 0 0;font-size:13px;color:#6B7280;text-align:center">Or call ops: <a href="tel:+13217580094" style="color:#C8102E">(321) 758-0094</a>.</p>
 </td></tr>
 <tr><td style="background:#F9FAFB;padding:14px 28px;text-align:center;color:#6B7280;font-size:11px">TORO MOVERS · Orlando, FL · (321) 758-0094 · toromovers.net</td></tr>
 </table></td></tr></table>
@@ -136,6 +143,18 @@ exports.handler = async (event) => {
     return respond(400, { error: 'Set the offered hourly rate on the job first.' });
   }
 
+  // Reset crew response to 'pending' on (re)dispatch so the buttons work fresh.
+  await admin.from('jobs').update({
+    crew_response: 'pending',
+    crew_responded_at: null,
+    crew_response_note: null,
+  }).eq('id', job_id);
+
+  // Build the base URL the email buttons will hit. Crew ID is included as
+  // a simple attestation (UUIDs aren't guessable); `r` is appended per button.
+  const origin = process.env.URL || `https://${event.headers.host}` || 'https://toromovers-crm.netlify.app';
+  const responseBase = `${origin}/.netlify/functions/crm-crew-response?j=${encodeURIComponent(job_id)}&c=${encodeURIComponent(crew.id)}`;
+
   // Send email if crew has one, else Telegram-only fallback.
   let channelUsed = 'telegram';
   if (crew.email && process.env.RESEND_API_KEY) {
@@ -146,7 +165,7 @@ exports.handler = async (event) => {
         to: [crew.email],
         replyTo: profile.email || FROM_EMAIL,
         subject: `Job offer — ${customer.full_name || 'Customer'} · ${fmtDate(job.scheduled_date)}`,
-        html: renderCrewEmail({ crew, customer, lead, job }),
+        html: renderCrewEmail({ crew, customer, lead, job, responseBase }),
       });
       if (sendErr) return respond(500, { error: 'Email send failed: ' + (sendErr.message || '') });
       channelUsed = 'email';
