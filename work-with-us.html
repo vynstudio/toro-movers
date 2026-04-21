@@ -127,6 +127,20 @@
       </div>
       <div class="field"><label>Truck size (if yes)</label><input name="truck_size" type="text" placeholder="e.g. 16-ft box, 26-ft box"></div>
       <div class="field">
+        <label>Tools you own or have regular access to</label>
+        <div class="zones-grid" id="tools-grid">
+          <label><input type="checkbox" name="tools" value="hand_truck"> Hand truck / dolly</label>
+          <label><input type="checkbox" name="tools" value="furniture_dolly"> 4-wheel furniture dolly</label>
+          <label><input type="checkbox" name="tools" value="appliance_dolly"> Appliance dolly</label>
+          <label><input type="checkbox" name="tools" value="blankets"> Moving blankets / pads</label>
+          <label><input type="checkbox" name="tools" value="straps"> Straps / tie-downs</label>
+          <label><input type="checkbox" name="tools" value="shrink_wrap"> Shrink wrap</label>
+          <label><input type="checkbox" name="tools" value="tool_kit"> Tool kit (for assembly)</label>
+          <label><input type="checkbox" name="tools" value="wardrobe_boxes"> Wardrobe boxes</label>
+          <label><input type="checkbox" name="tools" value="sliders"> Furniture sliders</label>
+        </div>
+      </div>
+      <div class="field">
         <label class="check"><input type="checkbox" name="bilingual"> I speak Spanish comfortably on the job</label>
       </div>
     </div>
@@ -271,6 +285,18 @@
   const btn = document.getElementById('submit-btn');
   const thanks = document.getElementById('thanks');
 
+  // If the user hits Back from Stripe Checkout, Chrome's bfcache can
+  // restore the "thanks" inline-display:block we set mid-submit. Reset
+  // to the fresh state whenever the page shows (first load or back-nav).
+  function resetFormVisibility() {
+    form.style.display = '';
+    thanks.style.display = 'none';
+    btn.disabled = false;
+    btn.textContent = 'Submit & pay $49 refundable fee →';
+  }
+  resetFormVisibility();
+  window.addEventListener('pageshow', resetFormVisibility);
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     btn.disabled = true;
@@ -280,7 +306,7 @@
     const fd = new FormData(form);
     const payload = {};
     for (const [k, v] of fd.entries()) {
-      if (k === 'service_zones' || k === 'skills') {
+      if (k === 'service_zones' || k === 'skills' || k === 'tools') {
         payload[k] = payload[k] || [];
         payload[k].push(v);
       } else {

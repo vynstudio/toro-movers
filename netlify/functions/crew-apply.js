@@ -98,6 +98,13 @@ exports.handler = async (event) => {
   if (skills.length === 0) {
     return respond(400, { error: 'Pick at least one skill you are best at.' });
   }
+  const VALID_TOOLS = new Set([
+    'hand_truck', 'furniture_dolly', 'appliance_dolly', 'blankets',
+    'straps', 'shrink_wrap', 'tool_kit', 'wardrobe_boxes', 'sliders',
+  ]);
+  const tools = Array.isArray(payload.tools)
+    ? payload.tools.filter(t => typeof t === 'string' && VALID_TOOLS.has(t))
+    : [];
 
   const row = {
     first_name: str(payload.first_name),
@@ -120,6 +127,7 @@ exports.handler = async (event) => {
     truck_size: str(payload.truck_size),
     service_zones: zones,
     skills: skills,
+    tools: tools,
     about: str(payload.about),
     references_text: str(payload.references_text),
     references_list: refs,
@@ -150,6 +158,7 @@ exports.handler = async (event) => {
     row.has_truck ? `Truck: yes${row.truck_size ? ' (' + row.truck_size + ')' : ''}` : '',
     row.bilingual ? 'Bilingual: yes' : '',
     zones.length ? `Zones: ${zones.join(', ')}` : '',
+    tools.length ? `Tools: ${tools.length}` : 'Tools: none',
     '',
     'Review in CRM → Crew applications',
   ]).catch(e => console.error('tg failed:', e.message));
