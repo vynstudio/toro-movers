@@ -49,27 +49,51 @@ exports.handler = async (event) => {
   if (jErr || !job) return respond(404, { error: 'Job not found' });
 
   const patch = {};
-  for (const k of ['actual_hours', 'actual_movers', 'materials', 'fees', 'offered_hourly_rate']) {
+  const numFields = ['actual_hours', 'actual_movers', 'materials', 'fees',
+                     'offered_hourly_rate', 'sub_bonus', 'expenses'];
+  for (const k of numFields) {
     if (k in payload) patch[k] = num(payload[k]);
   }
   if ('notes' in payload) patch.notes = payload.notes == null ? null : String(payload.notes).trim() || null;
 
-  // Recompute customer_total if any driver changed. Formula:
-  //   (hourly_rate × crew_size × hours) + materials + fees
+  // ----- Customer-total recompute -----
+  // (hourly_rate × crew_size × hours) + materials + fees
   // Uses actual_* when set, falls back to quoted values.
-  const drivers = ['actual_hours', 'actual_movers', 'materials', 'fees'];
-  if (drivers.some(k => k in patch)) {
-    const hours = (patch.actual_hours != null ? patch.actual_hours : job.actual_hours) ?? 0;
-    const movers = (patch.actual_movers != null ? patch.actual_movers : job.actual_movers) ?? null;
-    const crewSize = movers ?? 2; // fall back to 2 movers
+  const custDrivers = ['actual_hours', 'actual_movers', 'materials', 'fees'];
+  const effective = (k) => (patch[k] != null ? patch[k] : Number(job[k] || 0));
+  if (custDrivers.some(k => k in patch)) {
+    const hours = patch.actual_hours != null ? patch.actual_hours : (job.actual_hours ?? 0);
+    const movers = patch.actual_movers != null ? patch.actual_movers : (job.actual_movers ?? 2);
     const rate = Number(job.hourly_rate || 75);
-    const materials = patch.materials != null ? patch.materials : Number(job.materials || 0);
-    const fees = patch.fees != null ? patch.fees : Number(job.fees || 0);
-    const truckFeeIncluded = fees > 0;
-    const labor = rate * crewSize * Number(hours);
-    const newTotal = labor + Number(materials) + Number(fees);
-    patch.customer_total = Number(newTotal.toFixed(2));
+    const labor = rate * Number(movers) * Number(hours);
+    const materials = effective('materials');
+    const fees = effective('fees');
+    patch.customer_total = Number((labor + materials + fees).toFixed(2));
+    // Balance due — total − deposit_paid. Doesn't include tip (tip is separate).
     patch.balance_due = Math.max(0, patch.customer_total - Number(job.deposit_paid || 0));
+  }
+
+  // ----- Crew payout (sub_payout_flat = hourly × movers × hours) -----
+  const payoutDrivers = ['actual_hours', 'actual_movers', 'offered_hourly_rate'];
+  if (payoutDrivers.some(k => k in patch)) {
+    const hours = patch.actual_hours != null ? patch.actual_hours : (job.actual_hours ?? 0);
+    const movers = patch.actual_movers != null ? patch.actual_movers : (job.actual_movers ?? 2);
+    const crewRate = patch.offered_hourly_rate != null ? patch.offered_hourly_rate : Number(job.offered_hourly_rate || 0);
+    patch.sub_payout_flat = Number((Number(crewRate) * Number(movers) * Number(hours)).toFixed(2));
+  }
+
+  // ----- Internal cost + margin -----
+  // internal_cost_total = crew hourly payout + crew bonus + expenses
+  // margin = customer_total − internal_cost_total (tip not counted — pass-through)
+  const costDrivers = ['actual_hours', 'actual_movers', 'offered_hourly_rate',
+                       'sub_bonus', 'expenses', 'materials', 'fees'];
+  if (costDrivers.some(k => k in patch)) {
+    const subPayout = patch.sub_payout_flat != null ? patch.sub_payout_flat : Number(job.sub_payout_flat || 0);
+    const subBonus = patch.sub_bonus != null ? patch.sub_bonus : Number(job.sub_bonus || 0);
+    const expenses = patch.expenses != null ? patch.expenses : Number(job.expenses || 0);
+    const total = patch.customer_total != null ? patch.customer_total : Number(job.customer_total || 0);
+    patch.internal_cost_total = Number((subPayout + subBonus + expenses).toFixed(2));
+    patch.margin = Number((total - patch.internal_cost_total).toFixed(2));
   }
 
   const { data: updated, error: upErr } = await admin

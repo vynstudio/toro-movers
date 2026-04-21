@@ -99,7 +99,9 @@ exports.handler = async (event) => {
   if (Number(job.balance_due || 0) <= 0) return respond(400, { error: 'No balance due' });
 
   const origin = process.env.URL || `https://${event.headers.host}`;
-  const payUrl = `${origin}/.netlify/functions/balance-checkout?j=${encodeURIComponent(job_id)}`;
+  // Route to the tip picker page first; it handles tip selection and then
+  // forwards to /balance-checkout with the chosen tip amount as a query param.
+  const payUrl = `${origin}/balance.html?j=${encodeURIComponent(job_id)}`;
   const lang = customer.language_preference === 'es' ? 'es' : 'en';
   const L = COPY[lang];
   const firstName = String(customer.full_name || '').split(/\s+/)[0] || '';
