@@ -1380,6 +1380,22 @@
                         <label>Expenses ($) · truck rental, fuel, materials not invoiced</label>
                         <input type="number" id="jo-expenses" step="0.01" min="0" placeholder="0.00">
                     </div>
+                    <div class="form-grid-2" style="gap:12px">
+                        <div class="form-section">
+                            <label>Deposit paid ($) <span style="color:var(--toro-gray-500);font-weight:500;text-transform:none;letter-spacing:0;font-size:11px">manual entry for cash/Zelle/etc.</span></label>
+                            <input type="number" id="jo-deposit-paid" step="0.01" min="0" placeholder="0.00">
+                        </div>
+                        <div class="form-section">
+                            <label>Payment method</label>
+                            <select id="jo-payment-method" class="form-control form-control-sm">
+                                <option value="">—</option>
+                                <option value="card">Card (Stripe)</option>
+                                <option value="cash_app">Cash App</option>
+                                <option value="zelle">Zelle</option>
+                                <option value="cash">Cash</option>
+                            </select>
+                        </div>
+                    </div>
                     <div class="form-section">
                         <label>Job notes</label>
                         <textarea id="jo-notes" rows="2" style="width:100%;padding:8px 10px;border:1px solid var(--toro-gray-300);border-radius:6px;font-size:13px;font-family:inherit" placeholder="Anything that happened on the move — good, bad, or weird."></textarea>
@@ -2850,6 +2866,8 @@ async function loadJobOpsForLead(l) {
     document.getElementById('jo-offered-rate').value = CURRENT_JOB.offered_hourly_rate ?? '';
     document.getElementById('jo-bonus').value = CURRENT_JOB.sub_bonus ?? '';
     document.getElementById('jo-expenses').value = CURRENT_JOB.expenses ?? '';
+    document.getElementById('jo-deposit-paid').value = CURRENT_JOB.deposit_paid ?? '';
+    document.getElementById('jo-payment-method').value = CURRENT_JOB.payment_method || '';
     document.getElementById('jo-notes').value = CURRENT_JOB.notes || '';
     const bal = document.getElementById('job-ops-balance');
     if (CURRENT_JOB.id) {
@@ -2914,6 +2932,8 @@ async function saveJobOps() {
         offered_hourly_rate: document.getElementById('jo-offered-rate').value || null,
         sub_bonus: document.getElementById('jo-bonus').value || null,
         expenses: document.getElementById('jo-expenses').value || null,
+        deposit_paid: document.getElementById('jo-deposit-paid').value || null,
+        payment_method: document.getElementById('jo-payment-method').value || null,
         notes: document.getElementById('jo-notes').value,
     };
     const res = await fetch('/.netlify/functions/update-job', {

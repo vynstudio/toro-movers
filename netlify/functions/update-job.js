@@ -50,11 +50,25 @@ exports.handler = async (event) => {
 
   const patch = {};
   const numFields = ['actual_hours', 'actual_movers', 'materials', 'fees',
-                     'offered_hourly_rate', 'sub_bonus', 'expenses'];
+                     'offered_hourly_rate', 'sub_bonus', 'expenses',
+                     'deposit_paid', 'tip_amount'];
   for (const k of numFields) {
     if (k in payload) patch[k] = num(payload[k]);
   }
   if ('notes' in payload) patch.notes = payload.notes == null ? null : String(payload.notes).trim() || null;
+
+  // Manual payment method (for deposits paid outside Stripe — cash, zelle, cash_app)
+  const VALID_PAY_METHODS = new Set(['card', 'cash_app', 'zelle', 'cash']);
+  if ('payment_method' in payload) {
+    const pm = payload.payment_method;
+    patch.payment_method = pm && VALID_PAY_METHODS.has(pm) ? pm : null;
+  }
+
+  // If admin entered a deposit_paid amount, stamp payment_received_at (unless the
+  // field wasn't already set — we don't want to reset it on every save).
+  if ('deposit_paid' in patch && Number(patch.deposit_paid || 0) > 0 && !job.payment_received_at) {
+    patch.payment_received_at = new Date().toISOString();
+  }
 
   // ----- Customer-total recompute -----
   // (hourly_rate × crew_size × hours) + materials + fees
@@ -69,8 +83,14 @@ exports.handler = async (event) => {
     const materials = effective('materials');
     const fees = effective('fees');
     patch.customer_total = Number((labor + materials + fees).toFixed(2));
-    // Balance due — total − deposit_paid. Doesn't include tip (tip is separate).
-    patch.balance_due = Math.max(0, patch.customer_total - Number(job.deposit_paid || 0));
+  }
+
+  // ----- Balance + payment_status recompute if total or deposit_paid changed -----
+  if ('customer_total' in patch || 'deposit_paid' in patch) {
+    const total = patch.customer_total != null ? patch.customer_total : Number(job.customer_total || 0);
+    const paid = patch.deposit_paid != null ? patch.deposit_paid : Number(job.deposit_paid || 0);
+    patch.balance_due = Math.max(0, Number((total - paid).toFixed(2)));
+    patch.payment_status = paid <= 0 ? 'unpaid' : (patch.balance_due <= 0 ? 'paid' : 'partial');
   }
 
   // ----- Crew payout (sub_payout_flat = hourly × movers × hours) -----
