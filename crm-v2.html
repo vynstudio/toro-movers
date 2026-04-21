@@ -1032,6 +1032,10 @@
                                 <input type="tel" id="crew-contact-phone">
                             </div>
                         </div>
+                        <div class="form-section">
+                            <label>Dispatch email</label>
+                            <input type="email" id="crew-email" placeholder="crew@example.com — receives job briefs with offered rate">
+                        </div>
                         <div class="form-grid-2">
                             <div class="form-section">
                                 <label>Flat 2-hr rate</label>
@@ -2552,7 +2556,7 @@ async function renderCrewsView() {
         const statusLbl = c.active ? 'Active' : 'Inactive';
         return `<tr>
             <td style="padding:10px 14px;font-weight:700">${escapeHtml(c.name)}</td>
-            <td style="padding:10px 14px">${c.lead_contact_name ? escapeHtml(c.lead_contact_name) : '—'}${c.lead_contact_phone ? '<br><span style="color:var(--toro-gray-500);font-size:12px">' + escapeHtml(c.lead_contact_phone) + '</span>' : ''}</td>
+            <td style="padding:10px 14px">${c.lead_contact_name ? escapeHtml(c.lead_contact_name) : '—'}${c.lead_contact_phone ? '<br><span style="color:var(--toro-gray-500);font-size:12px">' + escapeHtml(c.lead_contact_phone) + '</span>' : ''}${c.email ? '<br><span style="color:var(--toro-gray-500);font-size:12px">' + escapeHtml(c.email) + '</span>' : ''}</td>
             <td style="padding:10px 14px">${c.default_crew_size || '—'}</td>
             <td style="padding:10px 14px">${c.bilingual ? 'Yes' : 'No'}</td>
             <td style="padding:10px 14px">${rates}</td>
@@ -2579,6 +2583,7 @@ function openCrewModal(id) {
     document.getElementById('crew-size').value = c ? (c.default_crew_size || 2) : 2;
     document.getElementById('crew-contact-name').value = c ? (c.lead_contact_name || '') : '';
     document.getElementById('crew-contact-phone').value = c ? (c.lead_contact_phone || '') : '';
+    document.getElementById('crew-email').value = c ? (c.email || '') : '';
     document.getElementById('crew-rate-2').value = c ? (c.flat_rate_2hr || '') : '';
     document.getElementById('crew-rate-4').value = c ? (c.flat_rate_4hr || '') : '';
     document.getElementById('crew-rate-8').value = c ? (c.flat_rate_8hr || '') : '';
@@ -2594,6 +2599,7 @@ async function saveCrew() {
         default_crew_size: parseInt(document.getElementById('crew-size').value, 10) || 2,
         lead_contact_name: document.getElementById('crew-contact-name').value.trim() || null,
         lead_contact_phone: document.getElementById('crew-contact-phone').value.trim() || null,
+        email: document.getElementById('crew-email').value.trim() || null,
         flat_rate_2hr: parseFloat(document.getElementById('crew-rate-2').value) || null,
         flat_rate_4hr: parseFloat(document.getElementById('crew-rate-4').value) || null,
         flat_rate_8hr: parseFloat(document.getElementById('crew-rate-8').value) || null,
