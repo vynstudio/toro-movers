@@ -1333,6 +1333,10 @@
                                 <i class="material-icons" style="font-size:14px;vertical-align:middle">phone</i>
                                 Log call
                             </button>
+                            <button class="btn btn-sm btn-outline-success" id="dv-send-booking-email" onclick="sendBookingEmail()" style="display:none">
+                                <i class="material-icons" style="font-size:14px;vertical-align:middle">mark_email_read</i>
+                                Send booking confirmation
+                            </button>
                             <button class="btn btn-sm btn-outline-secondary" onclick="requestReview()">
                                 <i class="material-icons" style="font-size:14px;vertical-align:middle">star</i>
                                 Request review
@@ -2320,6 +2324,17 @@ function openDetail(id) {
     // Crew assignment (booked/done leads, admin/dispatch only)
     loadCrewAssignmentForLead(l);
 
+    // "Send booking confirmation" button — booked leads only, admin/dispatch,
+    // and only if the customer has an email on file.
+    const sendBookingBtn = document.getElementById('dv-send-booking-email');
+    if (sendBookingBtn) {
+        const canSend = l.stage === 'booked'
+            && store === supabaseStore
+            && ['admin','dispatch'].includes(state.currentUser?.role)
+            && !!l.customer?.email;
+        sendBookingBtn.style.display = canSend ? '' : 'none';
+    }
+
     // Job ops panel (booked/done leads only) + Tasks panel
     loadJobOpsForLead(l);
     loadTasksForLead(l);
@@ -2595,6 +2610,38 @@ async function requestReview() {
     }
     const out = await res.json();
     alert('Review request sent to ' + out.sent_to + '.');
+}
+
+/* Manually (re)send the booking confirmation email for a booked lead — used
+   for migrated/backfilled leads whose customer never got the original email. */
+async function sendBookingEmail() {
+    if (store !== supabaseStore) {
+        alert('Mock mode — sign in with a Supabase account to send a real confirmation.');
+        return;
+    }
+    const lead = state.leads.find(l => l.id === state.detailId);
+    if (!lead) { alert('No lead selected.'); return; }
+    if (!lead.customer?.email) { alert('No email on file for this customer.'); return; }
+    if (!confirm('Send booking confirmation to ' + lead.customer.email + '?\n(Appointment details + deposit amount + balance due.)')) return;
+    const session = await supabaseStore.getSession();
+    if (!session) { alert('Session expired — please sign in again.'); return; }
+    const res = await fetch('/.netlify/functions/send-booking-email', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + session.access_token,
+        },
+        body: JSON.stringify({ lead_id: lead.id }),
+    });
+    if (!res.ok) {
+        let msg = 'Send failed';
+        try { msg = (await res.json()).error || msg; } catch (_) {}
+        alert(msg + ' (HTTP ' + res.status + ')');
+        return;
+    }
+    const out = await res.json();
+    alert('Booking confirmation sent to ' + out.email + '.');
+    await refreshAll();
 }
 
 /* ========== 10. ADD LEAD ========== */
