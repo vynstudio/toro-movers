@@ -7,6 +7,7 @@ const { getStore } = require('@netlify/blobs'); // surface for Netlify scanner
 const { listLeads, updateLead, notifyTelegram, getLead } = require('./_lib/leads');
 const { sendBookingConfirmation } = require('./_lib/emails');
 const { sendSms } = require('./_lib/sms');
+const { handleCrmV2Event } = require('./_lib/crm-stripe');
 
 exports.handler = async (event) => {
   const sig = event.headers['stripe-signature'];
@@ -23,6 +24,16 @@ exports.handler = async (event) => {
   } catch (err) {
     console.error('Webhook signature failed:', err.message);
     return { statusCode: 400, body: `Webhook Error: ${err.message}` };
+  }
+
+  // CRM v2: route deposit/balance events to the Supabase-backed handler.
+  // Returns true if handled — skip the v1 Netlify Blobs lead lookup.
+  try {
+    const handled = await handleCrmV2Event(evt);
+    if (handled) return { statusCode: 200, body: JSON.stringify({ received: true, handler: 'crm-v2' }) };
+  } catch (e) {
+    console.error('CRM v2 webhook handler failed:', e);
+    // Fall through to v1 logic so unrelated Stripe events still work.
   }
 
   if (evt.type === 'checkout.session.completed') {

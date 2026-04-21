@@ -886,6 +886,11 @@
                     <div class="value" id="kpi-close">&mdash;</div>
                     <div class="delta">Last 30 days</div>
                 </div>
+                <div class="kpi-card" id="kpi-margin-card" style="display:none">
+                    <div class="label">Week margin <span style="background:var(--toro-charcoal);color:#fff;font-size:9px;padding:2px 6px;border-radius:3px;margin-left:4px;font-weight:800;letter-spacing:0.05em">ADMIN</span></div>
+                    <div class="value" id="kpi-margin">&mdash;</div>
+                    <div class="delta" id="kpi-margin-delta">Last 7 days</div>
+                </div>
             </div>
 
             <div class="panel">
@@ -952,11 +957,8 @@
         <div class="view-container" id="view-calendar">
             <div class="panel">
                 <div class="panel-body">
-                    <div id="calendar-placeholder" style="text-align:center;padding:60px 20px;color:var(--toro-gray-500)">
-                        <i class="fas fa-calendar-alt" style="font-size:48px;color:var(--toro-gray-300);margin-bottom:16px;display:block"></i>
-                        <div style="font-weight:700;color:var(--toro-charcoal);margin-bottom:6px">Calendar view</div>
-                        <div style="font-size:13px">FullCalendar wires up in Phase 4 once Supabase is live.</div>
-                    </div>
+                    <div id="calendar-crew-legend" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px;font-size:12px;color:var(--toro-charcoal-soft)"></div>
+                    <div id="calendar-el" style="min-height:640px"></div>
                 </div>
             </div>
         </div>
@@ -972,13 +974,94 @@
             </div>
         </div>
 
-        <!-- ===== CREWS VIEW ===== -->
+        <!-- ===== CREWS VIEW (admin only) ===== -->
         <div class="view-container" id="view-crews">
             <div class="panel">
-                <div class="panel-body" style="text-align:center;padding:60px 20px;color:var(--toro-gray-500)">
-                    <i class="fas fa-hard-hat" style="font-size:48px;color:var(--toro-gray-300);margin-bottom:16px;display:block"></i>
-                    <div style="font-weight:700;color:var(--toro-charcoal);margin-bottom:6px">Crews (admin only)</div>
-                    <div style="font-size:13px">Wires up in Phase 4.</div>
+                <div class="panel-header">
+                    <h5>Crews</h5>
+                    <button class="btn btn-sm btn-primary" onclick="openCrewModal()">
+                        <i class="material-icons" style="font-size:16px;vertical-align:middle">add</i> New crew
+                    </button>
+                </div>
+                <div class="panel-body" style="padding:0">
+                    <table class="table table-sm" id="crews-table" style="margin:0;font-size:13px">
+                        <thead>
+                            <tr style="background:var(--toro-gray-50)">
+                                <th style="padding:10px 14px">Name</th>
+                                <th style="padding:10px 14px">Lead contact</th>
+                                <th style="padding:10px 14px">Size</th>
+                                <th style="padding:10px 14px">Bilingual</th>
+                                <th style="padding:10px 14px">2h / 4h / 8h</th>
+                                <th style="padding:10px 14px">Status</th>
+                                <th style="padding:10px 14px"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="crews-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Crew modal -->
+        <div class="modal fade" id="crewModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document" style="max-width:520px">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="crew-modal-title">New crew</h5>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="crew-id">
+                        <div class="form-grid-2">
+                            <div class="form-section">
+                                <label>Name *</label>
+                                <input type="text" id="crew-name" placeholder="Crew A">
+                            </div>
+                            <div class="form-section">
+                                <label>Default crew size</label>
+                                <input type="number" id="crew-size" min="1" max="8" value="2">
+                            </div>
+                        </div>
+                        <div class="form-grid-2">
+                            <div class="form-section">
+                                <label>Lead contact name</label>
+                                <input type="text" id="crew-contact-name">
+                            </div>
+                            <div class="form-section">
+                                <label>Lead contact phone</label>
+                                <input type="tel" id="crew-contact-phone">
+                            </div>
+                        </div>
+                        <div class="form-grid-2">
+                            <div class="form-section">
+                                <label>Flat 2-hr rate</label>
+                                <input type="number" step="0.01" id="crew-rate-2">
+                            </div>
+                            <div class="form-section">
+                                <label>Flat 4-hr rate</label>
+                                <input type="number" step="0.01" id="crew-rate-4">
+                            </div>
+                        </div>
+                        <div class="form-grid-2">
+                            <div class="form-section">
+                                <label>Flat 8-hr rate</label>
+                                <input type="number" step="0.01" id="crew-rate-8">
+                            </div>
+                            <div class="form-section">
+                                <label style="display:flex;align-items:center;gap:6px;text-transform:none;letter-spacing:0;margin-top:22px">
+                                    <input type="checkbox" id="crew-bilingual"> Bilingual
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-section">
+                            <label>Notes</label>
+                            <textarea id="crew-notes" rows="2" style="width:100%;padding:8px 10px;border:1px solid var(--toro-gray-300);border-radius:6px;font-size:13px;font-family:inherit"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-sm btn-outline-secondary" data-dismiss="modal">Cancel</button>
+                        <button class="btn btn-sm btn-primary" onclick="saveCrew()">Save</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1152,6 +1235,11 @@
                             <option>Dispatch</option>
                         </select>
 
+                        <div id="crew-assign-wrap" style="display:none;margin-bottom:16px">
+                            <h6>Crew</h6>
+                            <select id="dv-crew" class="form-control form-control-sm" onchange="changeCrewAssignment()"></select>
+                        </div>
+
                         <h6>Activity</h6>
                         <div id="dv-timeline"></div>
 
@@ -1266,6 +1354,7 @@
 <script src="crm-assets/vendor/popper.min.js"></script>
 <script src="crm-assets/vendor/bootstrap.min.js"></script>
 <script src="crm-assets/vendor/dragula/dragula.min.js"></script>
+<script src="crm-assets/vendor/fullcalendar/fullcalendar.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <!-- ================================================
@@ -1605,6 +1694,53 @@ const supabaseStore = {
     async signOut() {
         await this.client.auth.signOut();
     },
+    async getMyProfile(userId) {
+        const { data, error } = await this.client
+            .from('users').select('role, full_name').eq('id', userId).maybeSingle();
+        if (error) return null;
+        return data;
+    },
+
+    // --- Crews ---
+    async fetchCrews(includeInactive = false) {
+        let q = this.client.from('crews').select('*').order('name', { ascending: true });
+        if (!includeInactive) q = q.eq('active', true);
+        const { data, error } = await q;
+        if (error) throw error;
+        return data || [];
+    },
+    async createCrew(payload) {
+        const { data, error } = await this.client.from('crews').insert(payload).select().single();
+        if (error) throw error;
+        return data;
+    },
+    async updateCrew(id, patch) {
+        const { data, error } = await this.client.from('crews').update(patch).eq('id', id).select().single();
+        if (error) throw error;
+        return data;
+    },
+
+    // --- Jobs ---
+    async fetchJobs({ from, to } = {}) {
+        let q = this.client.from('jobs').select('*').order('scheduled_date', { ascending: true });
+        if (from) q = q.gte('scheduled_date', from);
+        if (to) q = q.lte('scheduled_date', to);
+        const { data, error } = await q;
+        if (error) throw error;
+        return data || [];
+    },
+    async fetchJobByLead(leadId) {
+        const { data, error } = await this.client
+            .from('jobs').select('*').eq('lead_id', leadId)
+            .order('created_at', { ascending: false }).limit(1).maybeSingle();
+        if (error) throw error;
+        return data;
+    },
+    async updateJob(id, patch) {
+        const { data, error } = await this.client.from('jobs').update(patch).eq('id', id).select().single();
+        if (error) throw error;
+        return data;
+    },
 };
 
 // Auto-detect: use Supabase if configured AND the client loads, else mock.
@@ -1639,7 +1775,8 @@ async function doLogin() {
         try {
             if (!password) { err.textContent = 'Password required.'; return; }
             const user = await supabaseStore.signInWithPassword(email, password);
-            state.currentUser = { email: user.email, id: user.id, role: 'admin' };
+            const profile = await supabaseStore.getMyProfile(user.id);
+            state.currentUser = { email: user.email, id: user.id, role: profile?.role || 'sales' };
             showApp();
         } catch (e) {
             err.textContent = e.message || 'Sign-in failed.';
@@ -1696,7 +1833,8 @@ async function checkSession() {
         try {
             const session = await supabaseStore.getSession();
             if (session?.user) {
-                state.currentUser = { email: session.user.email, id: session.user.id, role: 'admin' };
+                const profile = await supabaseStore.getMyProfile(session.user.id);
+                state.currentUser = { email: session.user.email, id: session.user.id, role: profile?.role || 'sales' };
                 showApp();
                 return;
             }
@@ -1741,6 +1879,8 @@ function switchView(view) {
     if (view === 'dashboard') renderDashboard();
     if (view === 'kanban') renderKanban();
     if (view === 'leads') renderLeadsTable();
+    if (view === 'crews') renderCrewsView();
+    if (view === 'calendar') renderCalendarView();
 }
 
 function toggleMobileSidebar() {
@@ -1778,6 +1918,14 @@ function renderDashboard() {
         <span><strong>${fmt$(pipelineValue)}</strong> pipeline</span>
         <span><strong>${closeRate}%</strong> close rate</span>
     `;
+
+    // Admin-only KPIs (fetches authoritative week revenue + margin from server)
+    if (state.currentUser?.role === 'admin' && store === supabaseStore) {
+        loadAdminKpis();
+    } else {
+        const mc = document.getElementById('kpi-margin-card');
+        if (mc) mc.style.display = 'none';
+    }
 
     // Recent activity
     const recent = [...state.leads].sort((a,b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 5);
@@ -1927,6 +2075,9 @@ function openDetail(id) {
     document.getElementById('dv-notes').value = l.notes || '';
     document.getElementById('dv-stage').value = l.stage;
 
+    // Crew assignment (booked/done leads, admin/dispatch only)
+    loadCrewAssignmentForLead(l);
+
     // Timeline
     const events = [
         { action: 'Lead created', meta: 'via ' + l.source, date: l.created_at, dot: 'red' },
@@ -1965,7 +2116,7 @@ function openDetail(id) {
     $('#detailModal').modal('show');
 }
 
-function changeStage() {
+async function changeStage() {
     const newStage = document.getElementById('dv-stage').value;
     const l = state.leads.find(x => x.id === state.detailId);
     if (!l) return;
@@ -1973,10 +2124,12 @@ function changeStage() {
     const badge = document.getElementById('detail-stage-badge');
     badge.textContent = CONFIG.stageLabels[newStage];
     badge.className = 'stage-badge s-' + newStage;
-    store.updateStage(l.id, newStage);
+    try { await store.updateStage(l.id, newStage); } catch (e) { console.error(e); }
     renderDashboard();
     renderKanban();
     renderLeadsTable();
+    // The db trigger may have just created a jobs row; re-evaluate the crew picker.
+    loadCrewAssignmentForLead(l);
 }
 
 /* ========== 9. QUOTE BUILDER ========== */
@@ -2115,8 +2268,57 @@ async function sendQuote() {
 function logCall() {
     alert('Mock mode — would append a call event to the activity log.');
 }
-function requestReview() {
-    alert('Mock mode — sends Google review request SMS via Twilio.');
+async function loadAdminKpis() {
+    try {
+        const session = await supabaseStore.getSession();
+        if (!session) return;
+        const res = await fetch('/.netlify/functions/crm-kpis', {
+            headers: { 'Authorization': 'Bearer ' + session.access_token },
+        });
+        if (!res.ok) return;
+        const k = await res.json();
+        const marginCard = document.getElementById('kpi-margin-card');
+        if (marginCard) marginCard.style.display = '';
+        document.getElementById('kpi-margin').textContent = fmt$(k.week.margin);
+        document.getElementById('kpi-margin-delta').textContent =
+            k.week.jobs_done + ' paid · ' + k.week.jobs_scheduled + ' scheduled';
+        // Upgrade the shared cards to authoritative server numbers
+        document.getElementById('kpi-week').textContent = fmt$(k.week.revenue);
+        document.getElementById('kpi-week-delta').textContent = k.week.jobs_done + ' jobs paid';
+        document.getElementById('kpi-close').textContent = Math.round(k.week.close_rate * 100) + '%';
+        document.getElementById('kpi-pipeline').textContent = fmt$(k.pipeline.open_value);
+    } catch (e) {
+        console.warn('KPI load failed:', e);
+    }
+}
+
+async function requestReview() {
+    if (store !== supabaseStore) {
+        alert('Mock mode — sign in with a Supabase account to send a real review request.');
+        return;
+    }
+    const lead = state.leads.find(l => l.id === state.detailId);
+    if (!lead) { alert('No lead selected.'); return; }
+    if (!lead.customer?.email) { alert('No email on file for this customer.'); return; }
+    if (!confirm('Send review request to ' + lead.customer.email + '?')) return;
+    const session = await supabaseStore.getSession();
+    if (!session) { alert('Session expired — please sign in again.'); return; }
+    const res = await fetch('/.netlify/functions/request-review', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + session.access_token,
+        },
+        body: JSON.stringify({ lead_id: lead.id }),
+    });
+    if (!res.ok) {
+        let msg = 'Review request failed';
+        try { msg = (await res.json()).error || msg; } catch (_) {}
+        alert(msg + ' (HTTP ' + res.status + ')');
+        return;
+    }
+    const out = await res.json();
+    alert('Review request sent to ' + out.sent_to + '.');
 }
 
 /* ========== 10. ADD LEAD ========== */
@@ -2139,11 +2341,28 @@ async function saveNewLead() {
         alert('Name and phone required.');
         return;
     }
-    await store.createLead(payload);
+    const lead = await store.createLead(payload);
     $('#addLeadModal').modal('hide');
     renderDashboard();
     renderKanban();
     renderLeadsTable();
+
+    // Fire team Telegram alert (Supabase-backed only; mock mode skips)
+    if (store === supabaseStore && lead && lead.id) {
+        try {
+            const session = await supabaseStore.getSession();
+            if (session) {
+                fetch('/.netlify/functions/notify-new-lead', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + session.access_token,
+                    },
+                    body: JSON.stringify({ lead_id: lead.id }),
+                }).catch(() => {});
+            }
+        } catch (_) { /* fire-and-forget */ }
+    }
 }
 
 /* ========== 11. BOOTSTRAP ========== */
@@ -2162,6 +2381,214 @@ async function refreshAll() {
 
 async function initApp() {
     await refreshAll();
+    // Role-aware sidebar gates (admin-only nav items)
+    const isAdmin = state.currentUser?.role === 'admin';
+    const isDispatchOrAdmin = ['admin','dispatch'].includes(state.currentUser?.role);
+    document.querySelectorAll('[data-view="crews"]').forEach(el => {
+        el.closest('li, .sb-nav-item, a').style.display = isAdmin ? '' : 'none';
+    });
+    document.querySelectorAll('[data-view="calendar"]').forEach(el => {
+        el.closest('li, .sb-nav-item, a').style.display = isDispatchOrAdmin ? '' : 'none';
+    });
+}
+
+/* ========== 11. CREWS CRUD (admin) ========== */
+let CREW_CACHE = [];
+
+async function renderCrewsView() {
+    const tbody = document.getElementById('crews-tbody');
+    if (!tbody) return;
+    if (store !== supabaseStore) {
+        tbody.innerHTML = '<tr><td colspan="7" style="padding:28px;text-align:center;color:var(--toro-gray-500)">Sign in with Supabase to manage crews.</td></tr>';
+        return;
+    }
+    try {
+        CREW_CACHE = await supabaseStore.fetchCrews(true);
+    } catch (e) {
+        tbody.innerHTML = '<tr><td colspan="7" style="padding:28px;text-align:center;color:var(--toro-gray-500)">'
+            + (e.message || 'Could not load crews (admin only).') + '</td></tr>';
+        return;
+    }
+    if (!CREW_CACHE.length) {
+        tbody.innerHTML = '<tr><td colspan="7" style="padding:28px;text-align:center;color:var(--toro-gray-500)">No crews yet. Click <strong>New crew</strong> to add one.</td></tr>';
+        return;
+    }
+    tbody.innerHTML = CREW_CACHE.map(c => {
+        const rates = [c.flat_rate_2hr, c.flat_rate_4hr, c.flat_rate_8hr]
+            .map(r => r ? '$' + Number(r).toFixed(0) : '—').join(' / ');
+        const statusCls = c.active ? 's-booked' : 's-lost';
+        const statusLbl = c.active ? 'Active' : 'Inactive';
+        return `<tr>
+            <td style="padding:10px 14px;font-weight:700">${escapeHtml(c.name)}</td>
+            <td style="padding:10px 14px">${c.lead_contact_name ? escapeHtml(c.lead_contact_name) : '—'}${c.lead_contact_phone ? '<br><span style="color:var(--toro-gray-500);font-size:12px">' + escapeHtml(c.lead_contact_phone) + '</span>' : ''}</td>
+            <td style="padding:10px 14px">${c.default_crew_size || '—'}</td>
+            <td style="padding:10px 14px">${c.bilingual ? 'Yes' : 'No'}</td>
+            <td style="padding:10px 14px">${rates}</td>
+            <td style="padding:10px 14px"><span class="stage-badge ${statusCls}">${statusLbl}</span></td>
+            <td style="padding:10px 14px;text-align:right;white-space:nowrap">
+                <button class="btn btn-sm btn-outline-secondary" onclick="openCrewModal('${c.id}')">Edit</button>
+                <button class="btn btn-sm btn-outline-secondary" onclick="toggleCrewActive('${c.id}')">${c.active ? 'Deactivate' : 'Reactivate'}</button>
+            </td>
+        </tr>`;
+    }).join('');
+}
+
+function escapeHtml(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({
+        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[c]));
+}
+
+function openCrewModal(id) {
+    const c = id ? CREW_CACHE.find(x => x.id === id) : null;
+    document.getElementById('crew-modal-title').textContent = c ? 'Edit crew' : 'New crew';
+    document.getElementById('crew-id').value = c ? c.id : '';
+    document.getElementById('crew-name').value = c ? c.name : '';
+    document.getElementById('crew-size').value = c ? (c.default_crew_size || 2) : 2;
+    document.getElementById('crew-contact-name').value = c ? (c.lead_contact_name || '') : '';
+    document.getElementById('crew-contact-phone').value = c ? (c.lead_contact_phone || '') : '';
+    document.getElementById('crew-rate-2').value = c ? (c.flat_rate_2hr || '') : '';
+    document.getElementById('crew-rate-4').value = c ? (c.flat_rate_4hr || '') : '';
+    document.getElementById('crew-rate-8').value = c ? (c.flat_rate_8hr || '') : '';
+    document.getElementById('crew-bilingual').checked = !!(c && c.bilingual);
+    document.getElementById('crew-notes').value = c ? (c.notes || '') : '';
+    $('#crewModal').modal('show');
+}
+
+async function saveCrew() {
+    const id = document.getElementById('crew-id').value;
+    const payload = {
+        name: document.getElementById('crew-name').value.trim(),
+        default_crew_size: parseInt(document.getElementById('crew-size').value, 10) || 2,
+        lead_contact_name: document.getElementById('crew-contact-name').value.trim() || null,
+        lead_contact_phone: document.getElementById('crew-contact-phone').value.trim() || null,
+        flat_rate_2hr: parseFloat(document.getElementById('crew-rate-2').value) || null,
+        flat_rate_4hr: parseFloat(document.getElementById('crew-rate-4').value) || null,
+        flat_rate_8hr: parseFloat(document.getElementById('crew-rate-8').value) || null,
+        bilingual: document.getElementById('crew-bilingual').checked,
+        notes: document.getElementById('crew-notes').value.trim() || null,
+    };
+    if (!payload.name) { alert('Name required.'); return; }
+    try {
+        if (id) await supabaseStore.updateCrew(id, payload);
+        else await supabaseStore.createCrew(payload);
+    } catch (e) {
+        alert('Save failed: ' + (e.message || e));
+        return;
+    }
+    $('#crewModal').modal('hide');
+    renderCrewsView();
+}
+
+async function toggleCrewActive(id) {
+    const c = CREW_CACHE.find(x => x.id === id);
+    if (!c) return;
+    if (!confirm((c.active ? 'Deactivate' : 'Reactivate') + ' crew "' + c.name + '"?')) return;
+    try {
+        await supabaseStore.updateCrew(id, { active: !c.active });
+    } catch (e) {
+        alert('Update failed: ' + (e.message || e));
+        return;
+    }
+    renderCrewsView();
+}
+
+/* ========== 12. CREW ASSIGNMENT on booked leads ========== */
+async function loadCrewAssignmentForLead(lead) {
+    const wrap = document.getElementById('crew-assign-wrap');
+    if (!wrap) return;
+    const showStages = ['booked', 'done'];
+    if (!showStages.includes(lead.stage) || store !== supabaseStore
+        || !['admin','dispatch'].includes(state.currentUser?.role)) {
+        wrap.style.display = 'none';
+        return;
+    }
+    wrap.style.display = '';
+    const sel = document.getElementById('dv-crew');
+    sel.innerHTML = '<option value="">Loading…</option>';
+    try {
+        if (!CREW_CACHE.length) CREW_CACHE = await supabaseStore.fetchCrews();
+        const job = await supabaseStore.fetchJobByLead(lead.id);
+        const activeCrews = CREW_CACHE.filter(c => c.active);
+        sel.innerHTML = '<option value="">— Unassigned —</option>' + activeCrews.map(c =>
+            `<option value="${c.id}" ${job && job.crew_id === c.id ? 'selected' : ''}>${escapeHtml(c.name)}${c.bilingual ? ' (bilingual)' : ''}</option>`
+        ).join('');
+        sel.dataset.jobId = job ? job.id : '';
+    } catch (e) {
+        sel.innerHTML = '<option value="">' + (e.message || 'Could not load crews') + '</option>';
+    }
+}
+
+async function changeCrewAssignment() {
+    const sel = document.getElementById('dv-crew');
+    const jobId = sel.dataset.jobId;
+    if (!jobId) { alert('No job row yet for this lead.'); return; }
+    try {
+        await supabaseStore.updateJob(jobId, { crew_id: sel.value || null });
+    } catch (e) {
+        alert('Crew assignment failed: ' + (e.message || e));
+    }
+}
+
+/* ========== 13. CALENDAR ========== */
+let CALENDAR_INSTANCE = null;
+const CREW_COLORS = ['#C8102E', '#2563EB', '#16A34A', '#F59E0B', '#8B5CF6', '#0EA5E9', '#EC4899', '#374151'];
+
+async function renderCalendarView() {
+    const el = document.getElementById('calendar-el');
+    if (!el || typeof $(el).fullCalendar !== 'function') return;
+    if (store !== supabaseStore) {
+        el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--toro-gray-500)">Sign in with Supabase to see scheduled jobs.</div>';
+        return;
+    }
+    try {
+        const crews = CREW_CACHE.length ? CREW_CACHE : await supabaseStore.fetchCrews(true);
+        CREW_CACHE = crews;
+        const jobs = await supabaseStore.fetchJobs();
+        const crewMap = {};
+        crews.forEach((c, i) => { crewMap[c.id] = { name: c.name, color: CREW_COLORS[i % CREW_COLORS.length] }; });
+
+        // Legend
+        const legend = document.getElementById('calendar-crew-legend');
+        legend.innerHTML = '<span><strong>Legend:</strong></span>' + crews.filter(c => c.active).map((c) => {
+            const color = crewMap[c.id].color;
+            return `<span style="display:inline-flex;align-items:center;gap:6px"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${color}"></span>${escapeHtml(c.name)}</span>`;
+        }).join('') + '<span style="display:inline-flex;align-items:center;gap:6px"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#9CA3AF"></span>Unassigned</span>';
+
+        const events = jobs.filter(j => j.scheduled_date).map(j => {
+            const crew = j.crew_id ? crewMap[j.crew_id] : null;
+            const lead = state.leads.find(l => l.id === j.lead_id);
+            const name = lead ? lead.customer.name : 'Job ' + String(j.id).slice(0, 6);
+            const amount = j.customer_total ? ' · $' + Number(j.customer_total).toFixed(0) : '';
+            return {
+                id: j.id,
+                title: name + amount + (crew ? ' · ' + crew.name : ''),
+                start: j.scheduled_date,
+                allDay: true,
+                backgroundColor: crew ? crew.color : '#9CA3AF',
+                borderColor: crew ? crew.color : '#9CA3AF',
+                textColor: '#ffffff',
+                leadId: j.lead_id,
+            };
+        });
+
+        if (CALENDAR_INSTANCE) {
+            $(el).fullCalendar('destroy');
+        }
+        $(el).fullCalendar({
+            defaultView: 'agendaWeek',
+            header: { left: 'prev,next today', center: 'title', right: 'month,agendaWeek' },
+            height: 'auto',
+            events,
+            eventClick(ev) {
+                if (ev.leadId) openDetail(ev.leadId);
+            },
+        });
+        CALENDAR_INSTANCE = true;
+    } catch (e) {
+        el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--toro-gray-500)">'
+            + (e.message || 'Could not load jobs.') + '</div>';
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {

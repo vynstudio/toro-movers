@@ -1,0 +1,130 @@
+// CRM v2 — Stripe webhook handling.
+//
+// Dispatched from stripe-webhook.js based on event.data.object.metadata.purpose.
+// The v1 lead-in-Blobs flow (stripe-webhook.js proper) is untouched; CRM v2
+// events are identified by purpose='deposit' or 'balance' and routed here.
+
+const { getAdminClient } = require('./supabase-admin');
+const { notifyTelegramTeam, sendBookingConfirmationEmail, fmtMoney } = require('./crm-notifications');
+
+// Returns true if the event was handled as a CRM v2 event; false if it should
+// fall through to the v1 lead lookup logic.
+async function handleCrmV2Event(evt) {
+  if (evt.type !== 'checkout.session.completed') return false;
+  const session = evt.data.object || {};
+  const md = session.metadata || {};
+  if (!md.purpose || !['deposit', 'balance'].includes(md.purpose)) return false;
+  if (!md.quote_id && !md.lead_id) return false;
+
+  if (md.purpose === 'deposit') {
+    await handleDepositPaid(session, md);
+  } else if (md.purpose === 'balance') {
+    await handleBalancePaid(session, md);
+  }
+  return true;
+}
+
+async function handleDepositPaid(session, md) {
+  const admin = getAdminClient();
+  const quoteId = md.quote_id;
+  const leadId = md.lead_id;
+  const amountPaid = session.amount_total ? session.amount_total / 100 : 0;
+  const paymentIntent = session.payment_intent || null;
+
+  // 1. Mark the quote accepted + load quote/lead/customer for downstream use.
+  const nowIso = new Date().toISOString();
+  const { data: quote } = await admin
+    .from('quotes').update({ accepted_at: nowIso })
+    .eq('id', quoteId).select('*').maybeSingle();
+
+  // 2. Bump lead stage quoted→booked (trigger creates jobs row from quote).
+  if (leadId) {
+    await admin.from('leads').update({ stage: 'booked' })
+      .eq('id', leadId)
+      .eq('stage', 'quoted');
+  }
+  const { data: lead } = await admin
+    .from('leads').select('*, customers(*)').eq('id', leadId).maybeSingle();
+  const customer = lead && lead.customers ? lead.customers : null;
+
+  // 3. Find the jobs row and record the deposit.
+  const { data: job } = await admin
+    .from('jobs').select('*').eq('quote_id', quoteId).maybeSingle();
+  if (job) {
+    const depositPaid = Number(job.deposit_paid || 0) + amountPaid;
+    const balanceDue = Math.max(0, Number(job.customer_total || 0) - depositPaid);
+    await admin.from('jobs').update({
+      deposit_paid: depositPaid,
+      balance_due: balanceDue,
+      payment_method: 'card',
+      payment_status: balanceDue <= 0 ? 'paid' : 'partial',
+      stripe_payment_intent_id: paymentIntent,
+      payment_received_at: nowIso,
+    }).eq('id', job.id);
+  }
+
+  // 4. Activity log.
+  const rows = [{
+    entity_type: 'quote', entity_id: quoteId, actor_id: null,
+    event_type: 'deposit_paid',
+    payload: { amount: amountPaid, stripe_session: session.id, payment_intent: paymentIntent },
+  }];
+  if (job) rows.push({
+    entity_type: 'job', entity_id: job.id, actor_id: null,
+    event_type: 'deposit_paid',
+    payload: { amount: amountPaid, stripe_session: session.id, payment_intent: paymentIntent },
+  });
+  await admin.from('activity_log').insert(rows);
+
+  // 5. Client email (booking confirmation) + team Telegram alert.
+  if (customer && quote) {
+    await sendBookingConfirmationEmail({ customer, lead, quote, amountPaid })
+      .catch(e => console.error('booking email failed:', e.message));
+  }
+  await notifyTelegramTeam([
+    '*DEPOSIT PAID — BOOKED*',
+    '',
+    customer ? `Customer: *${customer.full_name || '—'}*` : '',
+    customer && customer.phone ? `Phone: \`${customer.phone}\`` : '',
+    customer && customer.email ? `Email: ${customer.email}` : '',
+    '',
+    `Deposit: *${fmtMoney(amountPaid)}*`,
+    quote && quote.total ? `Est. total: ${fmtMoney(quote.total)}` : '',
+    lead && lead.move_date ? `Move date: ${lead.move_date}` : '',
+    '',
+    paymentIntent ? `[Stripe](https://dashboard.stripe.com/payments/${paymentIntent})` : '',
+  ]);
+}
+
+async function handleBalancePaid(session, md) {
+  const admin = getAdminClient();
+  const jobId = md.job_id;
+  if (!jobId) return;
+  const amountPaid = session.amount_total ? session.amount_total / 100 : 0;
+  const paymentIntent = session.payment_intent || null;
+
+  const { data: job } = await admin.from('jobs').select('*').eq('id', jobId).maybeSingle();
+  if (!job) return;
+
+  const totalPaid = Number(job.deposit_paid || 0) + amountPaid;
+  const balanceDue = Math.max(0, Number(job.customer_total || 0) - totalPaid);
+
+  await admin.from('jobs').update({
+    deposit_paid: totalPaid,
+    balance_due: balanceDue,
+    payment_method: 'card',
+    payment_status: balanceDue <= 0 ? 'paid' : 'partial',
+    stripe_payment_intent_id: paymentIntent,
+    payment_received_at: new Date().toISOString(),
+  }).eq('id', jobId);
+
+  await admin.from('activity_log').insert({
+    entity_type: 'job',
+    entity_id: jobId,
+    actor_id: null,
+    event_type: 'balance_paid',
+    payload: { amount: amountPaid, stripe_session: session.id, payment_intent: paymentIntent },
+  });
+}
+
+module.exports = { handleCrmV2Event };

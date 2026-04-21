@@ -9,7 +9,10 @@
 //
 // Bilingual: picks EN or ES off customer.language_preference.
 
-const PDFDocument = require('pdfkit');
+// Use the standalone build: single file with AFM fonts inlined as base64.
+// The default `require('pdfkit')` entry reads Helvetica.afm via fs at
+// runtime, which esbuild doesn't bundle — breaks on Netlify Functions.
+const PDFDocument = require('pdfkit/js/pdfkit.standalone.js');
 
 const TORO_RED = '#C8102E';
 const CHARCOAL = '#1C1C1E';

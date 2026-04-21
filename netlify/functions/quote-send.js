@@ -15,6 +15,7 @@
 const { Resend } = require('resend');
 const { getAdminClient, verifyUserJWT } = require('./_lib/supabase-admin');
 const { createQuote } = require('./_lib/quote-flow');
+const { notifyTelegramTeam } = require('./_lib/crm-notifications');
 
 const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'hello@toromovers.net';
 
@@ -45,7 +46,8 @@ const EMAIL_COPY = {
     summary: 'Summary',
     crew: 'Crew', hours: 'Hours', rate: 'Hourly rate',
     truck: 'Truck (26-ft)', deposit: 'Deposit', total: 'Total',
-    cta: 'To book, just reply to this email or call (321) 758-0094.',
+    cta: 'Reserve my spot now',
+    fallback: 'Or call (321) 758-0094 — same-week scheduling.',
     tagline: 'Moving People Forward',
     perMoverHr: '/ mover / hr',
   },
@@ -56,44 +58,80 @@ const EMAIL_COPY = {
     summary: 'Resumen',
     crew: 'Cuadrilla', hours: 'Horas', rate: 'Tarifa por hora',
     truck: 'Camion (26 pies)', deposit: 'Deposito', total: 'Total',
-    cta: 'Para reservar, responde este correo o llama al (321) 758-0094.',
+    cta: 'Reservar mi lugar',
+    fallback: 'O llama al (321) 758-0094 — agenda esta misma semana.',
     tagline: 'Mudanzas honestas. Manos fuertes.',
     perMoverHr: '/ mov. / h',
   },
 };
 
-function renderEmailHtml({ customer, quote, lang }) {
+function renderEmailHtml({ customer, quote, lang, replyEmail }) {
   const L = EMAIL_COPY[lang];
   const truckLine = quote.truck_included
     ? `<tr><td style="padding:6px 0;color:#6B7280">${L.truck}</td><td style="padding:6px 0;text-align:right;font-weight:700;color:#1C1C1E">+${fmtMoney(quote.truck_fee)}</td></tr>`
     : '';
   const firstName = String(customer.full_name || '').split(/\s+/)[0] || '';
 
+  const origin = process.env.URL
+    || process.env.DEPLOY_PRIME_URL
+    || 'https://toromovers-crm.netlify.app';
+  const reserveHref = `${origin}/.netlify/functions/reserve?q=${encodeURIComponent(quote.id)}`;
+
   return `<!DOCTYPE html>
-<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-<body style="margin:0;padding:0;background:#f3f4f6;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#1C1C1E">
-<table width="100%" cellpadding="0" cellspacing="0" style="background:#f3f4f6;padding:32px 16px">
+<html lang="${lang}"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
+<title>Toro Movers</title>
+<style>
+  :root { color-scheme: light only; supported-color-schemes: light only; }
+  body, table, td, p, a, div { -webkit-text-size-adjust:100%; }
+  @media (prefers-color-scheme: dark) {
+    body, .tm-shell, .tm-card, .tm-body { background:#ffffff !important; color:#1C1C1E !important; }
+    .tm-sand { background:#FBF6E9 !important; color:#1C1C1E !important; }
+    .tm-muted { color:#6B7280 !important; }
+    .tm-footer-bg { background:#F9FAFB !important; color:#6B7280 !important; }
+  }
+</style>
+</head>
+<body class="tm-shell" style="margin:0;padding:0;background:#ffffff;color:#1C1C1E;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" class="tm-shell" style="background:#ffffff;padding:32px 16px">
 <tr><td align="center">
-<table width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08)">
-<tr><td style="background:#C8102E;padding:22px 28px;color:#fff">
-<div style="font-weight:800;font-size:22px;letter-spacing:-0.01em">TORO MOVERS</div>
-<div style="font-size:12px;opacity:0.9;margin-top:4px">${L.tagline}</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" class="tm-card" style="max-width:560px;background:#ffffff;border:1px solid #E5E7EB;border-radius:16px;overflow:hidden">
+
+<tr><td style="background:#C8102E;padding:22px 28px;color:#ffffff">
+<div style="font-weight:800;font-size:22px;letter-spacing:-0.01em;color:#ffffff">TORO MOVERS</div>
+<div style="font-size:12px;margin-top:4px;color:#FFE8EC">${L.tagline}</div>
 </td></tr>
-<tr><td style="padding:28px">
-<p style="margin:0 0 12px 0;font-size:15px">${L.hi} ${firstName},</p>
-<p style="margin:0 0 18px 0;font-size:15px;line-height:1.55">${L.lead}</p>
-<table width="100%" cellpadding="0" cellspacing="0" style="background:#FBF6E9;border-radius:10px;padding:16px 18px;margin-bottom:18px">
+
+<tr><td class="tm-body" style="padding:28px;background:#ffffff;color:#1C1C1E">
+<p style="margin:0 0 12px 0;font-size:15px;color:#1C1C1E">${L.hi} ${firstName},</p>
+<p style="margin:0 0 20px 0;font-size:15px;line-height:1.55;color:#1C1C1E">${L.lead}</p>
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" class="tm-sand" style="background:#FBF6E9;border-radius:10px;margin-bottom:22px">
+<tr><td style="padding:16px 18px">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
 <tr><td colspan="2" style="font-weight:800;font-size:14px;color:#1C1C1E;padding-bottom:10px">${L.summary}</td></tr>
-<tr><td style="padding:6px 0;color:#6B7280">${L.crew}</td><td style="padding:6px 0;text-align:right;font-weight:700;color:#1C1C1E">${quote.crew_size}</td></tr>
-<tr><td style="padding:6px 0;color:#6B7280">${L.hours}</td><td style="padding:6px 0;text-align:right;font-weight:700;color:#1C1C1E">${quote.estimated_hours} h</td></tr>
-<tr><td style="padding:6px 0;color:#6B7280">${L.rate}</td><td style="padding:6px 0;text-align:right;font-weight:700;color:#1C1C1E">${fmtMoney(quote.hourly_rate)} ${L.perMoverHr}</td></tr>
+<tr><td class="tm-muted" style="padding:6px 0;color:#6B7280">${L.crew}</td><td style="padding:6px 0;text-align:right;font-weight:700;color:#1C1C1E">${quote.crew_size}</td></tr>
+<tr><td class="tm-muted" style="padding:6px 0;color:#6B7280">${L.hours}</td><td style="padding:6px 0;text-align:right;font-weight:700;color:#1C1C1E">${quote.estimated_hours} h</td></tr>
+<tr><td class="tm-muted" style="padding:6px 0;color:#6B7280">${L.rate}</td><td style="padding:6px 0;text-align:right;font-weight:700;color:#1C1C1E">${fmtMoney(quote.hourly_rate)} ${L.perMoverHr}</td></tr>
 ${truckLine}
-<tr><td style="padding:6px 0;color:#6B7280">${L.deposit}</td><td style="padding:6px 0;text-align:right;font-weight:700;color:#1C1C1E">${fmtMoney(quote.deposit_amount)}</td></tr>
+<tr><td class="tm-muted" style="padding:6px 0;color:#6B7280">${L.deposit}</td><td style="padding:6px 0;text-align:right;font-weight:700;color:#1C1C1E">${fmtMoney(quote.deposit_amount)}</td></tr>
 <tr><td style="padding:12px 0 0 0;color:#1C1C1E;font-weight:800;font-size:15px;border-top:1px solid #E5E7EB">${L.total}</td><td style="padding:12px 0 0 0;text-align:right;color:#C8102E;font-weight:800;font-size:22px;border-top:1px solid #E5E7EB">${fmtMoney(quote.total)}</td></tr>
 </table>
-<p style="margin:0;font-size:14px;line-height:1.55;color:#3A3A3D">${L.cta}</p>
 </td></tr>
-<tr><td style="background:#F9FAFB;padding:14px 28px;text-align:center;color:#6B7280;font-size:11px">TORO MOVERS · Orlando, FL · (321) 758-0094 · toromovers.net</td></tr>
+</table>
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:4px 0 10px 0">
+<a href="${reserveHref}" style="display:inline-block;background:#C8102E;color:#ffffff;font-weight:800;font-size:15px;text-decoration:none;padding:14px 28px;border-radius:9999px;letter-spacing:0.01em">${L.cta}</a>
+</td></tr></table>
+<p class="tm-muted" style="margin:2px 0 0 0;font-size:12px;color:#6B7280;text-align:center">${L.fallback}</p>
+
+</td></tr>
+
+<tr><td class="tm-footer-bg" style="background:#F9FAFB;padding:14px 28px;text-align:center;color:#6B7280;font-size:11px">TORO MOVERS · Orlando, FL · (321) 758-0094 · toromovers.net</td></tr>
+
 </table>
 </td></tr></table>
 </body></html>`;
@@ -145,6 +183,7 @@ exports.handler = async (event) => {
     customer: out.customer,
     quote: out.quote,
     lang: out.language,
+    replyEmail: profile.email || FROM_EMAIL,
   });
   const qNum = String(out.quote.id).replace(/-/g, '').slice(0, 8).toUpperCase();
 
@@ -183,6 +222,19 @@ exports.handler = async (event) => {
     .update({ stage: 'quoted' })
     .eq('id', lead_id)
     .in('stage', ['new', 'contacted']);
+
+  // Team Telegram alert
+  notifyTelegramTeam([
+    '*Quote sent*',
+    '',
+    out.customer.full_name ? `Customer: *${out.customer.full_name}*` : '',
+    out.customer.phone ? `Phone: \`${out.customer.phone}\`` : '',
+    `To: ${toEmail}`,
+    `Total: *${fmtMoney(out.quote.total)}*` + (out.quote.truck_included ? ' · truck' : ''),
+    out.language === 'es' ? 'Idioma: ES' : '',
+    '',
+    `Sent by: ${profile.email}`,
+  ]).catch(e => console.error('quote-send telegram failed:', e.message));
 
   return respond(200, {
     quote_id: out.quote.id,
