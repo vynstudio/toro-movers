@@ -1354,6 +1354,7 @@
 <script src="crm-assets/vendor/popper.min.js"></script>
 <script src="crm-assets/vendor/bootstrap.min.js"></script>
 <script src="crm-assets/vendor/dragula/dragula.min.js"></script>
+<script src="crm-assets/vendor/moment.min.js"></script>
 <script src="crm-assets/vendor/fullcalendar/fullcalendar.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -1589,6 +1590,8 @@ const supabaseStore = {
             stage: lead.stage,
             from_zone: lead.from_zone,
             to_zone: lead.to_zone,
+            origin_address: lead.origin_address,
+            destination_address: lead.destination_address,
             move_date: lead.move_date,
             size: lead.size,
             stairs: lead.stairs,
@@ -1895,6 +1898,20 @@ const fmtDate = (iso) => {
     const d = new Date(iso);
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 };
+// Date-only parse that ignores timezone — treats 'YYYY-MM-DD' as local.
+// Avoids the UTC-midnight-shifts-back-one-day-in-Eastern bug on move_date fields.
+const fmtMoveDate = (d) => {
+    if (!d) return '—';
+    const s = String(d);
+    const m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (m) {
+        const dt = new Date(+m[1], +m[2] - 1, +m[3]);
+        return dt.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+    }
+    const dt = new Date(s);
+    if (isNaN(dt)) return '—';
+    return dt.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+};
 
 function renderDashboard() {
     const open = state.leads.filter(l => !['done', 'lost'].includes(l.stage));
@@ -2067,8 +2084,10 @@ function openDetail(id) {
     document.getElementById('dv-phone').textContent = l.customer.phone;
     document.getElementById('dv-email').textContent = l.customer.email || '—';
     document.getElementById('dv-language').textContent = l.customer.language === 'es' ? 'Spanish' : 'English';
-    document.getElementById('dv-route').textContent = `${CONFIG.zoneLabels[l.from_zone]} → ${CONFIG.zoneLabels[l.to_zone]}`;
-    document.getElementById('dv-date').textContent = l.move_date ? new Date(l.move_date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }) : '—';
+    const routeFrom = CONFIG.zoneLabels[l.from_zone] || (l.origin_address ? String(l.origin_address).split(/[\n,]/)[0].trim() : '—');
+    const routeTo = CONFIG.zoneLabels[l.to_zone] || (l.destination_address ? String(l.destination_address).split(/[\n,]/)[0].trim() : '—');
+    document.getElementById('dv-route').textContent = `${routeFrom} → ${routeTo}`;
+    document.getElementById('dv-date').textContent = fmtMoveDate(l.move_date);
     document.getElementById('dv-size').textContent = CONFIG.sizeLabels[l.size];
     document.getElementById('dv-stairs').textContent = { none: 'None', '1_flight': '1 flight', '2_plus': '2+ flights', elevator: 'Elevator' }[l.stairs] || '—';
     document.getElementById('dv-source').textContent = l.source;
@@ -2265,8 +2284,38 @@ async function sendQuote() {
     }
     alert('Quote sent to ' + out.sent_to + '.');
 }
-function logCall() {
-    alert('Mock mode — would append a call event to the activity log.');
+async function logCall() {
+    if (store !== supabaseStore) {
+        alert('Mock mode — sign in with a Supabase account to log calls.');
+        return;
+    }
+    const lead = state.leads.find(l => l.id === state.detailId);
+    if (!lead) { alert('No lead selected.'); return; }
+    const note = prompt('Call notes (optional):', '');
+    if (note === null) return; // cancelled
+    try {
+        const { error } = await supabaseStore.client.from('activity_log').insert({
+            entity_type: 'lead',
+            entity_id: lead.id,
+            event_type: 'call_logged',
+            payload: { note: note || null, at: new Date().toISOString() },
+        });
+        if (error) throw error;
+        // First-time contact: set first_contact_at + bump stage new→contacted.
+        await supabaseStore.client.from('leads')
+            .update({ first_contact_at: new Date().toISOString() })
+            .eq('id', lead.id)
+            .is('first_contact_at', null);
+        if (lead.stage === 'new') {
+            await supabaseStore.updateStage(lead.id, 'contacted');
+            lead.stage = 'contacted';
+        }
+        alert('Call logged.');
+        openDetail(lead.id);
+        renderDashboard(); renderKanban(); renderLeadsTable();
+    } catch (e) {
+        alert('Log call failed: ' + (e.message || e));
+    }
 }
 async function loadAdminKpis() {
     try {
