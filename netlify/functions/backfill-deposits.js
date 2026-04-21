@@ -15,6 +15,7 @@
 
 const Stripe = require('stripe');
 const { getAdminClient, verifyUserJWT } = require('./_lib/supabase-admin');
+const { sendBookingConfirmationEmail } = require('./_lib/crm-notifications');
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -55,10 +56,12 @@ exports.handler = async (event) => {
   const stripe = Stripe(stripeKey);
   const admin = getAdminClient();
 
+  const sendEmail = payload.send_email !== false; // default: send booking confirmation on commit
+
   // Index all leads + their jobs so we can look up by email/phone in-memory.
   const { data: leads, error: leadErr } = await admin
     .from('leads')
-    .select('id, customer_id, stage, customers(id, full_name, email, phone)');
+    .select('id, customer_id, stage, move_date, move_time, pickup_address, dropoff_address, customers(id, full_name, email, phone, preferred_language)');
   if (leadErr) return respond(500, { error: 'Lead fetch failed: ' + leadErr.message });
 
   const { data: jobs, error: jobErr } = await admin
@@ -166,6 +169,24 @@ exports.handler = async (event) => {
         // If lead is still 'new'/'quoted', bump to 'booked' so it reflects reality.
         if (lead.stage === 'new' || lead.stage === 'quoted') {
           await admin.from('leads').update({ stage: 'booked' }).eq('id', lead.id);
+        }
+
+        // Send booking-confirmation email to the customer (same template the
+        // Stripe webhook uses). Best-effort: log failures, don't abort backfill.
+        if (sendEmail && lead.customers?.email) {
+          try {
+            const { data: quote } = job.quote_id
+              ? await admin.from('quotes').select('*').eq('id', job.quote_id).maybeSingle()
+              : { data: null };
+            await sendBookingConfirmationEmail({
+              customer: lead.customers,
+              lead,
+              quote: quote || { total: job.customer_total, deposit: amount },
+              amountPaid: amount,
+            });
+          } catch (e) {
+            console.error('booking email failed for', lead.customers.email, e.message);
+          }
         }
       }
       matched.push({
