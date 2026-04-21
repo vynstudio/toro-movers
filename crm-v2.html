@@ -2018,11 +2018,82 @@ function qbCompute() {
     document.getElementById('qb-deposit').textContent = fmt$(truck ? CONFIG.brand.depositTruck : CONFIG.brand.depositLabor);
 }
 
-function sendQuote() {
-    alert('Mock mode — in production this fires a Netlify Function that renders the PDF and emails via Resend.');
+/* ----- Quote PDF (Phase 3a) -----
+   Snapshots the quote builder state, POSTs to /quote-pdf with the
+   Supabase user JWT, opens the returned signed URL in a new tab.
+   Email delivery lands in Phase 3b. */
+
+function qbCurrentPayload() {
+    if (state.qbMode === 'package') {
+        const pkgKey = document.querySelector('.package-option.selected')?.dataset.pkg;
+        if (!pkgKey) return null;
+        const pkg = CONFIG.packages[pkgKey];
+        return {
+            type: 'package',
+            package_key: pkgKey,
+            crew_size: pkg.movers,
+            estimated_hours: pkg.hours,
+            hourly_rate: CONFIG.brand.rate,
+            truck_included: !!pkg.truck,
+            truck_fee: CONFIG.brand.truckFee,
+            deposit_amount: pkg.truck ? CONFIG.brand.depositTruck : CONFIG.brand.depositLabor,
+            total: pkg.total,
+        };
+    }
+    const movers = parseInt(document.getElementById('qb-movers').value, 10);
+    const hours = parseFloat(document.getElementById('qb-hours').value);
+    const truck = document.getElementById('qb-truck').checked;
+    const total = (movers * hours * CONFIG.brand.rate) + (truck ? CONFIG.brand.truckFee : 0);
+    return {
+        type: 'custom',
+        crew_size: movers,
+        estimated_hours: hours,
+        hourly_rate: CONFIG.brand.rate,
+        truck_included: truck,
+        truck_fee: CONFIG.brand.truckFee,
+        deposit_amount: truck ? CONFIG.brand.depositTruck : CONFIG.brand.depositLabor,
+        total,
+    };
 }
-function previewQuote() {
-    alert('Mock mode — PDF preview opens here.');
+
+async function generateQuotePdf() {
+    if (store !== supabaseStore) {
+        alert('Mock mode — sign in with a Supabase account to generate a real PDF.');
+        return null;
+    }
+    const lead = state.leads.find(l => l.id === state.detailId);
+    if (!lead) { alert('No lead selected.'); return null; }
+    const quote = qbCurrentPayload();
+    if (!quote) { alert('Pick a package (or configure a custom quote) first.'); return null; }
+    const session = await supabaseStore.getSession();
+    if (!session) { alert('Session expired — please sign in again.'); return null; }
+
+    const res = await fetch('/.netlify/functions/quote-pdf', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + session.access_token,
+        },
+        body: JSON.stringify({ lead_id: lead.id, quote }),
+    });
+    if (!res.ok) {
+        let msg = 'Quote PDF failed';
+        try { msg = (await res.json()).error || msg; } catch (_) {}
+        alert(msg + ' (HTTP ' + res.status + ')');
+        return null;
+    }
+    return res.json();
+}
+
+async function sendQuote() {
+    const out = await generateQuotePdf();
+    if (out?.signed_url) window.open(out.signed_url, '_blank', 'noopener');
+    // Phase 3b will wire Resend email delivery; for now the PDF just opens in a new tab.
+}
+
+async function previewQuote() {
+    const out = await generateQuotePdf();
+    if (out?.signed_url) window.open(out.signed_url, '_blank', 'noopener');
 }
 function logCall() {
     alert('Mock mode — would append a call event to the activity log.');
