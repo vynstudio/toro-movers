@@ -3050,6 +3050,17 @@ const SKILL_LABELS = {
     assembly_disassembly: 'Assembly / disassembly',
     organizing_truck: 'Organizing truck',
 };
+const TOOL_LABELS = {
+    hand_truck: 'Hand truck / dolly',
+    furniture_dolly: '4-wheel dolly',
+    appliance_dolly: 'Appliance dolly',
+    blankets: 'Blankets / pads',
+    straps: 'Straps',
+    shrink_wrap: 'Shrink wrap',
+    tool_kit: 'Tool kit',
+    wardrobe_boxes: 'Wardrobe boxes',
+    sliders: 'Sliders',
+};
 
 async function renderApplicationsView() {
     const tbody = document.getElementById('apps-tbody');
@@ -3145,6 +3156,10 @@ function openApplicationDetail(id) {
         <div style="margin-top:14px">
             <div style="font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--toro-charcoal);margin-bottom:6px">Skills</div>
             <div style="display:flex;flex-wrap:wrap;gap:4px">${(a.skills||[]).map(s => `<span style="background:var(--toro-sand);color:var(--toro-charcoal);font-size:11px;font-weight:700;padding:3px 9px;border-radius:9999px">${escapeHtml(SKILL_LABELS[s] || s)}</span>`).join('') || '<span style="color:var(--toro-gray-500);font-size:13px">—</span>'}</div>
+        </div>
+        <div style="margin-top:14px">
+            <div style="font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--toro-charcoal);margin-bottom:6px">Tools</div>
+            <div style="display:flex;flex-wrap:wrap;gap:4px">${(a.tools||[]).map(t => `<span style="background:var(--toro-gray-100);color:var(--toro-charcoal-soft);font-size:11px;font-weight:700;padding:3px 9px;border-radius:9999px">${escapeHtml(TOOL_LABELS[t] || t)}</span>`).join('') || '<span style="color:var(--toro-gray-500);font-size:13px">None listed</span>'}</div>
         </div>
         ${a.about ? `<div style="margin-top:14px"><div style="font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--toro-charcoal);margin-bottom:6px">About</div><div style="font-size:13px;color:var(--toro-charcoal-soft);white-space:pre-wrap">${escapeHtml(a.about)}</div></div>` : ''}
         ${(Array.isArray(a.references_list) && a.references_list.length) ? `
@@ -3247,6 +3262,7 @@ async function approveApplication() {
             bilingual: !!a.bilingual,
             service_zones: a.service_zones || [],
             skills: a.skills || [],
+            tools: a.tools || [],
             notes: (a.about ? 'About: ' + a.about : '') + (a.truck_size ? '\nTruck: ' + a.truck_size : ''),
             active: true,
         });
