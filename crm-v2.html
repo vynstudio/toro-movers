@@ -1255,6 +1255,57 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- ===== JOB OPS (booked/done only) ===== -->
+                <div id="job-ops-wrap" style="display:none;border-top:1px solid var(--toro-gray-200);padding:20px 24px;background:var(--toro-gray-50)">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+                        <h6 style="margin:0">Job ops</h6>
+                        <span id="job-ops-balance" style="font-size:12px;color:var(--toro-gray-500)"></span>
+                    </div>
+                    <div class="form-grid-2" style="gap:12px">
+                        <div class="form-section">
+                            <label>Actual hours</label>
+                            <input type="number" id="jo-actual-hours" step="0.25" min="0" placeholder="e.g. 4.5">
+                        </div>
+                        <div class="form-section">
+                            <label>Actual crew size</label>
+                            <input type="number" id="jo-actual-movers" min="1" max="8" placeholder="e.g. 2">
+                        </div>
+                    </div>
+                    <div class="form-grid-2" style="gap:12px">
+                        <div class="form-section">
+                            <label>Materials ($)</label>
+                            <input type="number" id="jo-materials" step="0.01" min="0" placeholder="0.00">
+                        </div>
+                        <div class="form-section">
+                            <label>Fees ($) · truck, parking, etc.</label>
+                            <input type="number" id="jo-fees" step="0.01" min="0" placeholder="0.00">
+                        </div>
+                    </div>
+                    <div class="form-section">
+                        <label>Offered to crew ($/mover/hr)</label>
+                        <input type="number" id="jo-offered-rate" step="0.01" min="0" placeholder="e.g. 25.00">
+                    </div>
+                    <div class="form-section">
+                        <label>Job notes</label>
+                        <textarea id="jo-notes" rows="2" style="width:100%;padding:8px 10px;border:1px solid var(--toro-gray-300);border-radius:6px;font-size:13px;font-family:inherit" placeholder="Anything that happened on the move — good, bad, or weird."></textarea>
+                    </div>
+                    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px">
+                        <button class="btn btn-sm btn-primary" onclick="saveJobOps()">Save job</button>
+                        <button class="btn btn-sm btn-outline-primary" onclick="dispatchCrew()">Dispatch to crew</button>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="emailBalance()">Email balance link</button>
+                    </div>
+                </div>
+
+                <!-- ===== TASKS ===== -->
+                <div id="tasks-wrap" style="display:none;border-top:1px solid var(--toro-gray-200);padding:20px 24px">
+                    <h6>Tasks</h6>
+                    <div id="tasks-list" style="margin-bottom:12px"></div>
+                    <div style="display:flex;gap:6px">
+                        <input type="text" id="task-new-title" placeholder="New task…" style="flex:1;padding:8px 10px;border:1px solid var(--toro-gray-300);border-radius:6px;font-size:13px">
+                        <button class="btn btn-sm btn-primary" onclick="addTask()">Add</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1744,6 +1795,34 @@ const supabaseStore = {
         if (error) throw error;
         return data;
     },
+
+    // --- Tasks ---
+    async fetchTasksForLead(leadId) {
+        const { data, error } = await this.client.from('tasks').select('*')
+            .eq('lead_id', leadId).order('created_at', { ascending: true });
+        if (error) throw error;
+        return data || [];
+    },
+    async fetchMyOpenTasks() {
+        if (!state.currentUser?.id) return [];
+        const { data, error } = await this.client.from('tasks').select('*, leads(id, customers(full_name))')
+            .is('completed_at', null)
+            .or(`assignee_id.eq.${state.currentUser.id},assignee_id.is.null`)
+            .order('due_at', { ascending: true, nullsFirst: false }).limit(10);
+        if (error) throw error;
+        return data || [];
+    },
+    async createTask(payload) {
+        const { data, error } = await this.client.from('tasks').insert(payload).select().single();
+        if (error) throw error;
+        return data;
+    },
+    async toggleTaskDone(id, done) {
+        const patch = { completed_at: done ? new Date().toISOString() : null };
+        const { data, error } = await this.client.from('tasks').update(patch).eq('id', id).select().single();
+        if (error) throw error;
+        return data;
+    },
 };
 
 // Auto-detect: use Supabase if configured AND the client loads, else mock.
@@ -2096,6 +2175,10 @@ function openDetail(id) {
 
     // Crew assignment (booked/done leads, admin/dispatch only)
     loadCrewAssignmentForLead(l);
+
+    // Job ops panel (booked/done leads only) + Tasks panel
+    loadJobOpsForLead(l);
+    loadTasksForLead(l);
 
     // Timeline
     const events = [
@@ -2576,6 +2659,177 @@ async function changeCrewAssignment() {
         await supabaseStore.updateJob(jobId, { crew_id: sel.value || null });
     } catch (e) {
         alert('Crew assignment failed: ' + (e.message || e));
+    }
+}
+
+/* ========== 12b. JOB OPS ========== */
+let CURRENT_JOB = null;
+
+async function loadJobOpsForLead(l) {
+    const wrap = document.getElementById('job-ops-wrap');
+    if (!wrap) return;
+    if (store !== supabaseStore || !['booked','done'].includes(l.stage)) {
+        wrap.style.display = 'none';
+        CURRENT_JOB = null;
+        return;
+    }
+    wrap.style.display = '';
+    try {
+        CURRENT_JOB = await supabaseStore.fetchJobByLead(l.id);
+    } catch (e) {
+        wrap.style.display = 'none'; return;
+    }
+    if (!CURRENT_JOB) {
+        // No job row (e.g. booked with no prior quote). Show panel with empty fields.
+        CURRENT_JOB = { id: null, hourly_rate: 75, deposit_paid: 0, customer_total: 0, balance_due: 0 };
+    }
+    document.getElementById('jo-actual-hours').value = CURRENT_JOB.actual_hours ?? '';
+    document.getElementById('jo-actual-movers').value = CURRENT_JOB.actual_movers ?? '';
+    document.getElementById('jo-materials').value = CURRENT_JOB.materials ?? '';
+    document.getElementById('jo-fees').value = CURRENT_JOB.fees ?? '';
+    document.getElementById('jo-offered-rate').value = CURRENT_JOB.offered_hourly_rate ?? '';
+    document.getElementById('jo-notes').value = CURRENT_JOB.notes || '';
+    const bal = document.getElementById('job-ops-balance');
+    if (CURRENT_JOB.id) {
+        bal.innerHTML = `Total <strong>${fmt$(CURRENT_JOB.customer_total)}</strong> · Paid <strong>${fmt$(CURRENT_JOB.deposit_paid)}</strong> · Balance <strong style="color:var(--toro-red)">${fmt$(CURRENT_JOB.balance_due)}</strong>`;
+    } else {
+        bal.textContent = 'No job row yet — save to create one.';
+    }
+}
+
+async function saveJobOps() {
+    if (!CURRENT_JOB || !CURRENT_JOB.id) { alert('No job row on this lead yet.'); return; }
+    const session = await supabaseStore.getSession();
+    if (!session) { alert('Session expired.'); return; }
+    const body = {
+        job_id: CURRENT_JOB.id,
+        actual_hours: document.getElementById('jo-actual-hours').value || null,
+        actual_movers: document.getElementById('jo-actual-movers').value || null,
+        materials: document.getElementById('jo-materials').value || null,
+        fees: document.getElementById('jo-fees').value || null,
+        offered_hourly_rate: document.getElementById('jo-offered-rate').value || null,
+        notes: document.getElementById('jo-notes').value,
+    };
+    const res = await fetch('/.netlify/functions/update-job', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
+        body: JSON.stringify(body),
+    });
+    if (!res.ok) {
+        let msg = 'Save failed';
+        try { msg = (await res.json()).error || msg; } catch (_) {}
+        alert(msg + ' (HTTP ' + res.status + ')');
+        return;
+    }
+    const out = await res.json();
+    CURRENT_JOB = out.job;
+    const bal = document.getElementById('job-ops-balance');
+    bal.innerHTML = `Total <strong>${fmt$(CURRENT_JOB.customer_total)}</strong> · Paid <strong>${fmt$(CURRENT_JOB.deposit_paid)}</strong> · Balance <strong style="color:var(--toro-red)">${fmt$(CURRENT_JOB.balance_due)}</strong>`;
+    alert('Saved.');
+}
+
+async function dispatchCrew() {
+    if (!CURRENT_JOB || !CURRENT_JOB.id) { alert('No job row yet — save first.'); return; }
+    if (!CURRENT_JOB.crew_id) { alert('Assign a crew first (Crew dropdown above).'); return; }
+    if (!(CURRENT_JOB.offered_hourly_rate > 0)) { alert('Set the offered hourly rate first and click Save job.'); return; }
+    if (!confirm('Send job details to the assigned crew?')) return;
+    const session = await supabaseStore.getSession();
+    if (!session) { alert('Session expired.'); return; }
+    const res = await fetch('/.netlify/functions/dispatch-crew', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
+        body: JSON.stringify({ job_id: CURRENT_JOB.id }),
+    });
+    if (!res.ok) {
+        let msg = 'Dispatch failed';
+        try { msg = (await res.json()).error || msg; } catch (_) {}
+        alert(msg + ' (HTTP ' + res.status + ')');
+        return;
+    }
+    const out = await res.json();
+    alert('Dispatched to ' + out.crew + (out.to ? ' (' + out.to + ')' : ' — Telegram only, no crew email on file'));
+}
+
+async function emailBalance() {
+    if (!CURRENT_JOB || !CURRENT_JOB.id) { alert('No job row yet — save first.'); return; }
+    if (!(CURRENT_JOB.balance_due > 0)) { alert('No balance due.'); return; }
+    const lead = state.leads.find(l => l.id === state.detailId);
+    if (!lead?.customer?.email) { alert('Customer has no email.'); return; }
+    if (!confirm(`Send a Stripe pay-balance link (${fmt$(CURRENT_JOB.balance_due)}) to ${lead.customer.email}?`)) return;
+    const session = await supabaseStore.getSession();
+    if (!session) { alert('Session expired.'); return; }
+    const res = await fetch('/.netlify/functions/email-balance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
+        body: JSON.stringify({ job_id: CURRENT_JOB.id }),
+    });
+    if (!res.ok) {
+        let msg = 'Email failed';
+        try { msg = (await res.json()).error || msg; } catch (_) {}
+        alert(msg + ' (HTTP ' + res.status + ')');
+        return;
+    }
+    const out = await res.json();
+    alert('Balance link emailed to ' + out.sent_to);
+}
+
+/* ========== 12c. TASKS ========== */
+async function loadTasksForLead(l) {
+    const wrap = document.getElementById('tasks-wrap');
+    if (!wrap) return;
+    if (store !== supabaseStore) { wrap.style.display = 'none'; return; }
+    wrap.style.display = '';
+    const listEl = document.getElementById('tasks-list');
+    listEl.innerHTML = '<div style="color:var(--toro-gray-500);font-size:12px">Loading…</div>';
+    try {
+        const tasks = await supabaseStore.fetchTasksForLead(l.id);
+        renderTaskList(listEl, tasks);
+    } catch (e) {
+        listEl.innerHTML = '<div style="color:var(--toro-gray-500);font-size:12px">' + (e.message || 'Could not load tasks.') + '</div>';
+    }
+}
+
+function renderTaskList(listEl, tasks) {
+    if (!tasks.length) {
+        listEl.innerHTML = '<div style="color:var(--toro-gray-500);font-size:12px">No tasks yet.</div>';
+        return;
+    }
+    listEl.innerHTML = tasks.map(t => {
+        const done = !!t.completed_at;
+        return `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--toro-gray-200)">
+            <input type="checkbox" ${done ? 'checked' : ''} onchange="toggleTask('${t.id}', this.checked)">
+            <span style="flex:1;font-size:13px;${done ? 'text-decoration:line-through;color:var(--toro-gray-500)' : ''}">${escapeHtml(t.title)}</span>
+        </div>`;
+    }).join('');
+}
+
+async function addTask() {
+    const input = document.getElementById('task-new-title');
+    const title = input.value.trim();
+    if (!title) return;
+    const lead = state.leads.find(l => l.id === state.detailId);
+    if (!lead) return;
+    try {
+        await supabaseStore.createTask({
+            title,
+            lead_id: lead.id,
+            assignee_id: state.currentUser?.id || null,
+            created_by: state.currentUser?.id || null,
+        });
+        input.value = '';
+        loadTasksForLead(lead);
+    } catch (e) {
+        alert('Add failed: ' + (e.message || e));
+    }
+}
+
+async function toggleTask(id, done) {
+    try {
+        await supabaseStore.toggleTaskDone(id, done);
+    } catch (e) {
+        alert('Update failed: ' + (e.message || e));
+        const lead = state.leads.find(l => l.id === state.detailId);
+        if (lead) loadTasksForLead(lead);
     }
 }
 
