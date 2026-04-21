@@ -2686,7 +2686,7 @@ async function runBackfillDeposits() {
     btn.disabled = true;
     btn.innerHTML = 'Scanning Stripe…';
     try {
-        const { data: { session } } = await window.supabase.auth.getSession();
+        const session = await supabaseStore.getSession();
         if (!session) throw new Error('Not signed in');
         const runOnce = async (dryRun) => {
             const r = await fetch('/.netlify/functions/backfill-deposits', {
