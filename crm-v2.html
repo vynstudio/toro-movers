@@ -1148,8 +1148,7 @@
 
                         <h6>Owner</h6>
                         <select id="dv-owner" class="form-control form-control-sm" style="margin-bottom:16px">
-                            <option>Diler (sales)</option>
-                            <option>Frank (admin)</option>
+                            <option>Diler (admin)</option>
                             <option>Dispatch</option>
                         </select>
 
@@ -1391,7 +1390,7 @@ const MOCK_LEADS = [
         source: 'referral', created_at: '2026-04-15T09:00:00',
         notes: 'Saturday 9am start. Deposit paid. Crew A assigned.',
         quote: { type: 'package', package: 'intown', movers: 2, hours: 4, truck: true, total: 875 },
-        estimated_value: 875, owner: 'Frank',
+        estimated_value: 875, owner: 'Diler',
     },
     {
         id: 'l_008', stage: 'booked',
@@ -1401,7 +1400,7 @@ const MOCK_LEADS = [
         source: '/mudanza', created_at: '2026-04-14T13:45:00',
         notes: 'Sunday 10am. Bilingual crew B. 3-BR family move.',
         quote: { type: 'package', package: 'big', movers: 3, hours: 4, truck: true, total: 1175 },
-        estimated_value: 1175, owner: 'Frank',
+        estimated_value: 1175, owner: 'Diler',
     },
     {
         id: 'l_009', stage: 'booked',
@@ -1411,7 +1410,7 @@ const MOCK_LEADS = [
         source: '/orlando-movers', created_at: '2026-04-18T10:30:00',
         notes: 'Loading help only — she has a U-Haul.',
         quote: { type: 'package', package: 'loading', movers: 2, hours: 2, truck: false, total: 300 },
-        estimated_value: 300, owner: 'Frank',
+        estimated_value: 300, owner: 'Diler',
     },
     {
         id: 'l_010', stage: 'done',
@@ -1421,7 +1420,7 @@ const MOCK_LEADS = [
         source: 'referral', created_at: '2026-04-01T08:00:00',
         notes: 'Paid. Left 5-star review on Google.',
         quote: { type: 'package', package: 'big', total: 1175 },
-        estimated_value: 1175, owner: 'Frank',
+        estimated_value: 1175, owner: 'Diler',
     },
     {
         id: 'l_011', stage: 'done',
@@ -1431,7 +1430,7 @@ const MOCK_LEADS = [
         source: '/orlando-movers', created_at: '2026-03-28T15:00:00',
         notes: 'Finished in 2.75 hrs. Paid via Zelle. Review pending.',
         quote: { type: 'package', package: 'intown', total: 875 },
-        estimated_value: 875, owner: 'Frank',
+        estimated_value: 875, owner: 'Diler',
     },
     {
         id: 'l_012', stage: 'lost',
@@ -2056,7 +2055,7 @@ function qbCurrentPayload() {
     };
 }
 
-async function generateQuotePdf() {
+async function callQuoteFn(endpoint) {
     if (store !== supabaseStore) {
         alert('Mock mode — sign in with a Supabase account to generate a real PDF.');
         return null;
@@ -2068,7 +2067,7 @@ async function generateQuotePdf() {
     const session = await supabaseStore.getSession();
     if (!session) { alert('Session expired — please sign in again.'); return null; }
 
-    const res = await fetch('/.netlify/functions/quote-pdf', {
+    const res = await fetch('/.netlify/functions/' + endpoint, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -2077,7 +2076,7 @@ async function generateQuotePdf() {
         body: JSON.stringify({ lead_id: lead.id, quote }),
     });
     if (!res.ok) {
-        let msg = 'Quote PDF failed';
+        let msg = 'Request failed';
         try { msg = (await res.json()).error || msg; } catch (_) {}
         alert(msg + ' (HTTP ' + res.status + ')');
         return null;
@@ -2085,15 +2084,33 @@ async function generateQuotePdf() {
     return res.json();
 }
 
-async function sendQuote() {
-    const out = await generateQuotePdf();
+async function previewQuote() {
+    const out = await callQuoteFn('quote-pdf');
     if (out?.signed_url) window.open(out.signed_url, '_blank', 'noopener');
-    // Phase 3b will wire Resend email delivery; for now the PDF just opens in a new tab.
 }
 
-async function previewQuote() {
-    const out = await generateQuotePdf();
-    if (out?.signed_url) window.open(out.signed_url, '_blank', 'noopener');
+async function sendQuote() {
+    const lead = state.leads.find(l => l.id === state.detailId);
+    if (!lead?.customer?.email) {
+        alert('No email on file for this customer — add one first.');
+        return;
+    }
+    if (!confirm('Send quote PDF to ' + lead.customer.email + '?')) return;
+    const out = await callQuoteFn('quote-send');
+    if (!out) return;
+    // Reflect the stage bump in the UI if the server flipped it.
+    if (lead.stage === 'new' || lead.stage === 'contacted') {
+        lead.stage = 'quoted';
+        renderDashboard(); renderKanban(); renderLeadsTable();
+        const badge = document.getElementById('detail-stage-badge');
+        if (badge) {
+            badge.textContent = CONFIG.stageLabels.quoted;
+            badge.className = 'stage-badge s-quoted';
+        }
+        const sel = document.getElementById('dv-stage');
+        if (sel) sel.value = 'quoted';
+    }
+    alert('Quote sent to ' + out.sent_to + '.');
 }
 function logCall() {
     alert('Mock mode — would append a call event to the activity log.');
