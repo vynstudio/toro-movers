@@ -550,6 +550,7 @@
     var leads = [];
     var crewList = [];
     var currentView = 'dashboard';
+    var currentLead = null; // last lead loaded via openLead — used to skip a redundant GET in sendConfirmation
     var calendarInitialized = false;
     var dragulaInstance = null;
 
@@ -1128,10 +1129,13 @@
             success: function(data) {
                 var lead = data.lead;
                 if (!lead) return;
+                currentLead = lead;
                 renderLeadModal(lead);
                 $('#leadModal').modal('show');
             },
-            error: function() { alert('Failed to load lead details'); }
+            error: function(xhr) {
+                alert('Failed to load lead details (HTTP ' + (xhr.status || '?') + '): ' + ((xhr.responseJSON && xhr.responseJSON.error) || xhr.statusText || 'network error'));
+            }
         });
     }
 
@@ -1545,33 +1549,49 @@
 
     function sendConfirmation(id) {
         if (!confirm('Send booking confirmation email to this customer?')) return;
-        // Fetch full lead to calculate deposit from timeline payments
-        $.ajax({
-            url: '/.netlify/functions/crm?action=get&id=' + id,
-            headers: apiHeaders(),
-            success: function(data) {
-                var lead = data.lead;
-                var deposit = 0;
-                if (lead) {
-                    (lead.timeline || []).forEach(function(t) {
-                        var m = (t.text || '').match(/\$(\d+)\s*deposit/i);
-                        if (m && t.type === 'payment') deposit = Math.max(deposit, parseInt(m[1], 10));
-                    });
-                    if (lead.depositPaid && !deposit) {
-                        deposit = lead.deposit || 0;
-                    }
+
+        // Reuse the lead already loaded for the open modal. Compute the deposit
+        // from its timeline — same logic as renderLeadModal. This avoids a
+        // second GET that was sometimes failing on Netlify cold starts.
+        function computeDeposit(lead) {
+            if (!lead) return 0;
+            var deposit = 0;
+            (lead.timeline || []).forEach(function(t) {
+                var m = (t.text || '').match(/\$(\d+)\s*deposit/i);
+                if (m && t.type === 'payment') deposit = Math.max(deposit, parseInt(m[1], 10));
+            });
+            if (lead.depositPaid && !deposit) deposit = lead.deposit || 0;
+            return deposit;
+        }
+
+        function postSend(deposit) {
+            $.ajax({
+                url: '/.netlify/functions/resend-confirmation?leadId=' + encodeURIComponent(id) + '&deposit=' + encodeURIComponent(deposit),
+                headers: apiHeaders(),
+                success: function(data) {
+                    if (data.ok) alert('Confirmation sent!');
+                    else alert('Failed: ' + (data.error || 'unknown'));
+                },
+                error: function(xhr) {
+                    alert('Send failed (HTTP ' + (xhr.status || '?') + '): ' + ((xhr.responseJSON && xhr.responseJSON.error) || xhr.statusText || 'network error'));
                 }
-                $.ajax({
-                    url: '/.netlify/functions/resend-confirmation?leadId=' + encodeURIComponent(id) + '&deposit=' + encodeURIComponent(deposit),
-                    headers: apiHeaders(),
-                    success: function(data) {
-                        if (data.ok) alert('Confirmation sent!');
-                        else alert('Failed: ' + (data.error || 'unknown'));
-                    },
-                    error: function() { alert('Send failed'); }
-                });
-            },
-            error: function() { alert('Send failed — could not fetch lead'); }
+            });
+        }
+
+        // Fast path: use the lead already in memory from the open modal
+        if (currentLead && currentLead.id === id) {
+            postSend(computeDeposit(currentLead));
+            return;
+        }
+
+        // Fallback: re-fetch if the in-memory lead isn't available (e.g. stale session)
+        $.ajax({
+            url: '/.netlify/functions/crm?action=get&id=' + encodeURIComponent(id),
+            headers: apiHeaders(),
+            success: function(data) { postSend(computeDeposit(data.lead)); },
+            error: function(xhr) {
+                alert('Send failed — could not fetch lead (HTTP ' + (xhr.status || '?') + '): ' + ((xhr.responseJSON && xhr.responseJSON.error) || xhr.statusText || 'network error'));
+            }
         });
     }
 
