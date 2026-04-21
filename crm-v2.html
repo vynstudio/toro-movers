@@ -1,0 +1,2085 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Toro Movers — CRM v2</title>
+    <meta name="robots" content="noindex,nofollow">
+    <meta name="theme-color" content="#C8102E">
+    <link rel="icon" href="assets/img/icon.png">
+    <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+
+    <!-- Template CSS (reusing existing crm-assets) -->
+    <link type="text/css" href="crm-assets/vendor/simplebar.min.css" rel="stylesheet">
+    <link type="text/css" href="crm-assets/css/app.css" rel="stylesheet">
+    <link type="text/css" href="crm-assets/css/vendor-material-icons.css" rel="stylesheet">
+    <link type="text/css" href="crm-assets/css/vendor-fontawesome-free.css" rel="stylesheet">
+    <link type="text/css" href="crm-assets/vendor/fullcalendar/fullcalendar.min.css" rel="stylesheet">
+    <link type="text/css" href="crm-assets/vendor/dragula/dragula.min.css" rel="stylesheet">
+    <link type="text/css" href="crm-assets/css/vendor-flatpickr.css" rel="stylesheet">
+    <link type="text/css" href="crm-assets/css/vendor-select2.css" rel="stylesheet">
+    <link type="text/css" href="crm-assets/css/vendor-quill.css" rel="stylesheet">
+
+    <style>
+    /* ================================
+       TORO MOVERS — CRM v2 Brand System
+       Source of truth: brand-identity.md
+       ================================ */
+    :root {
+        /* Brand */
+        --toro-red: #C8102E;
+        --toro-red-dark: #A50D26;
+        --toro-red-soft: #FFF1F3;
+        --toro-charcoal: #1C1C1E;
+        --toro-charcoal-soft: #3A3A3D;
+        --toro-sand: #FBF6E9;
+        --toro-gray-50: #F9FAFB;
+        --toro-gray-100: #F3F4F6;
+        --toro-gray-200: #E5E7EB;
+        --toro-gray-300: #D1D5DB;
+        --toro-gray-500: #6B7280;
+        --toro-gray-700: #374151;
+
+        /* Stage colors (functional, not brand) */
+        --s-new: #2563EB;
+        --s-contacted: #8B5CF6;
+        --s-quoted: #F59E0B;
+        --s-booked: #16A34A;
+        --s-done: #9CA3AF;
+        --s-lost: #EF4444;
+
+        /* Type */
+        --font-system: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    /* ===== Global overrides (beats template defaults) ===== */
+    body {
+        font-family: var(--font-system) !important;
+        background: var(--toro-gray-50) !important;
+        color: var(--toro-charcoal) !important;
+    }
+    h1, h2, h3, h4, h5, h6 {
+        font-family: var(--font-system) !important;
+        color: var(--toro-charcoal) !important;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+    }
+
+    /* Primary buttons = Toro Red, not template blue */
+    .btn-primary {
+        background-color: var(--toro-red) !important;
+        border-color: var(--toro-red) !important;
+        font-weight: 700;
+    }
+    .btn-primary:hover,
+    .btn-primary:focus,
+    .btn-primary:not(:disabled):not(.disabled):active {
+        background-color: var(--toro-red-dark) !important;
+        border-color: var(--toro-red-dark) !important;
+    }
+    .btn-outline-primary {
+        color: var(--toro-red) !important;
+        border-color: var(--toro-red) !important;
+    }
+    .btn-outline-primary:hover {
+        background-color: var(--toro-red) !important;
+        border-color: var(--toro-red) !important;
+        color: #fff !important;
+    }
+    .text-primary { color: var(--toro-red) !important; }
+    .bg-primary { background-color: var(--toro-red) !important; }
+
+    /* Links */
+    a { color: var(--toro-red); }
+    a:hover { color: var(--toro-red-dark); }
+
+    /* ===== Layout shell ===== */
+    .crm-sidebar {
+        position: fixed;
+        top: 0; left: 0; bottom: 0;
+        width: 230px;
+        background: var(--toro-charcoal);
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        z-index: 1000;
+        transition: transform 0.2s ease;
+    }
+    .crm-main {
+        margin-left: 230px;
+        min-height: 100vh;
+    }
+
+    .sb-brand {
+        padding: 20px 18px;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .sb-brand a { text-decoration: none; display: block; }
+    .sidebar-brand-text {
+        color: #fff;
+        font-size: 18px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+    }
+    .sidebar-brand-text .red { color: var(--toro-red); }
+    .sb-brand small {
+        color: #9ca3af;
+        font-size: 10px;
+        letter-spacing: 0.1em;
+        font-weight: 700;
+        text-transform: uppercase;
+        display: block;
+        margin-top: 2px;
+    }
+
+    .sb-nav { flex: 1; padding: 12px 0; overflow-y: auto; }
+    .sb-nav-item { margin: 2px 8px; }
+    .sb-nav-item a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 14px;
+        border-radius: 6px;
+        color: #d1d5db;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.15s;
+    }
+    .sb-nav-item a:hover {
+        background: rgba(255,255,255,0.06);
+        color: #fff;
+    }
+    .sb-nav-item.active a {
+        background: var(--toro-red);
+        color: #fff;
+        font-weight: 700;
+    }
+    .sb-icon { width: 16px; font-size: 14px; }
+    .sb-nav-item.active a .sb-icon { color: #fff; }
+
+    .sb-footer {
+        padding: 12px;
+        border-top: 1px solid rgba(255,255,255,0.08);
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    .sb-footer a {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 10px;
+        color: #9ca3af;
+        font-size: 12px;
+        text-decoration: none;
+        border-radius: 4px;
+    }
+    .sb-footer a:hover { background: rgba(255,255,255,0.04); color: #fff; }
+    .sb-footer .material-icons { font-size: 16px; }
+
+    /* ===== Header ===== */
+    .crm-header {
+        background: #fff;
+        border-bottom: 1px solid var(--toro-gray-200);
+        padding: 12px 24px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+    .crm-header h4 { margin: 0; font-size: 18px; font-weight: 700; }
+    .hamburger-btn {
+        display: none;
+        background: none;
+        border: 0;
+        font-size: 20px;
+        cursor: pointer;
+        color: var(--toro-charcoal);
+    }
+    .stat-strip {
+        display: flex;
+        gap: 20px;
+        font-size: 13px;
+        color: var(--toro-gray-500);
+    }
+    .stat-strip strong { color: var(--toro-charcoal); font-weight: 700; }
+
+    /* ===== Views ===== */
+    .view-container { display: none; padding: 20px 24px; }
+    .view-container.active { display: block; }
+
+    /* ===== Dashboard ===== */
+    .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+    .kpi-card {
+        background: #fff;
+        border: 1px solid var(--toro-gray-200);
+        border-radius: 10px;
+        padding: 18px;
+    }
+    .kpi-card .label {
+        font-size: 11px;
+        color: var(--toro-gray-500);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+    .kpi-card .value {
+        font-size: 28px;
+        font-weight: 800;
+        color: var(--toro-charcoal);
+        letter-spacing: -0.02em;
+    }
+    .kpi-card .value.red { color: var(--toro-red); }
+    .kpi-card .delta {
+        font-size: 12px;
+        margin-top: 4px;
+        color: var(--toro-gray-500);
+    }
+    .kpi-card .delta.up { color: #16A34A; }
+    .kpi-card .delta.down { color: #EF4444; }
+
+    .panel {
+        background: #fff;
+        border: 1px solid var(--toro-gray-200);
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+    .panel-header {
+        padding: 14px 18px;
+        border-bottom: 1px solid var(--toro-gray-200);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .panel-header h5 { margin: 0; font-size: 15px; font-weight: 700; }
+    .panel-body { padding: 18px; }
+
+    /* ===== Kanban ===== */
+    .kanban-board {
+        display: flex;
+        gap: 14px;
+        overflow-x: auto;
+        padding: 4px 0;
+        min-height: calc(100vh - 200px);
+    }
+    .kanban-col {
+        flex: 0 0 280px;
+        min-width: 280px;
+        background: var(--toro-gray-100);
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+        max-height: calc(100vh - 200px);
+    }
+    .kanban-col-header {
+        padding: 12px 14px;
+        border-bottom: 1px solid var(--toro-gray-200);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .kanban-col-header .title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .kanban-col-header .dot {
+        width: 8px; height: 8px;
+        border-radius: 50%;
+    }
+    .kanban-col-header h6 {
+        margin: 0;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--toro-charcoal);
+    }
+    .kanban-col-header .count {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--toro-gray-500);
+        background: #fff;
+        padding: 2px 8px;
+        border-radius: 10px;
+        min-width: 24px;
+        text-align: center;
+    }
+    .kanban-col-total {
+        font-size: 11px;
+        color: var(--toro-gray-500);
+        padding: 6px 14px 8px;
+        font-weight: 500;
+    }
+    .kanban-col-total strong { color: var(--toro-charcoal); }
+    .kanban-col-body {
+        padding: 8px;
+        overflow-y: auto;
+        flex: 1;
+        min-height: 80px;
+    }
+    .kanban-card {
+        background: #fff;
+        border: 1px solid var(--toro-gray-200);
+        border-radius: 8px;
+        padding: 10px 12px;
+        margin-bottom: 8px;
+        cursor: grab;
+        border-left: 3px solid #ccc;
+        transition: box-shadow 0.15s, transform 0.15s;
+    }
+    .kanban-card:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        transform: translateY(-1px);
+    }
+    .kanban-card.s-new      { border-left-color: var(--s-new); }
+    .kanban-card.s-contacted{ border-left-color: var(--s-contacted); }
+    .kanban-card.s-quoted   { border-left-color: var(--s-quoted); }
+    .kanban-card.s-booked   { border-left-color: var(--s-booked); }
+    .kanban-card.s-done     { border-left-color: var(--s-done); }
+    .kanban-card.s-lost     { border-left-color: var(--s-lost); opacity: 0.7; }
+
+    .kanban-card .name {
+        font-weight: 700;
+        font-size: 13px;
+        color: var(--toro-charcoal);
+        margin-bottom: 4px;
+    }
+    .kanban-card .meta {
+        font-size: 11px;
+        color: var(--toro-gray-500);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .kanban-card .total {
+        color: #16A34A;
+        font-weight: 700;
+        font-size: 12px;
+    }
+    .kanban-card .tag {
+        display: inline-block;
+        font-size: 10px;
+        font-weight: 700;
+        padding: 2px 6px;
+        background: var(--toro-red-soft);
+        color: var(--toro-red);
+        border-radius: 3px;
+        letter-spacing: 0.05em;
+    }
+    .kanban-col-body.gu-transit { background: var(--toro-red-soft); border-radius: 6px; }
+
+    /* Stage dot colors */
+    .dot.s-new      { background: var(--s-new); }
+    .dot.s-contacted{ background: var(--s-contacted); }
+    .dot.s-quoted   { background: var(--s-quoted); }
+    .dot.s-booked   { background: var(--s-booked); }
+    .dot.s-done     { background: var(--s-done); }
+    .dot.s-lost     { background: var(--s-lost); }
+
+    /* ===== Stage badges ===== */
+    .stage-badge {
+        display: inline-block;
+        font-size: 10px;
+        font-weight: 700;
+        padding: 3px 8px;
+        border-radius: 10px;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: #fff;
+    }
+    .stage-badge.s-new      { background: var(--s-new); }
+    .stage-badge.s-contacted{ background: var(--s-contacted); }
+    .stage-badge.s-quoted   { background: var(--s-quoted); }
+    .stage-badge.s-booked   { background: var(--s-booked); }
+    .stage-badge.s-done     { background: var(--s-done); }
+    .stage-badge.s-lost     { background: var(--s-lost); }
+
+    /* ===== Leads table ===== */
+    .leads-table { width: 100%; background: #fff; }
+    .leads-table thead th {
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--toro-gray-500);
+        border-bottom: 1px solid var(--toro-gray-200);
+        border-top: 0;
+        padding: 10px 14px;
+    }
+    .leads-table tbody td {
+        padding: 12px 14px;
+        font-size: 13px;
+        border-top: 1px solid var(--toro-gray-100);
+        vertical-align: middle;
+    }
+    .leads-table tbody tr { cursor: pointer; }
+    .leads-table tbody tr:hover { background: var(--toro-gray-50); }
+    .leads-table .cust-name { font-weight: 700; color: var(--toro-charcoal); }
+    .leads-table .cust-sub { font-size: 11px; color: var(--toro-gray-500); }
+
+    /* ===== Detail modal ===== */
+    .modal-content { border: 0; border-radius: 12px; overflow: hidden; }
+    .modal-header {
+        background: var(--toro-charcoal);
+        color: #fff;
+        padding: 14px 20px;
+        border-bottom: 0;
+    }
+    .modal-header .modal-title {
+        color: #fff;
+        font-size: 16px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .modal-header .close { color: #fff; opacity: 0.7; text-shadow: none; }
+    .modal-header .close:hover { opacity: 1; color: #fff; }
+
+    .detail-grid {
+        display: grid;
+        grid-template-columns: 280px 1fr 280px;
+        gap: 0;
+        min-height: 420px;
+    }
+    .detail-col {
+        padding: 18px;
+        border-right: 1px solid var(--toro-gray-200);
+    }
+    .detail-col:last-child { border-right: 0; }
+    .detail-col h6 {
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--toro-gray-500);
+        margin-bottom: 10px;
+    }
+    .detail-field {
+        margin-bottom: 14px;
+    }
+    .detail-field .label {
+        font-size: 11px;
+        color: var(--toro-gray-500);
+        font-weight: 500;
+        margin-bottom: 2px;
+    }
+    .detail-field .value {
+        font-size: 13px;
+        color: var(--toro-charcoal);
+        font-weight: 500;
+    }
+    .detail-field .value.big {
+        font-size: 16px;
+        font-weight: 700;
+    }
+
+    /* Timeline */
+    .timeline-item {
+        display: flex;
+        gap: 10px;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--toro-gray-100);
+        font-size: 12px;
+    }
+    .timeline-item:last-child { border-bottom: 0; }
+    .timeline-dot {
+        width: 8px; height: 8px;
+        border-radius: 50%;
+        background: var(--toro-gray-300);
+        margin-top: 5px;
+        flex-shrink: 0;
+    }
+    .timeline-dot.red { background: var(--toro-red); }
+    .timeline-content { flex: 1; }
+    .timeline-content .action {
+        font-weight: 700;
+        color: var(--toro-charcoal);
+    }
+    .timeline-content .meta {
+        font-size: 11px;
+        color: var(--toro-gray-500);
+        margin-top: 1px;
+    }
+
+    /* Quote builder (center column) */
+    .quote-builder {
+        background: var(--toro-gray-50);
+        border-radius: 8px;
+        padding: 14px;
+    }
+    .quote-toggle {
+        display: flex;
+        gap: 4px;
+        background: var(--toro-gray-200);
+        padding: 3px;
+        border-radius: 6px;
+        margin-bottom: 14px;
+    }
+    .quote-toggle button {
+        flex: 1;
+        border: 0;
+        background: transparent;
+        padding: 7px 12px;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--toro-gray-500);
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.15s;
+    }
+    .quote-toggle button.active {
+        background: #fff;
+        color: var(--toro-charcoal);
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+
+    .package-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+    .package-option {
+        background: #fff;
+        border: 2px solid var(--toro-gray-200);
+        border-radius: 8px;
+        padding: 12px 10px;
+        cursor: pointer;
+        text-align: center;
+        transition: all 0.15s;
+    }
+    .package-option:hover { border-color: var(--toro-gray-300); }
+    .package-option.selected {
+        border-color: var(--toro-red);
+        background: var(--toro-red-soft);
+    }
+    .package-option .price {
+        font-size: 18px;
+        font-weight: 800;
+        color: var(--toro-charcoal);
+        margin-bottom: 2px;
+    }
+    .package-option.selected .price { color: var(--toro-red); }
+    .package-option .desc {
+        font-size: 10px;
+        color: var(--toro-gray-500);
+        font-weight: 500;
+    }
+    .package-option .label {
+        font-size: 11px;
+        font-weight: 700;
+        margin-bottom: 6px;
+    }
+
+    .quote-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        font-size: 13px;
+    }
+    .quote-row .label { color: var(--toro-gray-500); }
+    .quote-row .value { font-weight: 700; color: var(--toro-charcoal); }
+    .quote-total {
+        background: var(--toro-charcoal);
+        color: #fff;
+        padding: 12px 14px;
+        border-radius: 6px;
+        margin-top: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .quote-total .label { font-size: 12px; opacity: 0.7; }
+    .quote-total .value { font-size: 22px; font-weight: 800; color: var(--toro-red); }
+
+    .slider-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 10px;
+    }
+    .slider-row label {
+        flex: 0 0 70px;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--toro-gray-700);
+        margin: 0;
+    }
+    .slider-row input[type="range"] {
+        flex: 1;
+        height: 4px;
+    }
+    .slider-row .readout {
+        flex: 0 0 60px;
+        font-size: 13px;
+        font-weight: 700;
+        text-align: right;
+        color: var(--toro-charcoal);
+    }
+
+    /* ===== Mobile ===== */
+    .mobile-backdrop {
+        display: none;
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,0.4);
+        z-index: 999;
+    }
+    @media (max-width: 768px) {
+        .crm-sidebar { transform: translateX(-100%); }
+        .crm-sidebar.open { transform: translateX(0); }
+        .mobile-backdrop.visible { display: block; }
+        .crm-main { margin-left: 0; }
+        .hamburger-btn { display: block; }
+        .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+        .detail-grid { grid-template-columns: 1fr; }
+        .detail-col { border-right: 0; border-bottom: 1px solid var(--toro-gray-200); }
+        .stat-strip { display: none !important; }
+    }
+
+    /* ===== Env banner (mock mode) ===== */
+    .env-banner {
+        background: var(--toro-sand);
+        color: var(--toro-charcoal);
+        padding: 6px 16px;
+        font-size: 11px;
+        font-weight: 700;
+        text-align: center;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--toro-gray-200);
+    }
+    .env-banner .red { color: var(--toro-red); }
+
+    /* ===== Login ===== */
+    .login-screen {
+        position: fixed;
+        inset: 0;
+        background: var(--toro-charcoal);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+    }
+    .login-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 32px;
+        width: 100%;
+        max-width: 380px;
+    }
+    .login-card .brand {
+        text-align: center;
+        font-size: 22px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin-bottom: 4px;
+    }
+    .login-card .brand .red { color: var(--toro-red); }
+    .login-card .tagline {
+        text-align: center;
+        font-size: 11px;
+        color: var(--toro-gray-500);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        font-weight: 700;
+        margin-bottom: 24px;
+    }
+    .login-card input {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1px solid var(--toro-gray-300);
+        border-radius: 6px;
+        font-size: 14px;
+        margin-bottom: 12px;
+    }
+    .login-card input:focus {
+        outline: none;
+        border-color: var(--toro-red);
+        box-shadow: 0 0 0 3px var(--toro-red-soft);
+    }
+    .login-card button {
+        width: 100%;
+        background: var(--toro-red);
+        color: #fff;
+        border: 0;
+        padding: 10px;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+    .login-card button:hover { background: var(--toro-red-dark); }
+    .login-card .hint {
+        text-align: center;
+        font-size: 11px;
+        color: var(--toro-gray-500);
+        margin-top: 14px;
+    }
+
+    /* Table view polish */
+    #view-leads .panel-body { padding: 0; }
+
+    /* Add lead modal form */
+    .form-section { margin-bottom: 16px; }
+    .form-section label {
+        display: block;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--toro-gray-500);
+        margin-bottom: 6px;
+    }
+    .form-section input,
+    .form-section select,
+    .form-section textarea {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid var(--toro-gray-300);
+        border-radius: 6px;
+        font-size: 13px;
+        font-family: inherit;
+    }
+    .form-section input:focus,
+    .form-section select:focus,
+    .form-section textarea:focus {
+        outline: none;
+        border-color: var(--toro-red);
+        box-shadow: 0 0 0 3px var(--toro-red-soft);
+    }
+    .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    </style>
+</head>
+<body>
+
+<!-- ================================================
+     LOGIN SCREEN
+     ================================================ -->
+<div class="login-screen" id="login-screen" style="display:none">
+    <div class="login-card">
+        <div class="brand">TORO <span class="red">MOVERS</span></div>
+        <div class="tagline">CRM Dashboard</div>
+        <input type="email" id="login-email" placeholder="you@toromovers.net" autocomplete="email">
+        <input type="password" id="login-password" placeholder="Password" autocomplete="current-password" style="display:none">
+        <button onclick="doLogin()">Sign in</button>
+        <div class="hint" id="login-hint"></div>
+        <div id="login-error" style="color:var(--toro-red);font-size:12px;text-align:center;margin-top:8px;min-height:16px"></div>
+    </div>
+</div>
+
+<!-- ================================================
+     APP SHELL
+     ================================================ -->
+<div id="app-screen">
+    <div class="mobile-backdrop" id="mobile-backdrop" onclick="toggleMobileSidebar()"></div>
+
+    <!-- ===== SIDEBAR ===== -->
+    <div class="crm-sidebar" id="crm-sidebar">
+        <div class="sb-brand">
+            <a href="#" onclick="switchView('dashboard');return false;">
+                <div class="sidebar-brand-text">TORO <span class="red">MOVERS</span></div>
+                <small>CRM v2</small>
+            </a>
+        </div>
+
+        <div class="sb-nav" id="sidebar-nav">
+            <div class="sb-nav-item active" data-view="dashboard">
+                <a href="#" onclick="switchView('dashboard');return false;">
+                    <i class="fas fa-th-large sb-icon"></i> <span>Dashboard</span>
+                </a>
+            </div>
+            <div class="sb-nav-item" data-view="kanban">
+                <a href="#" onclick="switchView('kanban');return false;">
+                    <i class="fas fa-columns sb-icon"></i> <span>Pipeline</span>
+                </a>
+            </div>
+            <div class="sb-nav-item" data-view="leads">
+                <a href="#" onclick="switchView('leads');return false;">
+                    <i class="fas fa-users sb-icon"></i> <span>Leads</span>
+                </a>
+            </div>
+            <div class="sb-nav-item" data-view="calendar">
+                <a href="#" onclick="switchView('calendar');return false;">
+                    <i class="fas fa-calendar-alt sb-icon"></i> <span>Calendar</span>
+                </a>
+            </div>
+            <div class="sb-nav-item" data-view="customers">
+                <a href="#" onclick="switchView('customers');return false;">
+                    <i class="fas fa-address-book sb-icon"></i> <span>Customers</span>
+                </a>
+            </div>
+            <div class="sb-nav-item" data-view="crews">
+                <a href="#" onclick="switchView('crews');return false;">
+                    <i class="fas fa-hard-hat sb-icon"></i> <span>Crews</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="sb-footer">
+            <a href="/" target="_blank">
+                <i class="material-icons">open_in_new</i> Open website
+            </a>
+            <a href="/crm.html">
+                <i class="material-icons">history</i> CRM v1
+            </a>
+            <a href="#" onclick="doLogout();return false;">
+                <i class="material-icons">exit_to_app</i> Sign out
+            </a>
+        </div>
+    </div>
+
+    <!-- ===== MAIN ===== -->
+    <div class="crm-main">
+        <!-- Env banner -->
+        <div class="env-banner" id="env-banner" style="display:none"></div>
+
+        <!-- Header -->
+        <div class="crm-header">
+            <button class="hamburger-btn" onclick="toggleMobileSidebar()">&#9776;</button>
+            <h4 id="navbar-title">Dashboard</h4>
+            <div class="stat-strip d-none d-md-flex" id="stat-strip"></div>
+            <div class="ml-auto d-flex" style="gap:8px">
+                <button class="btn btn-sm btn-primary" onclick="openAddLeadModal()">
+                    <i class="material-icons" style="font-size:16px;vertical-align:middle;margin-right:4px">add</i>
+                    New lead
+                </button>
+                <button class="btn btn-sm btn-outline-secondary" onclick="refreshAll()" title="Refresh">
+                    <i class="material-icons" style="font-size:16px;vertical-align:middle">refresh</i>
+                </button>
+            </div>
+        </div>
+
+        <!-- ===== DASHBOARD VIEW ===== -->
+        <div class="view-container active" id="view-dashboard">
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="label">Open leads</div>
+                    <div class="value" id="kpi-open">&mdash;</div>
+                    <div class="delta" id="kpi-open-delta">&mdash;</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="label">Pipeline value</div>
+                    <div class="value red" id="kpi-pipeline">&mdash;</div>
+                    <div class="delta">All open quotes + bookings</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="label">This week revenue</div>
+                    <div class="value" id="kpi-week">&mdash;</div>
+                    <div class="delta up" id="kpi-week-delta">&mdash;</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="label">Close rate</div>
+                    <div class="value" id="kpi-close">&mdash;</div>
+                    <div class="delta">Last 30 days</div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <h5>Recent activity</h5>
+                    <a href="#" onclick="switchView('kanban');return false;" style="font-size:12px;font-weight:700">
+                        Open pipeline &rarr;
+                    </a>
+                </div>
+                <div class="panel-body" id="dash-activity">&mdash;</div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <h5>Upcoming jobs (this week)</h5>
+                </div>
+                <div class="panel-body" id="dash-upcoming">&mdash;</div>
+            </div>
+        </div>
+
+        <!-- ===== KANBAN VIEW ===== -->
+        <div class="view-container" id="view-kanban">
+            <div id="kanban-board" class="kanban-board"></div>
+        </div>
+
+        <!-- ===== LEADS TABLE VIEW ===== -->
+        <div class="view-container" id="view-leads">
+            <div class="panel">
+                <div class="panel-header">
+                    <h5>All leads & jobs</h5>
+                    <div style="display:flex;gap:8px">
+                        <select id="leads-filter-stage" class="form-control form-control-sm" style="width:auto" onchange="renderLeadsTable()">
+                            <option value="">All stages</option>
+                            <option value="new">New</option>
+                            <option value="contacted">Contacted</option>
+                            <option value="quoted">Quoted</option>
+                            <option value="booked">Booked</option>
+                            <option value="done">Done</option>
+                            <option value="lost">Lost</option>
+                        </select>
+                        <input type="text" id="leads-search" class="form-control form-control-sm" placeholder="Search name, phone..." style="width:220px" oninput="renderLeadsTable()">
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <table class="leads-table">
+                        <thead>
+                            <tr>
+                                <th>Customer</th>
+                                <th>Stage</th>
+                                <th>Move date</th>
+                                <th>Zone</th>
+                                <th>Size</th>
+                                <th class="text-right">Value</th>
+                                <th>Owner</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leads-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== CALENDAR VIEW ===== -->
+        <div class="view-container" id="view-calendar">
+            <div class="panel">
+                <div class="panel-body">
+                    <div id="calendar-placeholder" style="text-align:center;padding:60px 20px;color:var(--toro-gray-500)">
+                        <i class="fas fa-calendar-alt" style="font-size:48px;color:var(--toro-gray-300);margin-bottom:16px;display:block"></i>
+                        <div style="font-weight:700;color:var(--toro-charcoal);margin-bottom:6px">Calendar view</div>
+                        <div style="font-size:13px">FullCalendar wires up in Phase 4 once Supabase is live.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== CUSTOMERS VIEW ===== -->
+        <div class="view-container" id="view-customers">
+            <div class="panel">
+                <div class="panel-body" style="text-align:center;padding:60px 20px;color:var(--toro-gray-500)">
+                    <i class="fas fa-address-book" style="font-size:48px;color:var(--toro-gray-300);margin-bottom:16px;display:block"></i>
+                    <div style="font-weight:700;color:var(--toro-charcoal);margin-bottom:6px">Customers directory</div>
+                    <div style="font-size:13px">Wires up once Supabase is live.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== CREWS VIEW ===== -->
+        <div class="view-container" id="view-crews">
+            <div class="panel">
+                <div class="panel-body" style="text-align:center;padding:60px 20px;color:var(--toro-gray-500)">
+                    <i class="fas fa-hard-hat" style="font-size:48px;color:var(--toro-gray-300);margin-bottom:16px;display:block"></i>
+                    <div style="font-weight:700;color:var(--toro-charcoal);margin-bottom:6px">Crews (admin only)</div>
+                    <div style="font-size:13px">Wires up in Phase 4.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ================================================
+     DETAIL MODAL (lead / job)
+     ================================================ -->
+<div class="modal fade" id="detailModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document" style="max-width:1040px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <span id="detail-name">&mdash;</span>
+                    <span class="stage-badge" id="detail-stage-badge">&mdash;</span>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="detail-grid">
+                    <!-- LEFT: Customer + move details -->
+                    <div class="detail-col">
+                        <h6>Customer</h6>
+                        <div class="detail-field">
+                            <div class="label">Name</div>
+                            <div class="value big" id="dv-name">&mdash;</div>
+                        </div>
+                        <div class="detail-field">
+                            <div class="label">Phone</div>
+                            <div class="value" id="dv-phone">&mdash;</div>
+                        </div>
+                        <div class="detail-field">
+                            <div class="label">Email</div>
+                            <div class="value" id="dv-email">&mdash;</div>
+                        </div>
+                        <div class="detail-field">
+                            <div class="label">Language</div>
+                            <div class="value" id="dv-language">&mdash;</div>
+                        </div>
+
+                        <h6 style="margin-top:20px">Move details</h6>
+                        <div class="detail-field">
+                            <div class="label">From &rarr; To</div>
+                            <div class="value" id="dv-route">&mdash;</div>
+                        </div>
+                        <div class="detail-field">
+                            <div class="label">Date</div>
+                            <div class="value" id="dv-date">&mdash;</div>
+                        </div>
+                        <div class="detail-field">
+                            <div class="label">Size</div>
+                            <div class="value" id="dv-size">&mdash;</div>
+                        </div>
+                        <div class="detail-field">
+                            <div class="label">Stairs / elevator</div>
+                            <div class="value" id="dv-stairs">&mdash;</div>
+                        </div>
+                        <div class="detail-field">
+                            <div class="label">Source</div>
+                            <div class="value" id="dv-source">&mdash;</div>
+                        </div>
+                    </div>
+
+                    <!-- CENTER: Quote builder -->
+                    <div class="detail-col">
+                        <h6>Quote</h6>
+                        <div class="quote-builder">
+                            <div class="quote-toggle">
+                                <button class="active" onclick="qbSetMode('package')">Package</button>
+                                <button onclick="qbSetMode('custom')">Custom</button>
+                            </div>
+
+                            <!-- Package mode -->
+                            <div id="qb-package-mode">
+                                <div class="package-grid">
+                                    <div class="package-option" onclick="qbSelectPackage('loading')" data-pkg="loading">
+                                        <div class="label">Loading</div>
+                                        <div class="price">$300</div>
+                                        <div class="desc">2 movers &middot; 2 hrs</div>
+                                    </div>
+                                    <div class="package-option" onclick="qbSelectPackage('intown')" data-pkg="intown">
+                                        <div class="label">In-Town</div>
+                                        <div class="price">$875</div>
+                                        <div class="desc">2 movers &middot; 4 hrs + truck</div>
+                                    </div>
+                                    <div class="package-option" onclick="qbSelectPackage('big')" data-pkg="big">
+                                        <div class="label">Big Move</div>
+                                        <div class="price">$1,175</div>
+                                        <div class="desc">3 movers &middot; 4 hrs + truck</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Custom mode -->
+                            <div id="qb-custom-mode" style="display:none">
+                                <div class="slider-row">
+                                    <label>Movers</label>
+                                    <input type="range" id="qb-movers" min="2" max="4" value="2" step="1" oninput="qbCompute()">
+                                    <div class="readout" id="qb-movers-out">2</div>
+                                </div>
+                                <div class="slider-row">
+                                    <label>Hours</label>
+                                    <input type="range" id="qb-hours" min="2" max="12" value="4" step="0.5" oninput="qbCompute()">
+                                    <div class="readout" id="qb-hours-out">4</div>
+                                </div>
+                                <div class="slider-row">
+                                    <label>Truck</label>
+                                    <div style="flex:1">
+                                        <label style="display:inline-flex;align-items:center;gap:6px;font-weight:500;font-size:12px;text-transform:none;letter-spacing:0">
+                                            <input type="checkbox" id="qb-truck" onchange="qbCompute()"> 26-ft box truck (+$275)
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="margin-top:12px">
+                                <div class="quote-row">
+                                    <span class="label">Hourly rate</span>
+                                    <span class="value" id="qb-rate">$75.00 / mover</span>
+                                </div>
+                                <div class="quote-row">
+                                    <span class="label">Estimated hours</span>
+                                    <span class="value" id="qb-est-hours">4</span>
+                                </div>
+                                <div class="quote-row" id="qb-truck-row">
+                                    <span class="label">Truck fee</span>
+                                    <span class="value">$275.00</span>
+                                </div>
+                                <div class="quote-row">
+                                    <span class="label">Deposit</span>
+                                    <span class="value" id="qb-deposit">$125.00</span>
+                                </div>
+                            </div>
+
+                            <div class="quote-total">
+                                <span class="label">Total</span>
+                                <span class="value" id="qb-total">$875.00</span>
+                            </div>
+
+                            <div style="display:flex;gap:6px;margin-top:12px">
+                                <button class="btn btn-sm btn-primary" style="flex:1" onclick="sendQuote()">
+                                    <i class="material-icons" style="font-size:14px;vertical-align:middle">send</i>
+                                    Send quote
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary" onclick="previewQuote()">Preview PDF</button>
+                            </div>
+                        </div>
+
+                        <div style="margin-top:18px">
+                            <h6>Notes</h6>
+                            <textarea id="dv-notes" rows="3" style="width:100%;padding:8px 10px;border:1px solid var(--toro-gray-300);border-radius:6px;font-size:13px;font-family:inherit" placeholder="Anything worth remembering about this move..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- RIGHT: Timeline + actions -->
+                    <div class="detail-col" style="background:var(--toro-gray-50)">
+                        <h6>Stage</h6>
+                        <select id="dv-stage" class="form-control form-control-sm" onchange="changeStage()" style="margin-bottom:16px">
+                            <option value="new">New</option>
+                            <option value="contacted">Contacted</option>
+                            <option value="quoted">Quoted</option>
+                            <option value="booked">Booked</option>
+                            <option value="done">Done</option>
+                            <option value="lost">Lost</option>
+                        </select>
+
+                        <h6>Owner</h6>
+                        <select id="dv-owner" class="form-control form-control-sm" style="margin-bottom:16px">
+                            <option>Diler (sales)</option>
+                            <option>Frank (admin)</option>
+                            <option>Dispatch</option>
+                        </select>
+
+                        <h6>Activity</h6>
+                        <div id="dv-timeline"></div>
+
+                        <div style="margin-top:20px;display:flex;flex-direction:column;gap:6px">
+                            <button class="btn btn-sm btn-outline-primary" onclick="logCall()">
+                                <i class="material-icons" style="font-size:14px;vertical-align:middle">phone</i>
+                                Log call
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="requestReview()">
+                                <i class="material-icons" style="font-size:14px;vertical-align:middle">star</i>
+                                Request review
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ================================================
+     ADD LEAD MODAL
+     ================================================ -->
+<div class="modal fade" id="addLeadModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document" style="max-width:520px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">New lead</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-grid-2">
+                    <div class="form-section">
+                        <label>Full name *</label>
+                        <input type="text" id="al-name" placeholder="e.g. Sarah Chen">
+                    </div>
+                    <div class="form-section">
+                        <label>Phone *</label>
+                        <input type="tel" id="al-phone" placeholder="(321) 555-0123">
+                    </div>
+                </div>
+                <div class="form-section">
+                    <label>Email</label>
+                    <input type="email" id="al-email" placeholder="customer@example.com">
+                </div>
+                <div class="form-grid-2">
+                    <div class="form-section">
+                        <label>Move date</label>
+                        <input type="date" id="al-date">
+                    </div>
+                    <div class="form-section">
+                        <label>Size</label>
+                        <select id="al-size">
+                            <option value="few_items">Just a few items</option>
+                            <option value="studio">Studio</option>
+                            <option value="1br">1-Bedroom</option>
+                            <option value="2br" selected>2-Bedroom</option>
+                            <option value="3br">3-Bedroom</option>
+                            <option value="4br_plus">4+ Bedroom</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-grid-2">
+                    <div class="form-section">
+                        <label>From zone</label>
+                        <select id="al-from-zone">
+                            <option value="orlando_area">Orlando area</option>
+                            <option value="kissimmee_st_cloud">Kissimmee / St. Cloud</option>
+                            <option value="sanford_lake_mary">Sanford / Lake Mary</option>
+                            <option value="winter_park_springs_oviedo">Winter Park / Springs / Oviedo</option>
+                            <option value="apopka_ocoee_winter_garden">Apopka / Ocoee / Winter Garden</option>
+                            <option value="clermont_davenport_haines">Clermont / Davenport / Haines City</option>
+                            <option value="lake_nona_hunters_creek">Lake Nona / Hunters Creek</option>
+                            <option value="the_villages_ocala">The Villages / Ocala</option>
+                            <option value="long_distance">Long distance</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-section">
+                        <label>To zone</label>
+                        <select id="al-to-zone">
+                            <option value="orlando_area">Orlando area</option>
+                            <option value="kissimmee_st_cloud">Kissimmee / St. Cloud</option>
+                            <option value="sanford_lake_mary">Sanford / Lake Mary</option>
+                            <option value="winter_park_springs_oviedo">Winter Park / Springs / Oviedo</option>
+                            <option value="apopka_ocoee_winter_garden">Apopka / Ocoee / Winter Garden</option>
+                            <option value="clermont_davenport_haines">Clermont / Davenport / Haines City</option>
+                            <option value="lake_nona_hunters_creek">Lake Nona / Hunters Creek</option>
+                            <option value="the_villages_ocala">The Villages / Ocala</option>
+                            <option value="long_distance">Long distance</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-section">
+                    <label>Notes</label>
+                    <textarea id="al-notes" rows="2" placeholder="Inventory details, special items, scheduling notes..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer" style="border-top:1px solid var(--toro-gray-200)">
+                <button class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
+                <button class="btn btn-primary" onclick="saveNewLead()">Create lead</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ================================================
+     LIBS
+     ================================================ -->
+<script src="crm-assets/vendor/jquery.min.js"></script>
+<script src="crm-assets/vendor/popper.min.js"></script>
+<script src="crm-assets/vendor/bootstrap.min.js"></script>
+<script src="crm-assets/vendor/dragula/dragula.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- ================================================
+     SUPABASE CONFIG
+     Replace with an empty string to force mock mode.
+     ================================================ -->
+<script>
+window.TORO_SUPABASE = {
+    url: 'https://wiorktgphbvlovdmkcca.supabase.co',
+    publishableKey: 'sb_publishable_SPj1MFnFuLCiG3JvZQ0lag_UEEw1PZF',
+};
+</script>
+
+<!-- ================================================
+     APP LOGIC — CRM v2
+     Clean architecture: state module, render module, event handlers.
+     Data layer is swappable: mockStore -> supabaseStore when ready.
+     ================================================ -->
+<script>
+/* ========== 1. CONFIG ========== */
+const CONFIG = {
+    // Flip to 'supabase' once creds are set in window.TORO_SUPABASE_CONFIG
+    dataSource: 'mock',
+    brand: {
+        rate: 75.00,
+        minHours: 2,
+        truckFee: 275.00,
+        depositLabor: 50.00,
+        depositTruck: 125.00,
+    },
+    packages: {
+        loading: { movers: 2, hours: 2, truck: false, total: 300 },
+        intown:  { movers: 2, hours: 4, truck: true,  total: 875 },
+        big:     { movers: 3, hours: 4, truck: true,  total: 1175 },
+    },
+    stageOrder: ['new', 'contacted', 'quoted', 'booked', 'done', 'lost'],
+    stageLabels: {
+        new: 'New', contacted: 'Contacted', quoted: 'Quoted',
+        booked: 'Booked', done: 'Done', lost: 'Lost',
+    },
+    zoneLabels: {
+        orlando_area: 'Orlando',
+        kissimmee_st_cloud: 'Kissimmee/St. Cloud',
+        sanford_lake_mary: 'Sanford/Lake Mary',
+        winter_park_springs_oviedo: 'Winter Park area',
+        apopka_ocoee_winter_garden: 'Apopka/Ocoee/WG',
+        clermont_davenport_haines: 'Clermont/Davenport',
+        lake_nona_hunters_creek: 'Lake Nona',
+        the_villages_ocala: 'The Villages/Ocala',
+        long_distance: 'Long distance',
+        other: 'Other',
+    },
+    sizeLabels: {
+        few_items: 'Few items', studio: 'Studio', '1br': '1-BR',
+        '2br': '2-BR', '3br': '3-BR', '4br_plus': '4+ BR',
+    },
+};
+
+/* ========== 2. MOCK DATA ========== */
+const MOCK_LEADS = [
+    {
+        id: 'l_001', stage: 'new',
+        customer: { name: 'Sarah Chen', phone: '(321) 555-0142', email: 'sarah.c@email.com', language: 'en' },
+        from_zone: 'winter_park_springs_oviedo', to_zone: 'sanford_lake_mary',
+        move_date: '2026-04-27', size: '2br', stairs: 'none',
+        source: 'toromovers.net / #book', created_at: '2026-04-20T09:12:00',
+        notes: '2-BR apartment to new place in Lake Mary. Flexible on timing.',
+        estimated_value: 875, owner: 'Diler',
+    },
+    {
+        id: 'l_002', stage: 'new',
+        customer: { name: 'Mike Ortiz', phone: '(407) 555-0188', email: 'mortiz@email.com', language: 'en' },
+        from_zone: 'orlando_area', to_zone: 'winter_park_springs_oviedo',
+        move_date: '2026-04-25', size: 'studio', stairs: '1_flight',
+        source: '/orlando-movers', created_at: '2026-04-20T08:05:00',
+        notes: 'Studio, mostly boxes. Needs Sat before noon.',
+        estimated_value: 300, owner: 'Diler',
+    },
+    {
+        id: 'l_003', stage: 'new',
+        customer: { name: 'J. Patel', phone: '(321) 555-0177', email: 'jp@email.com', language: 'en' },
+        from_zone: 'lake_nona_hunters_creek', to_zone: 'winter_park_springs_oviedo',
+        move_date: '2026-05-02', size: '3br', stairs: 'elevator',
+        source: 'google / referral', created_at: '2026-04-19T14:30:00',
+        notes: '3-BR townhouse. Has a baby grand piano — flagged.',
+        estimated_value: 1450, owner: 'Diler',
+    },
+    {
+        id: 'l_004', stage: 'contacted',
+        customer: { name: 'Maria Santos', phone: '(407) 555-0201', email: 'maria.s@email.com', language: 'es' },
+        from_zone: 'kissimmee_st_cloud', to_zone: 'kissimmee_st_cloud',
+        move_date: '2026-04-28', size: '2br', stairs: 'none',
+        source: '/mudanza', created_at: '2026-04-19T10:15:00',
+        notes: 'Spoke Saturday — waiting on quote. Bilingual crew preferred.',
+        estimated_value: 720, owner: 'Diler',
+    },
+    {
+        id: 'l_005', stage: 'quoted',
+        customer: { name: 'Daniel Rivera', phone: '(321) 555-0155', email: 'd.rivera@email.com', language: 'en' },
+        from_zone: 'orlando_area', to_zone: 'apopka_ocoee_winter_garden',
+        move_date: '2026-04-26', size: '1br', stairs: 'none',
+        source: 'toromovers.net / #book', created_at: '2026-04-18T16:20:00',
+        notes: 'Quote sent Friday. Following up today.',
+        quote: { type: 'custom', movers: 2, hours: 4, truck: true, total: 875, sent_at: '2026-04-19' },
+        estimated_value: 875, owner: 'Diler',
+    },
+    {
+        id: 'l_006', stage: 'quoted',
+        customer: { name: 'Kelly Nguyen', phone: '(407) 555-0099', email: 'kelly.n@email.com', language: 'en' },
+        from_zone: 'lake_nona_hunters_creek', to_zone: 'lake_nona_hunters_creek',
+        move_date: '2026-05-04', size: '3br', stairs: 'none',
+        source: '/lake-nona-movers', created_at: '2026-04-17T11:00:00',
+        notes: '3-BR house within Lake Nona. Declined "Big Move" package, wants custom.',
+        quote: { type: 'custom', movers: 3, hours: 6, truck: true, total: 1625, sent_at: '2026-04-18' },
+        estimated_value: 1625, owner: 'Diler',
+    },
+    {
+        id: 'l_007', stage: 'booked',
+        customer: { name: 'Alex Thompson', phone: '(321) 555-0165', email: 'alex.t@email.com', language: 'en' },
+        from_zone: 'winter_park_springs_oviedo', to_zone: 'winter_park_springs_oviedo',
+        move_date: '2026-04-26', size: '2br', stairs: '1_flight',
+        source: 'referral', created_at: '2026-04-15T09:00:00',
+        notes: 'Saturday 9am start. Deposit paid. Crew A assigned.',
+        quote: { type: 'package', package: 'intown', movers: 2, hours: 4, truck: true, total: 875 },
+        estimated_value: 875, owner: 'Frank',
+    },
+    {
+        id: 'l_008', stage: 'booked',
+        customer: { name: 'Rosa Mendez', phone: '(407) 555-0123', email: 'rosa.m@email.com', language: 'es' },
+        from_zone: 'kissimmee_st_cloud', to_zone: 'orlando_area',
+        move_date: '2026-04-27', size: '3br', stairs: 'none',
+        source: '/mudanza', created_at: '2026-04-14T13:45:00',
+        notes: 'Sunday 10am. Bilingual crew B. 3-BR family move.',
+        quote: { type: 'package', package: 'big', movers: 3, hours: 4, truck: true, total: 1175 },
+        estimated_value: 1175, owner: 'Frank',
+    },
+    {
+        id: 'l_009', stage: 'booked',
+        customer: { name: 'Linda Park', phone: '(321) 555-0144', email: 'l.park@email.com', language: 'en' },
+        from_zone: 'orlando_area', to_zone: 'orlando_area',
+        move_date: '2026-04-28', size: 'studio', stairs: '1_flight',
+        source: '/orlando-movers', created_at: '2026-04-18T10:30:00',
+        notes: 'Loading help only — she has a U-Haul.',
+        quote: { type: 'package', package: 'loading', movers: 2, hours: 2, truck: false, total: 300 },
+        estimated_value: 300, owner: 'Frank',
+    },
+    {
+        id: 'l_010', stage: 'done',
+        customer: { name: 'Sarang P.', phone: '(407) 555-0111', email: 'sarang.p@email.com', language: 'en' },
+        from_zone: 'sanford_lake_mary', to_zone: 'sanford_lake_mary',
+        move_date: '2026-04-13', size: '3br', stairs: 'none',
+        source: 'referral', created_at: '2026-04-01T08:00:00',
+        notes: 'Paid. Left 5-star review on Google.',
+        quote: { type: 'package', package: 'big', total: 1175 },
+        estimated_value: 1175, owner: 'Frank',
+    },
+    {
+        id: 'l_011', stage: 'done',
+        customer: { name: 'Maggie Calder', phone: '(321) 555-0102', email: 'maggie.c@email.com', language: 'en' },
+        from_zone: 'orlando_area', to_zone: 'orlando_area',
+        move_date: '2026-04-10', size: '2br', stairs: 'none',
+        source: '/orlando-movers', created_at: '2026-03-28T15:00:00',
+        notes: 'Finished in 2.75 hrs. Paid via Zelle. Review pending.',
+        quote: { type: 'package', package: 'intown', total: 875 },
+        estimated_value: 875, owner: 'Frank',
+    },
+    {
+        id: 'l_012', stage: 'lost',
+        customer: { name: 'Tomás G.', phone: '(407) 555-0177', email: 'tg@email.com', language: 'es' },
+        from_zone: 'long_distance', to_zone: 'long_distance',
+        move_date: '2026-05-15', size: '4br_plus', stairs: 'none',
+        source: '/mudanza', created_at: '2026-04-12T12:00:00',
+        notes: 'Out-of-state move, too big for our fleet. Referred to partner.',
+        lost_reason: 'out_of_scope',
+        estimated_value: 0, owner: 'Diler',
+    },
+];
+
+/* ========== 3. STATE ========== */
+const state = {
+    leads: [],
+    currentUser: null,
+    detailId: null,
+    qbMode: 'package',
+};
+
+/* ========== 4. DATA LAYER (swappable) ========== */
+const mockStore = {
+    async fetchLeads() { return JSON.parse(JSON.stringify(MOCK_LEADS)); },
+    async updateStage(id, stage) {
+        const lead = state.leads.find(l => l.id === id);
+        if (lead) lead.stage = stage;
+        return lead;
+    },
+    async createLead(payload) {
+        const lead = {
+            id: 'l_' + Date.now(),
+            stage: 'new',
+            customer: { name: payload.name, phone: payload.phone, email: payload.email, language: 'en' },
+            from_zone: payload.from_zone, to_zone: payload.to_zone,
+            move_date: payload.move_date, size: payload.size, stairs: 'none',
+            source: 'manual / CRM', created_at: new Date().toISOString(),
+            notes: payload.notes || '', estimated_value: 0, owner: 'Diler',
+        };
+        state.leads.unshift(lead);
+        return lead;
+    },
+};
+
+// Supabase store — live Postgres via @supabase/supabase-js
+const supabaseStore = {
+    client: null,
+
+    init() {
+        const cfg = window.TORO_SUPABASE || {};
+        if (!cfg.url || !cfg.publishableKey) return false;
+        if (!window.supabase) {
+            console.warn('Supabase JS client not loaded.');
+            return false;
+        }
+        this.client = window.supabase.createClient(cfg.url, cfg.publishableKey, {
+            auth: { persistSession: true, autoRefreshToken: true },
+        });
+        return true;
+    },
+
+    // --- Data layer ---
+    // Normalizes a Supabase row join into the shape the UI expects.
+    _shape(lead) {
+        return {
+            id: lead.id,
+            stage: lead.stage,
+            from_zone: lead.from_zone,
+            to_zone: lead.to_zone,
+            move_date: lead.move_date,
+            size: lead.size,
+            stairs: lead.stairs,
+            source: lead.source || '—',
+            source_url_path: lead.source_url_path,
+            notes: lead.notes || '',
+            estimated_value: Number(lead.estimated_value || 0),
+            owner: lead.assigned_to ? 'Assigned' : 'Unassigned',
+            created_at: lead.created_at,
+            lost_reason: lead.lost_reason,
+            customer: lead.customers ? {
+                name: lead.customers.full_name,
+                phone: lead.customers.phone,
+                email: lead.customers.email,
+                language: lead.customers.language_preference || 'en',
+            } : { name: 'Unknown', phone: '', email: '', language: 'en' },
+            quote: null, // joined separately if needed
+        };
+    },
+
+    async fetchLeads() {
+        const { data, error } = await this.client
+            .from('leads')
+            .select('*, customers(*)')
+            .order('created_at', { ascending: false });
+        if (error) throw error;
+        return (data || []).map(this._shape);
+    },
+
+    async updateStage(id, stage) {
+        const { error } = await this.client
+            .from('leads')
+            .update({ stage })
+            .eq('id', id);
+        if (error) throw error;
+        const lead = state.leads.find(l => l.id === id);
+        if (lead) lead.stage = stage;
+        return lead;
+    },
+
+    async createLead(payload) {
+        // 1. Upsert the customer
+        const { data: cust, error: custErr } = await this.client
+            .from('customers')
+            .insert({
+                full_name: payload.name,
+                phone: payload.phone,
+                email: payload.email || null,
+                language_preference: 'en',
+                source: 'manual / CRM',
+            })
+            .select()
+            .single();
+        if (custErr) throw custErr;
+
+        // 2. Insert the lead
+        const { data: lead, error: leadErr } = await this.client
+            .from('leads')
+            .insert({
+                customer_id: cust.id,
+                stage: 'new',
+                from_zone: payload.from_zone,
+                to_zone: payload.to_zone,
+                move_date: payload.move_date || null,
+                size: payload.size,
+                stairs: 'none',
+                notes: payload.notes || '',
+                source: 'manual / CRM',
+                source_url_path: '/crm-v2',
+                estimated_value: 0,
+            })
+            .select('*, customers(*)')
+            .single();
+        if (leadErr) throw leadErr;
+
+        const shaped = this._shape(lead);
+        state.leads.unshift(shaped);
+        return shaped;
+    },
+
+    // --- Auth ---
+    async signInWithOtp(email) {
+        const { error } = await this.client.auth.signInWithOtp({
+            email,
+            options: { emailRedirectTo: window.location.href },
+        });
+        if (error) throw error;
+    },
+    async signInWithPassword(email, password) {
+        const { data, error } = await this.client.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        return data.user;
+    },
+    async signUp(email, password) {
+        const { data, error } = await this.client.auth.signUp({ email, password });
+        if (error) throw error;
+        return data.user;
+    },
+    async getSession() {
+        const { data } = await this.client.auth.getSession();
+        return data.session;
+    },
+    async signOut() {
+        await this.client.auth.signOut();
+    },
+};
+
+// Auto-detect: use Supabase if configured AND the client loads, else mock.
+let store = mockStore;
+if (supabaseStore.init()) {
+    store = supabaseStore;
+    CONFIG.dataSource = 'supabase';
+}
+
+/* ========== 5. AUTH ========== */
+function showLoginModeHints() {
+    const isLive = store === supabaseStore;
+    const pw = document.getElementById('login-password');
+    const hint = document.getElementById('login-hint');
+    if (isLive) {
+        pw.style.display = 'block';
+        hint.innerHTML = 'Sign in with your Toro email + password.<br><a href="#" onclick="doSignUp();return false;" style="color:var(--toro-red);font-weight:700">Create account instead</a>';
+    } else {
+        pw.style.display = 'none';
+        hint.textContent = 'Mock mode — any email signs in.';
+    }
+}
+
+async function doLogin() {
+    const email = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value;
+    const err = document.getElementById('login-error');
+    err.textContent = '';
+    if (!email) { err.textContent = 'Email required.'; return; }
+
+    if (store === supabaseStore) {
+        try {
+            if (!password) { err.textContent = 'Password required.'; return; }
+            const user = await supabaseStore.signInWithPassword(email, password);
+            state.currentUser = { email: user.email, id: user.id, role: 'admin' };
+            showApp();
+        } catch (e) {
+            err.textContent = e.message || 'Sign-in failed.';
+        }
+    } else {
+        // Mock mode
+        state.currentUser = { email, role: 'admin' };
+        localStorage.setItem('toro_crm_mock_user', JSON.stringify(state.currentUser));
+        showApp();
+    }
+}
+
+async function doSignUp() {
+    const email = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value;
+    const err = document.getElementById('login-error');
+    err.textContent = '';
+    if (!email || !password) { err.textContent = 'Email + password required.'; return; }
+    if (password.length < 6) { err.textContent = 'Password at least 6 characters.'; return; }
+    try {
+        await supabaseStore.signUp(email, password);
+        err.style.color = 'var(--s-booked)';
+        err.textContent = 'Account created — check your email to confirm, then sign in.';
+    } catch (e) {
+        err.textContent = e.message || 'Sign-up failed.';
+    }
+}
+
+async function doLogout() {
+    if (store === supabaseStore) await supabaseStore.signOut();
+    localStorage.removeItem('toro_crm_mock_user');
+    location.reload();
+}
+
+function showApp() {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app-screen').style.display = 'block';
+
+    // Env banner
+    const banner = document.getElementById('env-banner');
+    if (store === supabaseStore) {
+        banner.style.display = 'none';
+    } else {
+        banner.style.display = 'block';
+        banner.innerHTML = '<span class="red">&#9888;</span> Mock mode &mdash; Supabase not configured. Data resets on reload.';
+    }
+
+    initApp();
+}
+
+async function checkSession() {
+    // Supabase mode: check for a real session first
+    if (store === supabaseStore) {
+        try {
+            const session = await supabaseStore.getSession();
+            if (session?.user) {
+                state.currentUser = { email: session.user.email, id: session.user.id, role: 'admin' };
+                showApp();
+                return;
+            }
+        } catch (e) {
+            console.warn('Session check failed:', e);
+        }
+        document.getElementById('login-screen').style.display = 'flex';
+        document.getElementById('app-screen').style.display = 'none';
+        showLoginModeHints();
+        return;
+    }
+
+    // Mock mode: localStorage
+    const saved = localStorage.getItem('toro_crm_mock_user');
+    if (saved) {
+        state.currentUser = JSON.parse(saved);
+        showApp();
+    } else {
+        document.getElementById('login-screen').style.display = 'flex';
+        document.getElementById('app-screen').style.display = 'none';
+        showLoginModeHints();
+    }
+}
+
+/* ========== 6. VIEW SWITCHER ========== */
+function switchView(view) {
+    $('.view-container').removeClass('active');
+    $('#view-' + view).addClass('active');
+    $('#sidebar-nav .sb-nav-item').removeClass('active');
+    $('#sidebar-nav .sb-nav-item[data-view="' + view + '"]').addClass('active');
+    const titles = {
+        dashboard: 'Dashboard', kanban: 'Pipeline', leads: 'Leads & jobs',
+        calendar: 'Calendar', customers: 'Customers', crews: 'Crews',
+    };
+    document.getElementById('navbar-title').textContent = titles[view] || '';
+
+    // Close mobile sidebar
+    document.getElementById('crm-sidebar').classList.remove('open');
+    document.getElementById('mobile-backdrop').classList.remove('visible');
+
+    // Re-render per-view as needed
+    if (view === 'dashboard') renderDashboard();
+    if (view === 'kanban') renderKanban();
+    if (view === 'leads') renderLeadsTable();
+}
+
+function toggleMobileSidebar() {
+    document.getElementById('crm-sidebar').classList.toggle('open');
+    document.getElementById('mobile-backdrop').classList.toggle('visible');
+}
+
+/* ========== 7. RENDERERS ========== */
+const fmt$ = (n) => '$' + (n || 0).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+const fmtDate = (iso) => {
+    if (!iso) return '—';
+    const d = new Date(iso);
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+};
+
+function renderDashboard() {
+    const open = state.leads.filter(l => !['done', 'lost'].includes(l.stage));
+    const pipelineValue = open.reduce((sum, l) => sum + (l.estimated_value || 0), 0);
+    const weekDone = state.leads.filter(l => l.stage === 'done');
+    const weekRevenue = weekDone.reduce((sum, l) => sum + (l.estimated_value || 0), 0);
+    const totalClosed = state.leads.filter(l => ['done', 'lost'].includes(l.stage)).length;
+    const closed = state.leads.filter(l => l.stage === 'done').length;
+    const closeRate = totalClosed > 0 ? Math.round((closed / totalClosed) * 100) : 0;
+
+    document.getElementById('kpi-open').textContent = open.length;
+    document.getElementById('kpi-open-delta').textContent = open.length + ' across 4 stages';
+    document.getElementById('kpi-pipeline').textContent = fmt$(pipelineValue);
+    document.getElementById('kpi-week').textContent = fmt$(weekRevenue);
+    document.getElementById('kpi-week-delta').textContent = weekDone.length + ' jobs completed';
+    document.getElementById('kpi-close').textContent = closeRate + '%';
+
+    // Stat strip
+    document.getElementById('stat-strip').innerHTML = `
+        <span><strong>${open.length}</strong> open</span>
+        <span><strong>${fmt$(pipelineValue)}</strong> pipeline</span>
+        <span><strong>${closeRate}%</strong> close rate</span>
+    `;
+
+    // Recent activity
+    const recent = [...state.leads].sort((a,b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 5);
+    document.getElementById('dash-activity').innerHTML = recent.map(l => `
+        <div class="timeline-item" style="padding:10px 0" onclick="openDetail('${l.id}')" role="button" tabindex="0">
+            <span class="timeline-dot ${l.stage === 'new' ? 'red' : ''}"></span>
+            <div class="timeline-content" style="display:flex;justify-content:space-between;align-items:center;width:100%">
+                <div>
+                    <div class="action">${l.customer.name}</div>
+                    <div class="meta">${CONFIG.sizeLabels[l.size]} &middot; ${CONFIG.zoneLabels[l.from_zone]} &rarr; ${CONFIG.zoneLabels[l.to_zone]}</div>
+                </div>
+                <span class="stage-badge s-${l.stage}">${CONFIG.stageLabels[l.stage]}</span>
+            </div>
+        </div>
+    `).join('');
+
+    // Upcoming
+    const upcoming = state.leads
+        .filter(l => l.stage === 'booked')
+        .sort((a,b) => new Date(a.move_date) - new Date(b.move_date))
+        .slice(0, 5);
+    document.getElementById('dash-upcoming').innerHTML = upcoming.length ? upcoming.map(l => `
+        <div class="timeline-item" style="padding:10px 0" onclick="openDetail('${l.id}')" role="button" tabindex="0">
+            <span class="timeline-dot" style="background:var(--s-booked)"></span>
+            <div class="timeline-content" style="display:flex;justify-content:space-between;align-items:center;width:100%">
+                <div>
+                    <div class="action">${l.customer.name} &middot; ${fmtDate(l.move_date)}</div>
+                    <div class="meta">${CONFIG.sizeLabels[l.size]} &middot; ${CONFIG.zoneLabels[l.from_zone]} &rarr; ${CONFIG.zoneLabels[l.to_zone]}</div>
+                </div>
+                <strong style="color:var(--s-booked);font-size:14px">${fmt$(l.estimated_value)}</strong>
+            </div>
+        </div>
+    `).join('') : '<div style="color:var(--toro-gray-500);font-size:13px;padding:10px 0">No jobs booked for this week yet.</div>';
+}
+
+let drakeInstance = null;
+function renderKanban() {
+    const board = document.getElementById('kanban-board');
+    board.innerHTML = CONFIG.stageOrder.map(stage => {
+        const leads = state.leads.filter(l => l.stage === stage);
+        const total = leads.reduce((s, l) => s + (l.estimated_value || 0), 0);
+        return `
+            <div class="kanban-col" data-stage="${stage}">
+                <div class="kanban-col-header">
+                    <div class="title">
+                        <span class="dot s-${stage}"></span>
+                        <h6>${CONFIG.stageLabels[stage]}</h6>
+                    </div>
+                    <span class="count">${leads.length}</span>
+                </div>
+                <div class="kanban-col-total"><strong>${fmt$(total)}</strong> total</div>
+                <div class="kanban-col-body" data-stage="${stage}">
+                    ${leads.map(l => renderKanbanCard(l)).join('')}
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    // Attach card click
+    board.querySelectorAll('.kanban-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+            if (card.classList.contains('gu-transit')) return;
+            openDetail(card.dataset.id);
+        });
+    });
+
+    // Wire up dragula
+    if (drakeInstance) drakeInstance.destroy();
+    const containers = Array.from(board.querySelectorAll('.kanban-col-body'));
+    drakeInstance = dragula(containers, {
+        moves: (el) => el.classList.contains('kanban-card'),
+    });
+    drakeInstance.on('drop', async (el, target, source) => {
+        const id = el.dataset.id;
+        const newStage = target.dataset.stage;
+        await store.updateStage(id, newStage);
+        // Update card class
+        el.className = 'kanban-card s-' + newStage;
+        // Refresh KPIs + counts
+        renderKanban();
+        renderDashboard();
+    });
+}
+
+function renderKanbanCard(l) {
+    const moveInfo = l.move_date ? fmtDate(l.move_date) : 'TBD';
+    const valuePart = l.estimated_value ? `<span class="total">${fmt$(l.estimated_value)}</span>` : '';
+    const langTag = l.customer.language === 'es' ? '<span class="tag">ES</span>' : '';
+    return `
+        <div class="kanban-card s-${l.stage}" data-id="${l.id}">
+            <div class="name">${l.customer.name} ${langTag}</div>
+            <div class="meta">
+                <span>${CONFIG.sizeLabels[l.size]} &middot; ${moveInfo}</span>
+                ${valuePart}
+            </div>
+        </div>
+    `;
+}
+
+function renderLeadsTable() {
+    const filter = document.getElementById('leads-filter-stage').value;
+    const q = document.getElementById('leads-search').value.trim().toLowerCase();
+    let rows = [...state.leads];
+    if (filter) rows = rows.filter(l => l.stage === filter);
+    if (q) rows = rows.filter(l =>
+        l.customer.name.toLowerCase().includes(q) ||
+        l.customer.phone.includes(q) ||
+        (l.customer.email || '').toLowerCase().includes(q)
+    );
+    rows.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+    const tbody = document.getElementById('leads-tbody');
+    tbody.innerHTML = rows.length ? rows.map(l => `
+        <tr onclick="openDetail('${l.id}')">
+            <td>
+                <div class="cust-name">${l.customer.name}</div>
+                <div class="cust-sub">${l.customer.phone}</div>
+            </td>
+            <td><span class="stage-badge s-${l.stage}">${CONFIG.stageLabels[l.stage]}</span></td>
+            <td>${fmtDate(l.move_date)}</td>
+            <td style="font-size:12px">${CONFIG.zoneLabels[l.from_zone]}<br><span style="color:var(--toro-gray-500)">&rarr; ${CONFIG.zoneLabels[l.to_zone]}</span></td>
+            <td>${CONFIG.sizeLabels[l.size]}</td>
+            <td class="text-right"><strong>${fmt$(l.estimated_value)}</strong></td>
+            <td style="color:var(--toro-gray-500);font-size:12px">${l.owner}</td>
+        </tr>
+    `).join('') : '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--toro-gray-500)">No leads match those filters.</td></tr>';
+}
+
+/* ========== 8. DETAIL MODAL ========== */
+function openDetail(id) {
+    const l = state.leads.find(x => x.id === id);
+    if (!l) return;
+    state.detailId = id;
+    document.getElementById('detail-name').textContent = l.customer.name;
+    const badge = document.getElementById('detail-stage-badge');
+    badge.textContent = CONFIG.stageLabels[l.stage];
+    badge.className = 'stage-badge s-' + l.stage;
+
+    document.getElementById('dv-name').textContent = l.customer.name;
+    document.getElementById('dv-phone').textContent = l.customer.phone;
+    document.getElementById('dv-email').textContent = l.customer.email || '—';
+    document.getElementById('dv-language').textContent = l.customer.language === 'es' ? 'Spanish' : 'English';
+    document.getElementById('dv-route').textContent = `${CONFIG.zoneLabels[l.from_zone]} → ${CONFIG.zoneLabels[l.to_zone]}`;
+    document.getElementById('dv-date').textContent = l.move_date ? new Date(l.move_date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }) : '—';
+    document.getElementById('dv-size').textContent = CONFIG.sizeLabels[l.size];
+    document.getElementById('dv-stairs').textContent = { none: 'None', '1_flight': '1 flight', '2_plus': '2+ flights', elevator: 'Elevator' }[l.stairs] || '—';
+    document.getElementById('dv-source').textContent = l.source;
+    document.getElementById('dv-notes').value = l.notes || '';
+    document.getElementById('dv-stage').value = l.stage;
+
+    // Timeline
+    const events = [
+        { action: 'Lead created', meta: 'via ' + l.source, date: l.created_at, dot: 'red' },
+        ...(l.stage !== 'new' ? [{ action: 'Moved to Contacted', meta: 'by ' + l.owner, date: l.created_at, dot: '' }] : []),
+        ...(l.quote?.sent_at ? [{ action: 'Quote sent', meta: fmt$(l.quote.total) + ' · ' + l.quote.type, date: l.quote.sent_at, dot: '' }] : []),
+        ...(l.stage === 'booked' ? [{ action: 'Booked', meta: 'deposit received', date: l.created_at, dot: '' }] : []),
+        ...(l.stage === 'done' ? [{ action: 'Job completed', meta: 'paid in full', date: l.move_date, dot: '' }] : []),
+    ];
+    document.getElementById('dv-timeline').innerHTML = events.map(e => `
+        <div class="timeline-item">
+            <span class="timeline-dot ${e.dot}"></span>
+            <div class="timeline-content">
+                <div class="action">${e.action}</div>
+                <div class="meta">${e.meta} · ${fmtDate(e.date)}</div>
+            </div>
+        </div>
+    `).join('');
+
+    // Quote builder state
+    if (l.quote) {
+        if (l.quote.type === 'package' && l.quote.package) {
+            qbSetMode('package');
+            qbSelectPackage(l.quote.package);
+        } else {
+            qbSetMode('custom');
+            document.getElementById('qb-movers').value = l.quote.movers || 2;
+            document.getElementById('qb-hours').value = l.quote.hours || 4;
+            document.getElementById('qb-truck').checked = !!l.quote.truck;
+            qbCompute();
+        }
+    } else {
+        qbSetMode('package');
+        qbSelectPackage('intown');
+    }
+
+    $('#detailModal').modal('show');
+}
+
+function changeStage() {
+    const newStage = document.getElementById('dv-stage').value;
+    const l = state.leads.find(x => x.id === state.detailId);
+    if (!l) return;
+    l.stage = newStage;
+    const badge = document.getElementById('detail-stage-badge');
+    badge.textContent = CONFIG.stageLabels[newStage];
+    badge.className = 'stage-badge s-' + newStage;
+    store.updateStage(l.id, newStage);
+    renderDashboard();
+    renderKanban();
+    renderLeadsTable();
+}
+
+/* ========== 9. QUOTE BUILDER ========== */
+function qbSetMode(mode) {
+    state.qbMode = mode;
+    document.querySelectorAll('.quote-toggle button').forEach((b, i) => {
+        b.classList.toggle('active', (i === 0 && mode === 'package') || (i === 1 && mode === 'custom'));
+    });
+    document.getElementById('qb-package-mode').style.display = mode === 'package' ? 'block' : 'none';
+    document.getElementById('qb-custom-mode').style.display = mode === 'custom' ? 'block' : 'none';
+    if (mode === 'custom') qbCompute();
+}
+
+function qbSelectPackage(key) {
+    document.querySelectorAll('.package-option').forEach(el => el.classList.remove('selected'));
+    document.querySelector(`[data-pkg="${key}"]`).classList.add('selected');
+    const pkg = CONFIG.packages[key];
+    document.getElementById('qb-est-hours').textContent = pkg.hours;
+    document.getElementById('qb-total').textContent = fmt$(pkg.total);
+    document.getElementById('qb-truck-row').style.display = pkg.truck ? 'flex' : 'none';
+    document.getElementById('qb-deposit').textContent = fmt$(pkg.truck ? CONFIG.brand.depositTruck : CONFIG.brand.depositLabor);
+}
+
+function qbCompute() {
+    const movers = parseInt(document.getElementById('qb-movers').value, 10);
+    const hours = parseFloat(document.getElementById('qb-hours').value);
+    const truck = document.getElementById('qb-truck').checked;
+    document.getElementById('qb-movers-out').textContent = movers;
+    document.getElementById('qb-hours-out').textContent = hours;
+
+    const labor = movers * hours * CONFIG.brand.rate;
+    const truckFee = truck ? CONFIG.brand.truckFee : 0;
+    const total = labor + truckFee;
+
+    document.getElementById('qb-est-hours').textContent = hours;
+    document.getElementById('qb-total').textContent = fmt$(total);
+    document.getElementById('qb-truck-row').style.display = truck ? 'flex' : 'none';
+    document.getElementById('qb-deposit').textContent = fmt$(truck ? CONFIG.brand.depositTruck : CONFIG.brand.depositLabor);
+}
+
+function sendQuote() {
+    alert('Mock mode — in production this fires a Netlify Function that renders the PDF and emails via Resend.');
+}
+function previewQuote() {
+    alert('Mock mode — PDF preview opens here.');
+}
+function logCall() {
+    alert('Mock mode — would append a call event to the activity log.');
+}
+function requestReview() {
+    alert('Mock mode — sends Google review request SMS via Twilio.');
+}
+
+/* ========== 10. ADD LEAD ========== */
+function openAddLeadModal() {
+    ['al-name', 'al-phone', 'al-email', 'al-date', 'al-notes'].forEach(id => document.getElementById(id).value = '');
+    $('#addLeadModal').modal('show');
+}
+async function saveNewLead() {
+    const payload = {
+        name: document.getElementById('al-name').value.trim(),
+        phone: document.getElementById('al-phone').value.trim(),
+        email: document.getElementById('al-email').value.trim(),
+        move_date: document.getElementById('al-date').value,
+        size: document.getElementById('al-size').value,
+        from_zone: document.getElementById('al-from-zone').value,
+        to_zone: document.getElementById('al-to-zone').value,
+        notes: document.getElementById('al-notes').value.trim(),
+    };
+    if (!payload.name || !payload.phone) {
+        alert('Name and phone required.');
+        return;
+    }
+    await store.createLead(payload);
+    $('#addLeadModal').modal('hide');
+    renderDashboard();
+    renderKanban();
+    renderLeadsTable();
+}
+
+/* ========== 11. BOOTSTRAP ========== */
+async function refreshAll() {
+    try {
+        state.leads = await store.fetchLeads();
+        renderDashboard();
+        renderKanban();
+        renderLeadsTable();
+    } catch (e) {
+        console.error('Failed to load leads:', e);
+        const msg = e?.message || String(e);
+        alert('Failed to load leads from Supabase.\n\n' + msg + '\n\nCheck: (1) schema migration ran, (2) RLS policies allow your role, (3) you signed up via CRM login so a users row exists.');
+    }
+}
+
+async function initApp() {
+    await refreshAll();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    checkSession();
+});
+</script>
+
+</body>
+</html>
