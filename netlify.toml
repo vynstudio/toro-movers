@@ -75,6 +75,11 @@
     X-Robots-Tag = "noindex, nofollow"
 
 [[headers]]
+  for = "/crm-v2.html"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
   for = "/crm-assets/*"
   [headers.values]
     X-Robots-Tag = "noindex, nofollow"
@@ -110,6 +115,21 @@
 # ============================================================
 # REDIRECTS
 # ============================================================
+# CRM v2 canonical URL. Rewrite (status 200) so the browser URL stays /crm
+# while the file lives at /crm-v2.html. noindex is already enforced via the
+# <meta> robots tag in crm-v2.html + a header rule below.
+[[redirects]]
+  from = "/crm"
+  to = "/crm-v2.html"
+  status = 200
+[[redirects]]
+  from = "/crm/"
+  to = "/crm-v2.html"
+  status = 200
+
+# Keep /crm-v2.html path working too (existing bookmarks, shared links).
+# Nothing to do — the file is already served at that path.
+
 # Internal strategy / brand / analytics docs kept in the repo for reference
 # but MUST NOT serve publicly. Return 404 for each. Keeping the files in
 # git lets the team edit them locally without shipping to prod.
