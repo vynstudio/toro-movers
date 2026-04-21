@@ -827,6 +827,11 @@
                     <i class="fas fa-hard-hat sb-icon"></i> <span>Crews</span>
                 </a>
             </div>
+            <div class="sb-nav-item" data-view="applications">
+                <a href="#" onclick="switchView('applications');return false;">
+                    <i class="fas fa-id-badge sb-icon"></i> <span>Applications</span>
+                </a>
+            </div>
         </div>
 
         <div class="sb-footer">
@@ -1013,6 +1018,58 @@
                         </thead>
                         <tbody id="crews-tbody"></tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== APPLICATIONS VIEW (admin/dispatch) ===== -->
+        <div class="view-container" id="view-applications">
+            <div class="panel">
+                <div class="panel-header">
+                    <h5>Crew applications</h5>
+                    <div style="display:flex;gap:4px" id="app-filter-bar">
+                        <button class="btn btn-sm btn-outline-secondary active" data-status="all" onclick="filterApplications('all',event)">All</button>
+                        <button class="btn btn-sm btn-outline-secondary" data-status="new" onclick="filterApplications('new',event)">New</button>
+                        <button class="btn btn-sm btn-outline-secondary" data-status="reviewing" onclick="filterApplications('reviewing',event)">Reviewing</button>
+                        <button class="btn btn-sm btn-outline-secondary" data-status="approved" onclick="filterApplications('approved',event)">Approved</button>
+                        <button class="btn btn-sm btn-outline-secondary" data-status="rejected" onclick="filterApplications('rejected',event)">Rejected</button>
+                    </div>
+                </div>
+                <div class="panel-body" style="padding:0">
+                    <table class="table table-sm" style="margin:0;font-size:13px">
+                        <thead>
+                            <tr style="background:var(--toro-gray-50)">
+                                <th style="padding:10px 14px">Applicant</th>
+                                <th style="padding:10px 14px">Location</th>
+                                <th style="padding:10px 14px">Experience</th>
+                                <th style="padding:10px 14px">Zones</th>
+                                <th style="padding:10px 14px">Submitted</th>
+                                <th style="padding:10px 14px">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="apps-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Application detail modal -->
+        <div class="modal fade" id="applicationModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document" style="max-width:640px">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="app-modal-title">Application</h5>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body" id="app-modal-body" style="font-size:13px"></div>
+                    <div class="modal-footer" style="flex-wrap:wrap;gap:6px;justify-content:space-between">
+                        <div style="display:flex;gap:6px;flex-wrap:wrap">
+                            <button class="btn btn-sm btn-outline-secondary" onclick="setApplicationStatus('reviewing')">Mark reviewing</button>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="setApplicationStatus('rejected')">Reject</button>
+                            <button class="btn btn-sm btn-primary" onclick="approveApplication()">Approve &amp; create crew</button>
+                        </div>
+                        <button class="btn btn-sm btn-outline-secondary" data-dismiss="modal">Close</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1823,6 +1880,20 @@ const supabaseStore = {
         return data;
     },
 
+    // --- Crew applications ---
+    async fetchApplications(status) {
+        let q = this.client.from('crew_applications').select('*').order('created_at', { ascending: false });
+        if (status && status !== 'all') q = q.eq('status', status);
+        const { data, error } = await q;
+        if (error) throw error;
+        return data || [];
+    },
+    async updateApplication(id, patch) {
+        const { data, error } = await this.client.from('crew_applications').update(patch).eq('id', id).select().single();
+        if (error) throw error;
+        return data;
+    },
+
     // --- Jobs ---
     async fetchJobs({ from, to } = {}) {
         let q = this.client.from('jobs').select('*').order('scheduled_date', { ascending: true });
@@ -1999,6 +2070,7 @@ function switchView(view) {
     const titles = {
         dashboard: 'Dashboard', kanban: 'Pipeline', leads: 'Leads & jobs',
         calendar: 'Calendar', customers: 'Customers', crews: 'Crews',
+        applications: 'Crew applications',
     };
     document.getElementById('navbar-title').textContent = titles[view] || '';
 
@@ -2013,6 +2085,7 @@ function switchView(view) {
     if (view === 'crews') renderCrewsView();
     if (view === 'calendar') renderCalendarView();
     if (view === 'customers') renderCustomersView();
+    if (view === 'applications') renderApplicationsView();
 }
 
 function toggleMobileSidebar() {
@@ -2572,6 +2645,9 @@ async function initApp() {
     document.querySelectorAll('[data-view="calendar"]').forEach(el => {
         el.closest('li, .sb-nav-item, a').style.display = isDispatchOrAdmin ? '' : 'none';
     });
+    document.querySelectorAll('[data-view="applications"]').forEach(el => {
+        el.closest('li, .sb-nav-item, a').style.display = isDispatchOrAdmin ? '' : 'none';
+    });
 }
 
 /* ========== 11. CREWS CRUD (admin) ========== */
@@ -2960,6 +3036,157 @@ async function toggleTask(id, done) {
         alert('Update failed: ' + (e.message || e));
         const lead = state.leads.find(l => l.id === state.detailId);
         if (lead) loadTasksForLead(lead);
+    }
+}
+
+/* ========== 12e. CREW APPLICATIONS ========== */
+let APPS_CACHE = [];
+let APPS_FILTER = 'all';
+let CURRENT_APP = null;
+
+async function renderApplicationsView() {
+    const tbody = document.getElementById('apps-tbody');
+    if (!tbody) return;
+    if (store !== supabaseStore) {
+        tbody.innerHTML = '<tr><td colspan="6" style="padding:28px;text-align:center;color:var(--toro-gray-500)">Sign in with Supabase to review applications.</td></tr>';
+        return;
+    }
+    tbody.innerHTML = '<tr><td colspan="6" style="padding:28px;text-align:center;color:var(--toro-gray-500)">Loading…</td></tr>';
+    try {
+        APPS_CACHE = await supabaseStore.fetchApplications(APPS_FILTER);
+        renderApplicationsTable();
+    } catch (e) {
+        tbody.innerHTML = '<tr><td colspan="6" style="padding:28px;text-align:center;color:var(--toro-gray-500)">' + (e.message || 'Could not load.') + '</td></tr>';
+    }
+}
+
+function renderApplicationsTable() {
+    const tbody = document.getElementById('apps-tbody');
+    if (!APPS_CACHE.length) {
+        tbody.innerHTML = '<tr><td colspan="6" style="padding:28px;text-align:center;color:var(--toro-gray-500)">No applications.</td></tr>';
+        return;
+    }
+    const badgeMap = {
+        new:       { bg: '#DBEAFE', fg: '#1D4ED8', label: 'New' },
+        reviewing: { bg: '#FEF3C7', fg: '#92400E', label: 'Reviewing' },
+        approved:  { bg: '#DCFCE7', fg: '#16A34A', label: 'Approved' },
+        rejected:  { bg: '#F3F4F6', fg: '#6B7280', label: 'Rejected' },
+        withdrawn: { bg: '#F3F4F6', fg: '#6B7280', label: 'Withdrawn' },
+    };
+    tbody.innerHTML = APPS_CACHE.map(a => {
+        const b = badgeMap[a.status] || badgeMap.new;
+        const zones = (a.service_zones || []).map(z => CONFIG.zoneLabels[z] || z).join(', ') || '—';
+        const loc = [a.city, a.state].filter(Boolean).join(', ') || '—';
+        const exp = a.years_experience ? a.years_experience + ' yr' : '—';
+        return `<tr onclick="openApplicationDetail('${a.id}')" style="cursor:pointer">
+            <td style="padding:10px 14px;font-weight:700">${escapeHtml(a.first_name + ' ' + a.last_name)}<br><span style="color:var(--toro-gray-500);font-weight:500;font-size:12px">${escapeHtml(a.phone)} · ${escapeHtml(a.email)}</span></td>
+            <td style="padding:10px 14px">${escapeHtml(loc)}</td>
+            <td style="padding:10px 14px">${exp}${a.team_size ? ' · ' + a.team_size + ' crew' : ''}${a.has_truck ? ' · truck' : ''}${a.bilingual ? ' · bilingual' : ''}</td>
+            <td style="padding:10px 14px;color:var(--toro-gray-500);font-size:12px">${escapeHtml(zones.length > 60 ? zones.slice(0, 60) + '…' : zones)}</td>
+            <td style="padding:10px 14px">${fmtDate(a.created_at)}</td>
+            <td style="padding:10px 14px"><span style="background:${b.bg};color:${b.fg};font-size:11px;font-weight:800;letter-spacing:0.05em;text-transform:uppercase;padding:3px 10px;border-radius:9999px">${b.label}</span></td>
+        </tr>`;
+    }).join('');
+}
+
+function filterApplications(status, ev) {
+    APPS_FILTER = status;
+    document.querySelectorAll('#app-filter-bar button').forEach(b => b.classList.remove('active'));
+    if (ev && ev.target) ev.target.classList.add('active');
+    renderApplicationsView();
+}
+
+function openApplicationDetail(id) {
+    const a = APPS_CACHE.find(x => x.id === id);
+    if (!a) return;
+    CURRENT_APP = a;
+    document.getElementById('app-modal-title').textContent = a.first_name + ' ' + a.last_name;
+    const body = document.getElementById('app-modal-body');
+    const zones = (a.service_zones || []).map(z => CONFIG.zoneLabels[z] || z).join(', ') || '—';
+    const row = (label, value) => `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--toro-gray-100)"><span style="color:var(--toro-gray-500);font-size:12px">${escapeHtml(label)}</span><span style="font-weight:600;font-size:13px;text-align:right;max-width:70%">${escapeHtml(value || '—')}</span></div>`;
+    const phoneHref = a.phone ? `<a href="tel:${encodeURIComponent(a.phone)}" style="color:var(--toro-red);font-weight:700">${escapeHtml(a.phone)}</a>` : '—';
+    const emailHref = a.email ? `<a href="mailto:${encodeURIComponent(a.email)}" style="color:var(--toro-red);font-weight:700">${escapeHtml(a.email)}</a>` : '—';
+    body.innerHTML = `
+        <div style="display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap">
+            <span style="background:var(--toro-gray-100);padding:4px 10px;border-radius:9999px;font-size:12px;font-weight:600">${escapeHtml(a.status)}</span>
+            ${a.company_name ? '<span style="background:var(--toro-sand);padding:4px 10px;border-radius:9999px;font-size:12px;font-weight:600">' + escapeHtml(a.company_name) + '</span>' : ''}
+            ${a.bilingual ? '<span style="background:var(--toro-sand);padding:4px 10px;border-radius:9999px;font-size:12px;font-weight:600">Bilingual</span>' : ''}
+            ${a.has_truck ? '<span style="background:var(--toro-sand);padding:4px 10px;border-radius:9999px;font-size:12px;font-weight:600">Truck · ' + escapeHtml(a.truck_size || '?') + '</span>' : ''}
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 24px">
+            <div>
+                <div style="font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--toro-charcoal);margin-bottom:6px">Contact</div>
+                <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--toro-gray-100)"><span style="color:var(--toro-gray-500);font-size:12px">Phone</span>${phoneHref}</div>
+                <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--toro-gray-100)"><span style="color:var(--toro-gray-500);font-size:12px">Email</span>${emailHref}</div>
+                ${row('DOB', a.dob)}
+                ${row('Address', [a.address, a.city, a.state, a.zip].filter(Boolean).join(', '))}
+            </div>
+            <div>
+                <div style="font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--toro-charcoal);margin-bottom:6px">ID</div>
+                ${row('DL #', a.drivers_license_number)}
+                ${row('DL state', a.dl_state)}
+                ${row('DL expires', a.dl_expiration)}
+                <div style="font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--toro-charcoal);margin:14px 0 6px">Experience</div>
+                ${row('Years', a.years_experience)}
+                ${row('Team size', a.team_size)}
+            </div>
+        </div>
+        <div style="margin-top:14px">
+            <div style="font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--toro-charcoal);margin-bottom:6px">Zones</div>
+            <div style="font-size:13px;color:var(--toro-charcoal-soft)">${escapeHtml(zones)}</div>
+        </div>
+        ${a.about ? `<div style="margin-top:14px"><div style="font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--toro-charcoal);margin-bottom:6px">About</div><div style="font-size:13px;color:var(--toro-charcoal-soft);white-space:pre-wrap">${escapeHtml(a.about)}</div></div>` : ''}
+        ${a.references_text ? `<div style="margin-top:14px"><div style="font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--toro-charcoal);margin-bottom:6px">References</div><div style="font-size:13px;color:var(--toro-charcoal-soft);white-space:pre-wrap">${escapeHtml(a.references_text)}</div></div>` : ''}
+        <div style="margin-top:14px">
+            <div style="font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--toro-charcoal);margin-bottom:6px">Review notes</div>
+            <textarea id="app-review-notes" rows="2" style="width:100%;padding:8px 10px;border:1px solid var(--toro-gray-300);border-radius:6px;font-size:13px;font-family:inherit">${escapeHtml(a.review_notes || '')}</textarea>
+        </div>
+        <div style="margin-top:10px;font-size:11px;color:var(--toro-gray-500)">FCRA consent recorded ${escapeHtml(a.consent_ip || '—')} · ${fmtDate(a.created_at)}</div>
+    `;
+    $('#applicationModal').modal('show');
+}
+
+async function setApplicationStatus(status) {
+    if (!CURRENT_APP) return;
+    const notes = document.getElementById('app-review-notes')?.value?.trim() || null;
+    try {
+        const updated = await supabaseStore.updateApplication(CURRENT_APP.id, {
+            status,
+            reviewed_by: state.currentUser?.id || null,
+            reviewed_at: new Date().toISOString(),
+            review_notes: notes,
+        });
+        CURRENT_APP = updated;
+        APPS_CACHE = APPS_CACHE.map(a => a.id === updated.id ? updated : a);
+        renderApplicationsTable();
+        $('#applicationModal').modal('hide');
+    } catch (e) {
+        alert('Update failed: ' + (e.message || e));
+    }
+}
+
+async function approveApplication() {
+    if (!CURRENT_APP) return;
+    if (!confirm('Approve and create a crew record for ' + CURRENT_APP.first_name + ' ' + CURRENT_APP.last_name + '? A new crew will be added with their info.')) return;
+    const a = CURRENT_APP;
+    const crewName = a.company_name || (a.first_name + ' ' + a.last_name[0] + '.');
+    try {
+        await supabaseStore.createCrew({
+            name: crewName,
+            lead_contact_name: a.first_name + ' ' + a.last_name,
+            lead_contact_phone: a.phone,
+            email: a.email,
+            default_crew_size: a.team_size || 2,
+            bilingual: !!a.bilingual,
+            service_zones: a.service_zones || [],
+            notes: (a.about ? 'About: ' + a.about : '') + (a.truck_size ? '\nTruck: ' + a.truck_size : ''),
+            active: true,
+        });
+        await setApplicationStatus('approved');
+        CREW_CACHE = []; // force refresh next time Crews opens
+        alert('Crew created. You can edit details in the Crews view.');
+    } catch (e) {
+        alert('Approval failed: ' + (e.message || e));
     }
 }
 
