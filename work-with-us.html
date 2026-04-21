@@ -166,9 +166,77 @@
     <div class="section">
       <h2>Tell us about you</h2>
       <div class="field"><label>What kind of moves are you best at?</label><textarea name="about" rows="3" placeholder="Apartments, pianos, long-distance, high-value, etc."></textarea></div>
+    </div>
+
+    <div class="section">
+      <h2>References <span class="req">*</span></h2>
+      <p class="hint">List three people who can vouch for you. Name + phone on all three. <strong>If you've worked for a moving company before, at least one must be a past manager at that company.</strong></p>
       <div class="field">
-        <label>References <span class="req">*</span></label>
-        <textarea name="references_text" rows="3" required placeholder="At least one name + phone. Past crews, companies, or customers we can call."></textarea>
+        <label>Have you worked for a moving company before?</label>
+        <div style="display:flex;gap:18px;align-items:center;margin-top:4px">
+          <label class="check" style="margin:0"><input type="radio" name="worked_for_moving_co" value="yes"> Yes</label>
+          <label class="check" style="margin:0"><input type="radio" name="worked_for_moving_co" value="no" checked> No</label>
+        </div>
+      </div>
+
+      <div id="refs-list">
+        <div class="ref-row" style="border:1px solid #E5E7EB;border-radius:12px;padding:14px;margin-bottom:10px">
+          <div style="font-weight:800;font-size:12px;color:#C8102E;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:10px">Reference 1</div>
+          <div class="row">
+            <div class="field"><label>Name <span class="req">*</span></label><input class="ref-name" type="text" required></div>
+            <div class="field"><label>Phone <span class="req">*</span></label><input class="ref-phone" type="tel" required></div>
+          </div>
+          <div class="field">
+            <label>Relationship <span class="req">*</span></label>
+            <select class="ref-relationship" required>
+              <option value="">Pick one…</option>
+              <option value="previous_manager_moving">Previous manager at a moving company</option>
+              <option value="previous_manager_other">Previous manager (other industry)</option>
+              <option value="coworker">Coworker / crewmate</option>
+              <option value="customer">Past customer</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="field"><label>Company (if applicable)</label><input class="ref-company" type="text" placeholder="e.g. Two Men and a Truck"></div>
+        </div>
+        <div class="ref-row" style="border:1px solid #E5E7EB;border-radius:12px;padding:14px;margin-bottom:10px">
+          <div style="font-weight:800;font-size:12px;color:#C8102E;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:10px">Reference 2</div>
+          <div class="row">
+            <div class="field"><label>Name <span class="req">*</span></label><input class="ref-name" type="text" required></div>
+            <div class="field"><label>Phone <span class="req">*</span></label><input class="ref-phone" type="tel" required></div>
+          </div>
+          <div class="field">
+            <label>Relationship <span class="req">*</span></label>
+            <select class="ref-relationship" required>
+              <option value="">Pick one…</option>
+              <option value="previous_manager_moving">Previous manager at a moving company</option>
+              <option value="previous_manager_other">Previous manager (other industry)</option>
+              <option value="coworker">Coworker / crewmate</option>
+              <option value="customer">Past customer</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="field"><label>Company (if applicable)</label><input class="ref-company" type="text"></div>
+        </div>
+        <div class="ref-row" style="border:1px solid #E5E7EB;border-radius:12px;padding:14px;margin-bottom:10px">
+          <div style="font-weight:800;font-size:12px;color:#C8102E;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:10px">Reference 3</div>
+          <div class="row">
+            <div class="field"><label>Name <span class="req">*</span></label><input class="ref-name" type="text" required></div>
+            <div class="field"><label>Phone <span class="req">*</span></label><input class="ref-phone" type="tel" required></div>
+          </div>
+          <div class="field">
+            <label>Relationship <span class="req">*</span></label>
+            <select class="ref-relationship" required>
+              <option value="">Pick one…</option>
+              <option value="previous_manager_moving">Previous manager at a moving company</option>
+              <option value="previous_manager_other">Previous manager (other industry)</option>
+              <option value="coworker">Coworker / crewmate</option>
+              <option value="customer">Past customer</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="field"><label>Company (if applicable)</label><input class="ref-company" type="text"></div>
+        </div>
       </div>
     </div>
 
@@ -230,10 +298,38 @@
       alert('Please check at least one skill you are best at.');
       btn.disabled = false; btn.textContent = original; return;
     }
-    if (!String(payload.references_text || '').trim()) {
-      alert('References are required — at least one name and phone.');
+
+    // Collect the 3 structured reference rows
+    const refs = [];
+    document.querySelectorAll('.ref-row').forEach(row => {
+      const name = row.querySelector('.ref-name').value.trim();
+      const phone = row.querySelector('.ref-phone').value.trim();
+      const relationship = row.querySelector('.ref-relationship').value;
+      const company = row.querySelector('.ref-company').value.trim();
+      if (name || phone || relationship) refs.push({ name, phone, relationship, company: company || null });
+    });
+    if (refs.length < 3) {
+      alert('Please fill out all three references — name, phone, and relationship on each.');
       btn.disabled = false; btn.textContent = original; return;
     }
+    for (let i = 0; i < refs.length; i++) {
+      if (!refs[i].name || !refs[i].phone || !refs[i].relationship) {
+        alert('Reference ' + (i + 1) + ' is incomplete — fill name, phone, and relationship.');
+        btn.disabled = false; btn.textContent = original; return;
+      }
+    }
+    payload.references_list = refs;
+    payload.worked_for_moving_co = payload.worked_for_moving_co === 'yes';
+
+    if (payload.worked_for_moving_co && !refs.some(r => r.relationship === 'previous_manager_moving')) {
+      alert("Since you worked at a moving company, one of your references needs to be a past manager from that company. Please update one of the references' relationship.");
+      btn.disabled = false; btn.textContent = original; return;
+    }
+
+    // Legacy compat: build a text summary so the old column still gets useful data.
+    payload.references_text = refs.map((r, i) =>
+      `${i + 1}. ${r.name} · ${r.phone} · ${r.relationship}${r.company ? ' · ' + r.company : ''}`
+    ).join('\n');
 
     try {
       const res = await fetch('/.netlify/functions/crew-apply', {
