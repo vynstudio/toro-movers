@@ -175,12 +175,6 @@
   status = 301
   force = true
 
-# /crm → /crm.html
-[[redirects]]
-  from = "/crm"
-  to = "/crm.html"
-  status = 200
-
 # /quote → /quote.html
 [[redirects]]
   from = "/quote"
