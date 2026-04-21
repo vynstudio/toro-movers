@@ -57,15 +57,23 @@ exports.handler = async (event) => {
     ? await admin.from('quotes').select('*').eq('id', quoteId).maybeSingle()
     : { data: null };
 
-  const amountPaid = Number(job?.deposit_paid || quote?.deposit || 0);
+  const amountPaid = Number(job?.deposit_paid || quote?.deposit_amount || 0);
   // For preview mode we swap the email on the customer object so the helper
   // uses the admin's address as the recipient.
   const customerForSend = { ...customer, email: recipient };
+  // Build a complete quote object so the email template never renders
+  // "undefined" (template references quote.crew_size / estimated_hours / total).
+  const quoteForEmail = {
+    crew_size: quote?.crew_size ?? job?.actual_movers ?? 2,
+    estimated_hours: quote?.estimated_hours ?? job?.actual_hours ?? 4,
+    total: Number(quote?.total ?? job?.customer_total ?? 0),
+    deposit_amount: amountPaid,
+  };
   try {
     await sendBookingConfirmationEmail({
       customer: customerForSend,
       lead,
-      quote: quote || { total: job?.customer_total, deposit: amountPaid },
+      quote: quoteForEmail,
       amountPaid,
     });
   } catch (e) {
