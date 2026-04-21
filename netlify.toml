@@ -118,14 +118,18 @@
 # CRM v2 canonical URL. Rewrite (status 200) so the browser URL stays /crm
 # while the file lives at /crm-v2.html. noindex is already enforced via the
 # <meta> robots tag in crm-v2.html + a header rule below.
+# force=true is required because crm.html exists on disk — without force,
+# Netlify's static-file match wins over the rewrite and serves the old CRM.
 [[redirects]]
   from = "/crm"
   to = "/crm-v2.html"
   status = 200
+  force = true
 [[redirects]]
   from = "/crm/"
   to = "/crm-v2.html"
   status = 200
+  force = true
 
 # Keep /crm-v2.html path working too (existing bookmarks, shared links).
 # Nothing to do — the file is already served at that path.
