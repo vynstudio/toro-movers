@@ -1251,34 +1251,8 @@
                     <div class="detail-col">
                         <h6>Quote</h6>
                         <div class="quote-builder">
-                            <div class="quote-toggle">
-                                <button class="active" onclick="qbSetMode('package')">Package</button>
-                                <button onclick="qbSetMode('custom')">Custom</button>
-                            </div>
-
-                            <!-- Package mode -->
-                            <div id="qb-package-mode">
-                                <div class="package-grid">
-                                    <div class="package-option" onclick="qbSelectPackage('loading')" data-pkg="loading">
-                                        <div class="label">Loading</div>
-                                        <div class="price">$300</div>
-                                        <div class="desc">2 movers &middot; 2 hrs</div>
-                                    </div>
-                                    <div class="package-option" onclick="qbSelectPackage('intown')" data-pkg="intown">
-                                        <div class="label">In-Town</div>
-                                        <div class="price">$875</div>
-                                        <div class="desc">2 movers &middot; 4 hrs + truck</div>
-                                    </div>
-                                    <div class="package-option" onclick="qbSelectPackage('big')" data-pkg="big">
-                                        <div class="label">Big Move</div>
-                                        <div class="price">$1,175</div>
-                                        <div class="desc">3 movers &middot; 4 hrs + truck</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Custom mode -->
-                            <div id="qb-custom-mode" style="display:none">
+                            <!-- Custom-only quote builder (packages removed per owner preference) -->
+                            <div id="qb-custom-mode">
                                 <div class="slider-row">
                                     <label>Movers</label>
                                     <input type="range" id="qb-movers" min="2" max="4" value="2" step="1" oninput="qbCompute()">
@@ -2457,22 +2431,18 @@ function openDetail(id) {
         </div>
     `).join('');
 
-    // Quote builder state
+    // Custom-only quote builder. If the lead has a saved quote, pre-fill from
+    // it; otherwise seed sensible defaults (2 movers × 4 hrs, no truck).
     if (l.quote) {
-        if (l.quote.type === 'package' && l.quote.package) {
-            qbSetMode('package');
-            qbSelectPackage(l.quote.package);
-        } else {
-            qbSetMode('custom');
-            document.getElementById('qb-movers').value = l.quote.movers || 2;
-            document.getElementById('qb-hours').value = l.quote.hours || 4;
-            document.getElementById('qb-truck').checked = !!l.quote.truck;
-            qbCompute();
-        }
+        document.getElementById('qb-movers').value = l.quote.movers || 2;
+        document.getElementById('qb-hours').value = l.quote.hours || (l.quote.package === 'loading' ? 2 : 4);
+        document.getElementById('qb-truck').checked = !!l.quote.truck;
     } else {
-        qbSetMode('package');
-        qbSelectPackage('intown');
+        document.getElementById('qb-movers').value = 2;
+        document.getElementById('qb-hours').value = 4;
+        document.getElementById('qb-truck').checked = false;
     }
+    qbCompute();
 
     $('#detailModal').modal('show');
 }
@@ -2493,26 +2463,11 @@ async function changeStage() {
     loadCrewAssignmentForLead(l);
 }
 
-/* ========== 9. QUOTE BUILDER ========== */
-function qbSetMode(mode) {
-    state.qbMode = mode;
-    document.querySelectorAll('.quote-toggle button').forEach((b, i) => {
-        b.classList.toggle('active', (i === 0 && mode === 'package') || (i === 1 && mode === 'custom'));
-    });
-    document.getElementById('qb-package-mode').style.display = mode === 'package' ? 'block' : 'none';
-    document.getElementById('qb-custom-mode').style.display = mode === 'custom' ? 'block' : 'none';
-    if (mode === 'custom') qbCompute();
-}
-
-function qbSelectPackage(key) {
-    document.querySelectorAll('.package-option').forEach(el => el.classList.remove('selected'));
-    document.querySelector(`[data-pkg="${key}"]`).classList.add('selected');
-    const pkg = CONFIG.packages[key];
-    document.getElementById('qb-est-hours').textContent = pkg.hours;
-    document.getElementById('qb-total').textContent = fmt$(pkg.total);
-    document.getElementById('qb-truck-row').style.display = pkg.truck ? 'flex' : 'none';
-    document.getElementById('qb-deposit').textContent = fmt$(pkg.truck ? CONFIG.brand.depositTruck : CONFIG.brand.depositLabor);
-}
+/* ========== 9. QUOTE BUILDER (custom-only) ========== */
+// Kept as no-op stubs so any old code paths that still reference them don't
+// crash — the Package mode and its DOM are gone.
+function qbSetMode() { state.qbMode = 'custom'; }
+function qbSelectPackage() { /* no-op: packages removed */ }
 
 function qbCompute() {
     const movers = parseInt(document.getElementById('qb-movers').value, 10);
