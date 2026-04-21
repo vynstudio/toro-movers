@@ -10,18 +10,75 @@ const { notifyTelegramTeam, sendBookingConfirmationEmail, fmtMoney } = require('
 // Returns true if the event was handled as a CRM v2 event; false if it should
 // fall through to the v1 lead lookup logic.
 async function handleCrmV2Event(evt) {
-  if (evt.type !== 'checkout.session.completed') return false;
   const session = evt.data.object || {};
   const md = session.metadata || {};
-  if (!md.purpose || !['deposit', 'balance'].includes(md.purpose)) return false;
-  if (!md.quote_id && !md.lead_id) return false;
 
-  if (md.purpose === 'deposit') {
-    await handleDepositPaid(session, md);
-  } else if (md.purpose === 'balance') {
-    await handleBalancePaid(session, md);
+  // checkout.session.completed — customer / applicant just paid
+  if (evt.type === 'checkout.session.completed') {
+    if (!md.purpose) return false;
+    if (md.purpose === 'deposit' && (md.quote_id || md.lead_id)) {
+      await handleDepositPaid(session, md);
+      return true;
+    }
+    if (md.purpose === 'balance' && md.job_id) {
+      await handleBalancePaid(session, md);
+      return true;
+    }
+    if (md.purpose === 'bg_check_fee' && md.application_id) {
+      await handleBgFeePaid(session, md);
+      return true;
+    }
   }
-  return true;
+
+  // charge.refunded — we issued a refund via the admin button (or manually)
+  if (evt.type === 'charge.refunded') {
+    const charge = session; // object is a charge
+    const pi = charge.payment_intent;
+    if (pi) {
+      const admin = getAdminClient();
+      const { data: app } = await admin
+        .from('crew_applications').select('id, first_name, last_name, email')
+        .eq('bg_fee_payment_intent_id', pi).maybeSingle();
+      if (app) {
+        await admin.from('crew_applications')
+          .update({ bg_fee_refunded_at: new Date().toISOString() })
+          .eq('id', app.id);
+        await notifyTelegramTeam([
+          '*BG fee refunded*',
+          '',
+          `Applicant: *${app.first_name} ${app.last_name}*`,
+          `Email: ${app.email}`,
+          `Refund: *$${(charge.amount_refunded / 100).toFixed(2)}*`,
+        ]);
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+async function handleBgFeePaid(session, md) {
+  const admin = getAdminClient();
+  const appId = md.application_id;
+  const paymentIntent = session.payment_intent || null;
+  const amount = session.amount_total ? session.amount_total / 100 : 0;
+
+  await admin.from('crew_applications').update({
+    bg_fee_paid_at: new Date().toISOString(),
+    bg_fee_payment_intent_id: paymentIntent,
+    bg_fee_stripe_session_id: session.id,
+  }).eq('id', appId);
+
+  await notifyTelegramTeam([
+    '*BG fee paid — $' + amount.toFixed(2) + '*',
+    '',
+    `Applicant: *${md.applicant_name || '—'}*`,
+    `Email: ${md.applicant_email || '—'}`,
+    '',
+    paymentIntent ? `[Stripe](https://dashboard.stripe.com/payments/${paymentIntent})` : '',
+    'Review in CRM → Crew applications',
+  ]);
 }
 
 async function handleDepositPaid(session, md) {

@@ -244,15 +244,16 @@
       <h2>Background check consent</h2>
       <div class="consent-box">
         <p><strong>We run a background check on every partner crew — non-negotiable.</strong> It covers identity, driving record, and criminal history through a third-party vendor (Checkr or similar). The vendor will contact you directly to collect your SSN — we never touch it.</p>
-        <p style="margin:0">By submitting this form, you authorize Toro Movers and our vendor to obtain a consumer report about you for employment purposes, under the Fair Credit Reporting Act. You can request a copy of the report from the vendor at any time. A criminal record will not automatically disqualify you — we review each case.</p>
+        <p style="margin:0 0 10px 0">By submitting this form, you authorize Toro Movers and our vendor to obtain a consumer report about you for employment purposes, under the Fair Credit Reporting Act. You can request a copy of the report from the vendor at any time. A criminal record will not automatically disqualify you — we review each case.</p>
+        <p style="margin:0;padding:10px 12px;background:#ffffff;border-radius:8px;border:1px solid #E5E7EB"><strong style="color:#C8102E">$49 background-check fee — fully refundable.</strong> You pay $49 upfront after submitting to cover the third-party report. We refund the full $49 after (1) you pass the check and (2) you complete your first Toro job. Paid securely via Stripe on the next screen.</p>
       </div>
       <div class="field">
-        <label class="check"><input type="checkbox" name="background_consent" required> I read and agree to the background check authorization above. <span class="req">*</span></label>
+        <label class="check"><input type="checkbox" name="background_consent" required> I read and agree to the background check authorization above, including the $49 refundable fee. <span class="req">*</span></label>
       </div>
     </div>
 
-    <button class="submit" type="submit" id="submit-btn">Submit application</button>
-    <p class="sub-note">We reply within a few business days. Your info stays private and is never sold.</p>
+    <button class="submit" type="submit" id="submit-btn">Submit & pay $49 refundable fee →</button>
+    <p class="sub-note">After you pay, we reply within a few business days. Your info stays private and is never sold.</p>
   </form>
 
   <div id="thanks" class="thanks">
@@ -342,6 +343,14 @@
         try { msg = (await res.json()).error || msg; } catch (_) {}
         alert(msg);
         btn.disabled = false; btn.textContent = original;
+        return;
+      }
+      const out = await res.json();
+      if (out.checkout_url) {
+        // Off to Stripe for the $49 bg-check fee. Don't show the thank-you
+        // card here — they'll land on /applied.html after paying.
+        btn.textContent = 'Redirecting to secure payment…';
+        window.location.href = out.checkout_url;
         return;
       }
       form.style.display = 'none';
