@@ -1173,42 +1173,78 @@
                         <h6>Customer</h6>
                         <div class="detail-field">
                             <div class="label">Name</div>
-                            <div class="value big" id="dv-name">&mdash;</div>
+                            <input type="text" class="form-control form-control-sm dv-edit" id="dv-name" data-kind="customer" data-field="name">
                         </div>
                         <div class="detail-field">
                             <div class="label">Phone</div>
-                            <div class="value" id="dv-phone">&mdash;</div>
+                            <input type="tel" class="form-control form-control-sm dv-edit" id="dv-phone" data-kind="customer" data-field="phone">
                         </div>
                         <div class="detail-field">
                             <div class="label">Email</div>
-                            <div class="value" id="dv-email">&mdash;</div>
+                            <input type="email" class="form-control form-control-sm dv-edit" id="dv-email" data-kind="customer" data-field="email">
                         </div>
                         <div class="detail-field">
                             <div class="label">Language</div>
-                            <div class="value" id="dv-language">&mdash;</div>
+                            <select class="form-control form-control-sm dv-edit" id="dv-language" data-kind="customer" data-field="language">
+                                <option value="en">English</option>
+                                <option value="es">Español</option>
+                            </select>
                         </div>
 
                         <h6 style="margin-top:20px">Move details</h6>
                         <div class="detail-field">
-                            <div class="label">From &rarr; To</div>
-                            <div class="value" id="dv-route">&mdash;</div>
+                            <div class="label">From zip</div>
+                            <input type="text" class="form-control form-control-sm dv-edit" id="dv-from-zone" data-kind="lead" data-field="from_zone" placeholder="32835">
+                        </div>
+                        <div class="detail-field">
+                            <div class="label">To zip</div>
+                            <input type="text" class="form-control form-control-sm dv-edit" id="dv-to-zone" data-kind="lead" data-field="to_zone" placeholder="34761">
+                        </div>
+                        <div class="detail-field">
+                            <div class="label">Origin address</div>
+                            <input type="text" class="form-control form-control-sm dv-edit" id="dv-origin-address" data-kind="lead" data-field="origin_address">
+                        </div>
+                        <div class="detail-field">
+                            <div class="label">Destination address</div>
+                            <input type="text" class="form-control form-control-sm dv-edit" id="dv-destination-address" data-kind="lead" data-field="destination_address">
                         </div>
                         <div class="detail-field">
                             <div class="label">Date</div>
-                            <div class="value" id="dv-date">&mdash;</div>
+                            <input type="date" class="form-control form-control-sm dv-edit" id="dv-date" data-kind="lead" data-field="move_date">
+                        </div>
+                        <div class="detail-field">
+                            <div class="label">Time</div>
+                            <input type="time" class="form-control form-control-sm dv-edit" id="dv-time" data-kind="lead" data-field="move_time">
                         </div>
                         <div class="detail-field">
                             <div class="label">Size</div>
-                            <div class="value" id="dv-size">&mdash;</div>
+                            <select class="form-control form-control-sm dv-edit" id="dv-size" data-kind="lead" data-field="size">
+                                <option value="studio">Studio</option>
+                                <option value="1_br">1 BR</option>
+                                <option value="2_br">2 BR</option>
+                                <option value="3_br">3 BR</option>
+                                <option value="4_plus_br">4+ BR</option>
+                                <option value="office">Office</option>
+                                <option value="other">Other</option>
+                            </select>
                         </div>
                         <div class="detail-field">
                             <div class="label">Stairs / elevator</div>
-                            <div class="value" id="dv-stairs">&mdash;</div>
+                            <select class="form-control form-control-sm dv-edit" id="dv-stairs" data-kind="lead" data-field="stairs">
+                                <option value="none">None</option>
+                                <option value="1_flight">1 flight</option>
+                                <option value="2_plus">2+ flights</option>
+                                <option value="elevator">Elevator</option>
+                            </select>
                         </div>
                         <div class="detail-field">
                             <div class="label">Source</div>
                             <div class="value" id="dv-source">&mdash;</div>
                         </div>
+                        <button class="btn btn-sm btn-primary btn-block" id="dv-save-details" onclick="saveLeadDetails()" style="margin-top:10px;display:none">
+                            <i class="material-icons" style="font-size:14px;vertical-align:middle;margin-right:4px">save</i>
+                            Save changes
+                        </button>
                     </div>
 
                     <!-- CENTER: Quote builder -->
@@ -1299,6 +1335,10 @@
                         <div style="margin-top:18px">
                             <h6>Notes</h6>
                             <textarea id="dv-notes" rows="3" style="width:100%;padding:8px 10px;border:1px solid var(--toro-gray-300);border-radius:6px;font-size:13px;font-family:inherit" placeholder="Anything worth remembering about this move..."></textarea>
+                            <button class="btn btn-sm btn-outline-primary" id="dv-save-note" onclick="saveNote()" style="margin-top:6px;display:none">
+                                <i class="material-icons" style="font-size:14px;vertical-align:middle;margin-right:4px">save</i>
+                                Save note
+                            </button>
                         </div>
                     </div>
 
@@ -1336,6 +1376,10 @@
                             <button class="btn btn-sm btn-outline-success" id="dv-send-booking-email" onclick="sendBookingEmail()" style="display:none">
                                 <i class="material-icons" style="font-size:14px;vertical-align:middle">mark_email_read</i>
                                 Send booking confirmation
+                            </button>
+                            <button class="btn btn-sm btn-outline-info admin-only" onclick="previewBookingEmail()" style="display:none" title="Send a copy of the confirmation email to yourself">
+                                <i class="material-icons" style="font-size:14px;vertical-align:middle">visibility</i>
+                                Preview confirmation email
                             </button>
                             <button class="btn btn-sm btn-outline-secondary" onclick="requestReview()">
                                 <i class="material-icons" style="font-size:14px;vertical-align:middle">star</i>
@@ -1732,6 +1776,17 @@ const mockStore = {
         if (lead) lead.stage = stage;
         return lead;
     },
+    async updateLead(id, patch) {
+        const lead = state.leads.find(l => l.id === id);
+        if (lead) Object.assign(lead, patch);
+        return lead;
+    },
+    async updateCustomer(customerId, patch) {
+        state.leads.forEach(l => {
+            if (l.customer?.id === customerId) Object.assign(l.customer, patch);
+        });
+        return true;
+    },
     async createLead(payload) {
         const lead = {
             id: 'l_' + Date.now(),
@@ -1769,12 +1824,14 @@ const supabaseStore = {
     _shape(lead) {
         return {
             id: lead.id,
+            customer_id: lead.customer_id,
             stage: lead.stage,
             from_zone: lead.from_zone,
             to_zone: lead.to_zone,
             origin_address: lead.origin_address,
             destination_address: lead.destination_address,
             move_date: lead.move_date,
+            move_time: lead.move_time,
             size: lead.size,
             stairs: lead.stairs,
             source: lead.source || '—',
@@ -1785,11 +1842,12 @@ const supabaseStore = {
             created_at: lead.created_at,
             lost_reason: lead.lost_reason,
             customer: lead.customers ? {
+                id: lead.customers.id,
                 name: lead.customers.full_name,
                 phone: lead.customers.phone,
                 email: lead.customers.email,
                 language: lead.customers.language_preference || 'en',
-            } : { name: 'Unknown', phone: '', email: '', language: 'en' },
+            } : { id: null, name: 'Unknown', phone: '', email: '', language: 'en' },
             quote: null, // joined separately if needed
         };
     },
@@ -1812,6 +1870,31 @@ const supabaseStore = {
         const lead = state.leads.find(l => l.id === id);
         if (lead) lead.stage = stage;
         return lead;
+    },
+
+    async updateLead(id, patch) {
+        const { error } = await this.client.from('leads').update(patch).eq('id', id);
+        if (error) throw error;
+        const lead = state.leads.find(l => l.id === id);
+        if (lead) Object.assign(lead, patch);
+        return lead;
+    },
+
+    async updateCustomer(customerId, patch) {
+        if (!customerId) throw new Error('customer_id required');
+        // Map UI fields → DB column names.
+        const dbPatch = {};
+        if ('name' in patch) dbPatch.full_name = patch.name;
+        if ('phone' in patch) dbPatch.phone = patch.phone;
+        if ('email' in patch) dbPatch.email = patch.email || null;
+        if ('language' in patch) dbPatch.language_preference = patch.language;
+        const { error } = await this.client.from('customers').update(dbPatch).eq('id', customerId);
+        if (error) throw error;
+        // Propagate to any in-memory leads referencing this customer.
+        state.leads.forEach(l => {
+            if (l.customer?.id === customerId) Object.assign(l.customer, patch);
+        });
+        return true;
     },
 
     async createLead(payload) {
@@ -2245,12 +2328,17 @@ function renderKanban() {
     drakeInstance.on('drop', async (el, target, source) => {
         const id = el.dataset.id;
         const newStage = target.dataset.stage;
-        await store.updateStage(id, newStage);
-        // Update card class
-        el.className = 'kanban-card s-' + newStage;
-        // Refresh KPIs + counts
-        renderKanban();
-        renderDashboard();
+        try {
+            await store.updateStage(id, newStage);
+            el.className = 'kanban-card s-' + newStage;
+            renderKanban();
+            renderDashboard();
+        } catch (e) {
+            console.error('updateStage failed:', e);
+            alert('Could not update stage: ' + (e.message || e) + '\n\nCheck your role has permission to update leads (admin/dispatch).');
+            // Revert: re-render from last-known state
+            renderKanban();
+        }
     });
 }
 
@@ -2307,19 +2395,27 @@ function openDetail(id) {
     badge.textContent = CONFIG.stageLabels[l.stage];
     badge.className = 'stage-badge s-' + l.stage;
 
-    document.getElementById('dv-name').textContent = l.customer.name;
-    document.getElementById('dv-phone').textContent = l.customer.phone;
-    document.getElementById('dv-email').textContent = l.customer.email || '—';
-    document.getElementById('dv-language').textContent = l.customer.language === 'es' ? 'Spanish' : 'English';
-    const routeFrom = CONFIG.zoneLabels[l.from_zone] || (l.origin_address ? String(l.origin_address).split(/[\n,]/)[0].trim() : '—');
-    const routeTo = CONFIG.zoneLabels[l.to_zone] || (l.destination_address ? String(l.destination_address).split(/[\n,]/)[0].trim() : '—');
-    document.getElementById('dv-route').textContent = `${routeFrom} → ${routeTo}`;
-    document.getElementById('dv-date').textContent = fmtMoveDate(l.move_date);
-    document.getElementById('dv-size').textContent = CONFIG.sizeLabels[l.size];
-    document.getElementById('dv-stairs').textContent = { none: 'None', '1_flight': '1 flight', '2_plus': '2+ flights', elevator: 'Elevator' }[l.stairs] || '—';
+    document.getElementById('dv-name').value = l.customer.name || '';
+    document.getElementById('dv-phone').value = l.customer.phone || '';
+    document.getElementById('dv-email').value = l.customer.email || '';
+    document.getElementById('dv-language').value = l.customer.language === 'es' ? 'es' : 'en';
+    document.getElementById('dv-from-zone').value = l.from_zone || '';
+    document.getElementById('dv-to-zone').value = l.to_zone || '';
+    document.getElementById('dv-origin-address').value = l.origin_address || '';
+    document.getElementById('dv-destination-address').value = l.destination_address || '';
+    document.getElementById('dv-date').value = l.move_date || '';
+    document.getElementById('dv-time').value = l.move_time || '';
+    document.getElementById('dv-size').value = l.size || 'studio';
+    document.getElementById('dv-stairs').value = l.stairs || 'none';
     document.getElementById('dv-source').textContent = l.source;
     document.getElementById('dv-notes').value = l.notes || '';
     document.getElementById('dv-stage').value = l.stage;
+    // Reset the "unsaved" state for the detail edits.
+    state.detailDirty = false;
+    const saveBtn = document.getElementById('dv-save-details');
+    if (saveBtn) saveBtn.style.display = 'none';
+    const noteSaveBtn = document.getElementById('dv-save-note');
+    if (noteSaveBtn) noteSaveBtn.style.display = 'none';
 
     // Crew assignment (booked/done leads, admin/dispatch only)
     loadCrewAssignmentForLead(l);
@@ -2334,6 +2430,10 @@ function openDetail(id) {
             && !!l.customer?.email;
         sendBookingBtn.style.display = canSend ? '' : 'none';
     }
+    // Preview button — admin-only, always visible on the open lead.
+    document.querySelectorAll('.admin-only').forEach(el => {
+        el.style.display = state.currentUser?.role === 'admin' ? '' : 'none';
+    });
 
     // Job ops panel (booked/done leads only) + Tasks panel
     loadJobOpsForLead(l);
@@ -2643,6 +2743,93 @@ async function sendBookingEmail() {
     alert('Booking confirmation sent to ' + out.email + '.');
     await refreshAll();
 }
+
+/* Collects every dirty .dv-edit input, splits into customer vs lead patches,
+   writes them, and refreshes. One button, one round trip. */
+async function saveLeadDetails() {
+    const lead = state.leads.find(l => l.id === state.detailId);
+    if (!lead) { alert('No lead selected.'); return; }
+    const btn = document.getElementById('dv-save-details');
+    const orig = btn.innerHTML;
+    btn.disabled = true; btn.innerHTML = 'Saving…';
+    try {
+        const custPatch = {}, leadPatch = {};
+        document.querySelectorAll('.dv-edit').forEach(el => {
+            const kind = el.dataset.kind;
+            const field = el.dataset.field;
+            if (!kind || !field) return;
+            const val = el.value === '' ? null : el.value;
+            if (kind === 'customer') custPatch[field] = val;
+            else if (kind === 'lead') leadPatch[field] = val;
+        });
+        // Only write when something actually changed vs current state.
+        const custChanged = Object.entries(custPatch).some(([k, v]) => (lead.customer?.[k] ?? null) !== (v ?? null));
+        const leadChanged = Object.entries(leadPatch).some(([k, v]) => (lead[k] ?? null) !== (v ?? null));
+        if (custChanged && lead.customer?.id) await store.updateCustomer(lead.customer.id, custPatch);
+        if (leadChanged) await store.updateLead(lead.id, leadPatch);
+        await refreshAll();
+        // Re-open detail so the view reflects saved values.
+        openDetail(state.detailId);
+        btn.style.display = 'none';
+    } catch (e) {
+        console.error('saveLeadDetails failed:', e);
+        alert('Save failed: ' + (e.message || e));
+    } finally {
+        btn.disabled = false; btn.innerHTML = orig;
+    }
+}
+
+async function saveNote() {
+    const lead = state.leads.find(l => l.id === state.detailId);
+    if (!lead) { alert('No lead selected.'); return; }
+    const btn = document.getElementById('dv-save-note');
+    const orig = btn.innerHTML;
+    btn.disabled = true; btn.innerHTML = 'Saving…';
+    try {
+        const notes = document.getElementById('dv-notes').value;
+        await store.updateLead(lead.id, { notes });
+        btn.style.display = 'none';
+    } catch (e) {
+        alert('Save note failed: ' + (e.message || e));
+    } finally {
+        btn.disabled = false; btn.innerHTML = orig;
+    }
+}
+
+/* Admin-only: fire a booking-confirmation email to the currently signed-in
+   admin's own email — lets Diler preview the template before sending to
+   customers. Uses the currently-open lead as the data source. */
+async function previewBookingEmail() {
+    if (store !== supabaseStore) { alert('Supabase mode required for preview emails.'); return; }
+    const lead = state.leads.find(l => l.id === state.detailId);
+    if (!lead) { alert('Open a lead first — the preview uses its quote/route/date as sample data.'); return; }
+    const session = await supabaseStore.getSession();
+    if (!session) { alert('Session expired — please sign in again.'); return; }
+    const res = await fetch('/.netlify/functions/send-booking-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + session.access_token },
+        body: JSON.stringify({ lead_id: lead.id, preview_to: state.currentUser.email }),
+    });
+    if (!res.ok) {
+        let msg = 'Preview failed';
+        try { msg = (await res.json()).error || msg; } catch (_) {}
+        alert(msg + ' (HTTP ' + res.status + ')');
+        return;
+    }
+    alert('Preview sent to ' + state.currentUser.email + '. Check your inbox.');
+}
+
+/* Wire up dirty-tracking once the DOM is built — any .dv-edit change shows
+   the Save button; typing in the note shows the note save button. */
+document.addEventListener('input', (e) => {
+    if (e.target.matches && e.target.matches('.dv-edit')) {
+        const btn = document.getElementById('dv-save-details');
+        if (btn) btn.style.display = '';
+    } else if (e.target.id === 'dv-notes') {
+        const btn = document.getElementById('dv-save-note');
+        if (btn) btn.style.display = '';
+    }
+});
 
 /* ========== 10. ADD LEAD ========== */
 function openAddLeadModal() {

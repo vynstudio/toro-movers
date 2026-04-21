@@ -222,8 +222,11 @@ async function notifyTelegram(lead){
   const isPartial = lead.status === 'partial';
   const isAbandon = lead.status === 'abandoned';
 
-  const emoji = isAbandon ? '⚠️' : (isPartial ? '🟡' : '🟢');
-  const tag   = isAbandon ? 'ABANDONED LEAD' : (isPartial ? 'EARLY LEAD (step 2)' : 'NEW QUOTE');
+  // "NEW QUOTE" only applies to leads with quote data (zip/size/estimate).
+  // Contact-only submissions are callbacks and shouldn't be mislabeled.
+  const hasQuoteData = !!(lead.zip_from || lead.zip_to || lead.furniture_size || (est && est.total));
+  const emoji = isAbandon ? '⚠️' : (isPartial ? '🟡' : (hasQuoteData ? '🟢' : '📞'));
+  const tag   = isAbandon ? 'ABANDONED LEAD' : (isPartial ? 'EARLY LEAD (step 2)' : (hasQuoteData ? 'NEW QUOTE' : 'CALLBACK REQUEST'));
 
   // Format phone nicely for display
   const pretty = (() => {
@@ -231,6 +234,14 @@ async function notifyTelegram(lead){
     if (d.length === 10) return `(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}`;
     if (d.length === 11 && d.startsWith('1')) return `+1 (${d.slice(1,4)}) ${d.slice(4,7)}-${d.slice(7)}`;
     return lead.phone || '';
+  })();
+
+  // Normalize the landing page path for display (strip query string noise).
+  const pageLabel = (() => {
+    const p = String(lead.page || '').trim();
+    if (!p) return '';
+    try { return p.startsWith('http') ? new URL(p).pathname : p.split('?')[0]; }
+    catch { return p.split('?')[0]; }
   })();
 
   const lines = [
@@ -243,12 +254,14 @@ async function notifyTelegram(lead){
     lead.zip_from && lead.zip_to ? `📍 ${esc(lead.zip_from)} → ${esc(lead.zip_to)}` : '',
     lead.furniture_size ? `🏠 ${esc(lead.furniture_size)}` : '',
     lead.floor ? `🏢 ${esc(lead.floor)}${lead.stairs_elevator ? ' · ' + esc(lead.stairs_elevator) : ''}` : (lead.stairs_elevator ? `🪜 ${esc(lead.stairs_elevator)}` : ''),
-    lead.move_date ? `📅 ${esc(lead.move_date)}` : '',
+    lead.move_date ? `📅 ${esc(lead.move_date)}${lead.move_time ? ' at ' + esc(lead.move_time) : ''}` : '',
     '',
     est ? `💰 *$${est.total}* (${est.movers} movers × ${est.hours}h)` : '',
     '',
-    lead.utm_content ? `🎯 Ad: \`${esc(lead.utm_content)}\`` : '',
-    lead.utm_source ? `📡 Source: ${esc(lead.utm_source)}` : '',
+    pageLabel ? `🔗 Page: \`${esc(pageLabel)}\`` : '',
+    lead.utm_source ? `📡 Source: ${esc(lead.utm_source)}${lead.utm_medium ? ' / ' + esc(lead.utm_medium) : ''}` : '',
+    lead.utm_campaign ? `🎯 Campaign: ${esc(lead.utm_campaign)}` : '',
+    lead.utm_content ? `📣 Ad: \`${esc(lead.utm_content)}\`` : '',
   ].filter(Boolean).join('\n');
 
   // Telegram inline buttons only accept web URLs or callback_data —

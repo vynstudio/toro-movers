@@ -37,6 +37,7 @@ exports.handler = async (event) => {
   if (!leadId) return respond(400, { error: 'lead_id required' });
 
   const admin = getAdminClient();
+  const previewTo = (payload.preview_to || '').trim();
   const { data: lead, error: leadErr } = await admin
     .from('leads')
     .select('*, customers(*)')
@@ -44,7 +45,11 @@ exports.handler = async (event) => {
     .maybeSingle();
   if (leadErr || !lead) return respond(404, { error: 'Lead not found' });
   const customer = lead.customers;
-  if (!customer?.email) return respond(400, { error: 'Customer has no email on file' });
+  if (!customer?.email && !previewTo) return respond(400, { error: 'Customer has no email on file' });
+  // Preview mode — admin wants the email routed to themselves, not the customer.
+  // Only allowed when the requester is an admin (role-checked above).
+  const recipient = previewTo && profile.role === 'admin' ? previewTo : customer?.email;
+  if (!recipient) return respond(400, { error: 'No recipient' });
 
   const { data: job } = await admin.from('jobs').select('*').eq('lead_id', leadId).maybeSingle();
   const quoteId = job?.quote_id;
@@ -53,9 +58,12 @@ exports.handler = async (event) => {
     : { data: null };
 
   const amountPaid = Number(job?.deposit_paid || quote?.deposit || 0);
+  // For preview mode we swap the email on the customer object so the helper
+  // uses the admin's address as the recipient.
+  const customerForSend = { ...customer, email: recipient };
   try {
     await sendBookingConfirmationEmail({
-      customer,
+      customer: customerForSend,
       lead,
       quote: quote || { total: job?.customer_total, deposit: amountPaid },
       amountPaid,
@@ -64,13 +72,16 @@ exports.handler = async (event) => {
     return respond(500, { error: 'Email failed: ' + (e.message || e) });
   }
 
-  await admin.from('activity_log').insert({
-    entity_type: 'lead',
-    entity_id: leadId,
-    actor_id: profile.id,
-    event_type: 'booking_confirmation_resent',
-    payload: { email: customer.email, amount_paid: amountPaid },
-  });
+  // Only log real sends (not previews) so the timeline stays accurate.
+  if (!previewTo) {
+    await admin.from('activity_log').insert({
+      entity_type: 'lead',
+      entity_id: leadId,
+      actor_id: profile.id,
+      event_type: 'booking_confirmation_resent',
+      payload: { email: recipient, amount_paid: amountPaid },
+    });
+  }
 
-  return respond(200, { sent: true, email: customer.email });
+  return respond(200, { sent: true, email: recipient, preview: !!previewTo });
 };
