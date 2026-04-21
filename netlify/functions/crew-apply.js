@@ -59,10 +59,23 @@ exports.handler = async (event) => {
   if (payload.background_consent !== true) {
     return respond(400, { error: 'You must consent to the background check to apply.' });
   }
+  if (!String(payload.references_text || '').trim()) {
+    return respond(400, { error: 'References are required — please include at least one name and phone.' });
+  }
 
   const zones = Array.isArray(payload.service_zones)
     ? payload.service_zones.filter(z => typeof z === 'string')
     : [];
+  const VALID_SKILLS = new Set([
+    'loading', 'unloading', 'driving', 'directing',
+    'packing', 'unpacking', 'assembly_disassembly', 'organizing_truck',
+  ]);
+  const skills = Array.isArray(payload.skills)
+    ? payload.skills.filter(s => typeof s === 'string' && VALID_SKILLS.has(s))
+    : [];
+  if (skills.length === 0) {
+    return respond(400, { error: 'Pick at least one skill you are best at.' });
+  }
 
   const row = {
     first_name: str(payload.first_name),
@@ -84,6 +97,7 @@ exports.handler = async (event) => {
     has_truck: !!payload.has_truck,
     truck_size: str(payload.truck_size),
     service_zones: zones,
+    skills: skills,
     about: str(payload.about),
     references_text: str(payload.references_text),
     background_consent: true,
