@@ -7,11 +7,13 @@
 // Env: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, RESEND_API_KEY,
 //      RESEND_FROM_EMAIL (optional), TELEGRAM_* (optional).
 
+const Stripe = require('stripe');
 const { Resend } = require('resend');
 const { getAdminClient } = require('./_lib/supabase-admin');
 const { notifyTelegramTeam } = require('./_lib/crm-notifications');
 
 const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'hello@toromovers.net';
+const BG_FEE_CENTS = 4900; // $49 background-check fee, refundable after first completed job.
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -34,8 +36,9 @@ function renderApplicantEmail(app) {
 <tr><td style="background:#C8102E;padding:22px 28px;color:#fff"><div style="font-weight:800;font-size:22px">TORO MOVERS</div><div style="font-size:12px;color:#FFE8EC;margin-top:4px">Moving People Forward</div></td></tr>
 <tr><td style="padding:28px">
 <p style="margin:0 0 12px 0;font-size:15px">Hey ${name},</p>
-<p style="margin:0 0 16px 0;font-size:15px;line-height:1.55">Thanks for applying to work with Toro Movers. We got your application and will review it within a few days.</p>
-<p style="margin:0 0 16px 0;font-size:15px;line-height:1.55">If your profile fits, we'll send a background-check link from our vendor (Checkr or similar). You'll enter your SSN directly with them — we never touch it.</p>
+<p style="margin:0 0 16px 0;font-size:15px;line-height:1.55">Thanks for applying to work with Toro Movers. Your application + <strong>$49 refundable background-check fee</strong> are in.</p>
+<p style="margin:0 0 16px 0;font-size:15px;line-height:1.55">Next: our background-check vendor (Checkr or similar) will email you a secure link to finish. You enter your SSN directly with them — we never touch it.</p>
+<p style="margin:0 0 16px 0;padding:12px 14px;background:#FBF6E9;border-radius:8px;font-size:14px;line-height:1.55">The <strong>$49 comes back to your card</strong> once you pass the check and complete your first Toro job.</p>
 <p style="margin:0;font-size:14px;color:#6B7280">Questions? Call or text <a href="tel:+13217580094" style="color:#C8102E;font-weight:700">(321) 758-0094</a>.</p>
 </td></tr>
 <tr><td style="background:#F9FAFB;padding:14px 28px;text-align:center;color:#6B7280;font-size:11px">TORO MOVERS · Orlando, FL · toromovers.net</td></tr>
@@ -165,5 +168,46 @@ exports.handler = async (event) => {
     } catch (e) { console.error('resend init failed:', e.message); }
   }
 
-  return respond(200, { ok: true, application_id: app.id });
+  // Background-check fee ($49) Stripe Checkout. Refundable after the
+  // applicant passes the check AND completes their first Toro job.
+  let checkoutUrl = null;
+  if (process.env.STRIPE_SECRET_KEY) {
+    try {
+      const stripe = Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2024-10-28.acacia' });
+      const origin = process.env.URL || `https://${event.headers.host}`;
+      const session = await stripe.checkout.sessions.create({
+        mode: 'payment',
+        payment_method_types: ['card'],
+        customer_email: row.email,
+        line_items: [{
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: 'Toro Movers — Background check fee',
+              description: 'Refundable. Returned after you pass the background check and complete your first Toro job.',
+            },
+            unit_amount: BG_FEE_CENTS,
+          },
+          quantity: 1,
+        }],
+        metadata: {
+          purpose: 'bg_check_fee',
+          application_id: app.id,
+          applicant_email: row.email,
+          applicant_name: `${row.first_name} ${row.last_name}`,
+        },
+        success_url: `${origin}/applied.html?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${origin}/work-with-us.html?abandoned=1`,
+      });
+      checkoutUrl = session.url;
+      await admin.from('crew_applications')
+        .update({ bg_fee_stripe_session_id: session.id })
+        .eq('id', app.id);
+    } catch (e) {
+      console.error('bg-fee stripe session failed:', e.message);
+      // Don't fail the application — admin can send a payment link later.
+    }
+  }
+
+  return respond(200, { ok: true, application_id: app.id, checkout_url: checkoutUrl });
 };

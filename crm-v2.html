@@ -1067,6 +1067,7 @@
                             <button class="btn btn-sm btn-outline-secondary" onclick="setApplicationStatus('reviewing')">Mark reviewing</button>
                             <button class="btn btn-sm btn-outline-secondary" onclick="setApplicationStatus('rejected')">Reject</button>
                             <button class="btn btn-sm btn-primary" onclick="approveApplication()">Approve &amp; create crew</button>
+                            <button class="btn btn-sm btn-outline-primary" id="refund-bg-fee-btn" onclick="refundBgFee()" style="display:none">Refund $49 bg fee</button>
                         </div>
                         <button class="btn btn-sm btn-outline-secondary" data-dismiss="modal">Close</button>
                     </div>
@@ -3170,7 +3171,46 @@ function openApplicationDetail(id) {
         </div>
         <div style="margin-top:10px;font-size:11px;color:var(--toro-gray-500)">FCRA consent recorded ${escapeHtml(a.consent_ip || '—')} · ${fmtDate(a.created_at)}</div>
     `;
+    // BG-fee status badge + refund button visibility
+    const feeStatus = a.bg_fee_refunded_at ? 'refunded'
+        : (a.bg_fee_paid_at ? 'paid' : 'pending');
+    const feeBadge = {
+        pending:  { bg: '#FEF3C7', fg: '#92400E', label: 'BG fee pending' },
+        paid:     { bg: '#DCFCE7', fg: '#16A34A', label: 'BG fee paid · $49' },
+        refunded: { bg: '#F3F4F6', fg: '#6B7280', label: 'BG fee refunded' },
+    }[feeStatus];
+    const header = document.querySelector('#applicationModal .modal-header .modal-title');
+    if (header) header.insertAdjacentHTML('beforeend',
+        ` <span style="background:${feeBadge.bg};color:${feeBadge.fg};font-size:10px;font-weight:800;letter-spacing:0.05em;text-transform:uppercase;padding:3px 9px;border-radius:9999px;margin-left:8px;vertical-align:middle">${feeBadge.label}</span>`);
+    // Enable refund button only when paid + not refunded + admin
+    const refundBtn = document.getElementById('refund-bg-fee-btn');
+    if (refundBtn) refundBtn.style.display =
+        (state.currentUser?.role === 'admin' && feeStatus === 'paid') ? '' : 'none';
     $('#applicationModal').modal('show');
+}
+
+async function refundBgFee() {
+    if (!CURRENT_APP) return;
+    if (!confirm('Refund $49 background-check fee to ' + CURRENT_APP.first_name + ' ' + CURRENT_APP.last_name + '? This is usually done after they pass the check AND complete their first Toro job.')) return;
+    const session = await supabaseStore.getSession();
+    if (!session) { alert('Session expired.'); return; }
+    const res = await fetch('/.netlify/functions/refund-bg-fee', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
+        body: JSON.stringify({ application_id: CURRENT_APP.id }),
+    });
+    if (!res.ok) {
+        let msg = 'Refund failed';
+        try { msg = (await res.json()).error || msg; } catch (_) {}
+        alert(msg + ' (HTTP ' + res.status + ')');
+        return;
+    }
+    const out = await res.json();
+    CURRENT_APP.bg_fee_refunded_at = out.refunded_at;
+    APPS_CACHE = APPS_CACHE.map(a => a.id === CURRENT_APP.id ? CURRENT_APP : a);
+    renderApplicationsTable();
+    $('#applicationModal').modal('hide');
+    alert('Refunded $' + out.amount.toFixed(2) + ' to the card on file.');
 }
 
 async function setApplicationStatus(status) {
