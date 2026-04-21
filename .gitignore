@@ -14,6 +14,7 @@
 
 # Netlify
 .netlify/
+deno.lock
 
 # Env
 .env

@@ -90,6 +90,19 @@ exports.handler = async (event) => {
     console.error('createLead failed:', e.message);
   }
 
+  // CRM v2 bridge — mirror this lead into Supabase (public.customers + public.leads)
+  // so the Toro CRM sees every public quote submission. Fire-and-forget so it
+  // never blocks the customer-facing quote email. No duplicate Telegram (the
+  // v1 notifyTelegram above already pinged the team).
+  try {
+    const { upsertCrmLeadFromPublic } = require('./_lib/crm-leads');
+    upsertCrmLeadFromPublic(payload)
+      .then(r => { if (!r.ok) console.warn('CRM v2 bridge skipped:', r.reason); })
+      .catch(e => console.error('CRM v2 bridge failed:', e.message));
+  } catch (e) {
+    console.error('CRM v2 bridge unavailable:', e.message);
+  }
+
   const truckLine = truck
     ? `<tr><td style="padding:12px 0;border-bottom:1px solid #e5e7eb;color:#374151">Truck</td><td style="padding:12px 0;border-bottom:1px solid #e5e7eb;text-align:right;font-weight:700;color:#1C1C1E">+$${truckFee}</td></tr>`
     : '';
