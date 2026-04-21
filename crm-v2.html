@@ -2687,9 +2687,26 @@ async function loadCrewAssignmentForLead(lead) {
         if (!CREW_CACHE.length) CREW_CACHE = await supabaseStore.fetchCrews();
         const job = await supabaseStore.fetchJobByLead(lead.id);
         const activeCrews = CREW_CACHE.filter(c => c.active);
-        sel.innerHTML = '<option value="">— Unassigned —</option>' + activeCrews.map(c =>
-            `<option value="${c.id}" ${job && job.crew_id === c.id ? 'selected' : ''}>${escapeHtml(c.name)}${c.bilingual ? ' (bilingual)' : ''}</option>`
-        ).join('');
+        // Prioritize crews whose service_zones cover the lead's from_zone.
+        // Crew with no zones configured = "covers everywhere". No from_zone on
+        // the lead → show all crews. Currently-assigned crew is always shown.
+        const fromZone = lead.from_zone || null;
+        const covers = (c) => {
+            if (!fromZone) return true;
+            if (!Array.isArray(c.service_zones) || c.service_zones.length === 0) return true;
+            return c.service_zones.includes(fromZone);
+        };
+        const matching = activeCrews.filter(covers);
+        const other = activeCrews.filter(c => !covers(c) && (!job || job.crew_id !== c.id));
+        const assigned = job && job.crew_id ? activeCrews.find(c => c.id === job.crew_id) : null;
+        const assignedOutOfZone = assigned && !covers(assigned);
+        const opt = (c, mark = '') =>
+            `<option value="${c.id}" ${job && job.crew_id === c.id ? 'selected' : ''}>${escapeHtml(c.name)}${c.bilingual ? ' (bilingual)' : ''}${mark}</option>`;
+        let html = '<option value="">— Unassigned —</option>';
+        if (assignedOutOfZone) html += opt(assigned, ' · assigned (out of zone)');
+        html += matching.map(c => opt(c)).join('');
+        if (other.length) html += `<optgroup label="Out-of-zone crews">${other.map(c => opt(c, ' · other zone')).join('')}</optgroup>`;
+        sel.innerHTML = html;
         sel.dataset.jobId = job ? job.id : '';
     } catch (e) {
         sel.innerHTML = '<option value="">' + (e.message || 'Could not load crews') + '</option>';
