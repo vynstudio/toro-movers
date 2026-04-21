@@ -143,17 +143,20 @@ exports.handler = async (event) => {
     return respond(400, { error: 'Set the offered hourly rate on the job first.' });
   }
 
-  // Reset crew response to 'pending' on (re)dispatch so the buttons work fresh.
+  // Reset crew response + rotate the dispatch token so stale or forwarded
+  // emails (from a previous dispatch) stop working.
+  const dispatchToken = require('crypto').randomUUID();
   await admin.from('jobs').update({
     crew_response: 'pending',
     crew_responded_at: null,
     crew_response_note: null,
+    crew_dispatch_token: dispatchToken,
   }).eq('id', job_id);
 
-  // Build the base URL the email buttons will hit. Crew ID is included as
-  // a simple attestation (UUIDs aren't guessable); `r` is appended per button.
+  // Per-dispatch token `t` is required by crm-crew-response; it must match
+  // jobs.crew_dispatch_token or the click is rejected as "Link expired".
   const origin = process.env.URL || `https://${event.headers.host}` || 'https://toromovers-crm.netlify.app';
-  const responseBase = `${origin}/.netlify/functions/crm-crew-response?j=${encodeURIComponent(job_id)}&c=${encodeURIComponent(crew.id)}`;
+  const responseBase = `${origin}/.netlify/functions/crm-crew-response?j=${encodeURIComponent(job_id)}&c=${encodeURIComponent(crew.id)}&t=${encodeURIComponent(dispatchToken)}`;
 
   // Send email if crew has one, else Telegram-only fallback.
   let channelUsed = 'telegram';

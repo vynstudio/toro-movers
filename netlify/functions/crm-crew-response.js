@@ -46,12 +46,18 @@ exports.handler = async (event) => {
   const action = ACTIONS[actionKey];
   if (!action) return page({ title: 'Unknown action', message: 'This link is invalid. Please reply to the dispatch email instead.' });
 
+  const token = (event.queryStringParameters || {}).t;
+
   const admin = getAdminClient();
   const { data: job, error } = await admin
     .from('jobs').select('*, crews(*), leads(*, customers(*))').eq('id', jobId).maybeSingle();
   if (error || !job) return page({ title: 'Job not found', message: 'We couldn\'t locate that job. It may have been reassigned.' });
   if (job.crew_id !== crewId) {
     return page({ title: 'Not assigned to you', message: 'This job is no longer assigned to your crew. Please ignore this email or call ops.' });
+  }
+  // Per-dispatch token — forwarded or stale emails won't carry the live token.
+  if (!token || !job.crew_dispatch_token || token !== job.crew_dispatch_token) {
+    return page({ title: 'Link expired', message: 'This offer has been re-sent or rescinded — this link no longer works. Open the most recent dispatch email, or call ops.' });
   }
 
   // Idempotent: don't overwrite a prior response with a different verb.
