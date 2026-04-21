@@ -3146,7 +3146,24 @@ function openApplicationDetail(id) {
             <div style="display:flex;flex-wrap:wrap;gap:4px">${(a.skills||[]).map(s => `<span style="background:var(--toro-sand);color:var(--toro-charcoal);font-size:11px;font-weight:700;padding:3px 9px;border-radius:9999px">${escapeHtml(SKILL_LABELS[s] || s)}</span>`).join('') || '<span style="color:var(--toro-gray-500);font-size:13px">—</span>'}</div>
         </div>
         ${a.about ? `<div style="margin-top:14px"><div style="font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--toro-charcoal);margin-bottom:6px">About</div><div style="font-size:13px;color:var(--toro-charcoal-soft);white-space:pre-wrap">${escapeHtml(a.about)}</div></div>` : ''}
-        ${a.references_text ? `<div style="margin-top:14px"><div style="font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--toro-charcoal);margin-bottom:6px">References</div><div style="font-size:13px;color:var(--toro-charcoal-soft);white-space:pre-wrap">${escapeHtml(a.references_text)}</div></div>` : ''}
+        ${(Array.isArray(a.references_list) && a.references_list.length) ? `
+            <div style="margin-top:14px">
+                <div style="font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--toro-charcoal);margin-bottom:6px">References${a.worked_for_moving_co ? ' · worked at a moving company before' : ''}</div>
+                <div style="display:flex;flex-direction:column;gap:6px">${a.references_list.map((r, i) => {
+                    const rel = {
+                        previous_manager_moving: 'Prior moving-co manager',
+                        previous_manager_other: 'Past manager',
+                        coworker: 'Coworker',
+                        customer: 'Customer',
+                        other: 'Other',
+                    }[r.relationship] || r.relationship || '—';
+                    const badge = r.relationship === 'previous_manager_moving' ? 'background:#FFF1F3;color:#C8102E' : 'background:var(--toro-gray-100);color:var(--toro-charcoal-soft)';
+                    return `<div style="display:flex;justify-content:space-between;gap:8px;padding:8px 10px;border:1px solid var(--toro-gray-200);border-radius:8px;font-size:13px">
+                        <div style="flex:1"><strong>${escapeHtml(r.name || '—')}</strong> · <a href="tel:${encodeURIComponent(r.phone||'')}" style="color:var(--toro-red);font-weight:700">${escapeHtml(r.phone || '—')}</a>${r.company ? ' <span style="color:var(--toro-gray-500)">· ' + escapeHtml(r.company) + '</span>' : ''}</div>
+                        <span style="${badge};padding:2px 8px;border-radius:9999px;font-size:10px;font-weight:800;letter-spacing:0.05em;text-transform:uppercase;align-self:center;white-space:nowrap">${escapeHtml(rel)}</span>
+                    </div>`;
+                }).join('')}</div>
+            </div>` : (a.references_text ? `<div style="margin-top:14px"><div style="font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--toro-charcoal);margin-bottom:6px">References</div><div style="font-size:13px;color:var(--toro-charcoal-soft);white-space:pre-wrap">${escapeHtml(a.references_text)}</div></div>` : '')}
         <div style="margin-top:14px">
             <div style="font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--toro-charcoal);margin-bottom:6px">Review notes</div>
             <textarea id="app-review-notes" rows="2" style="width:100%;padding:8px 10px;border:1px solid var(--toro-gray-300);border-radius:6px;font-size:13px;font-family:inherit">${escapeHtml(a.review_notes || '')}</textarea>

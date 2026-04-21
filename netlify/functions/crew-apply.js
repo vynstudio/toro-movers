@@ -59,8 +59,27 @@ exports.handler = async (event) => {
   if (payload.background_consent !== true) {
     return respond(400, { error: 'You must consent to the background check to apply.' });
   }
-  if (!String(payload.references_text || '').trim()) {
-    return respond(400, { error: 'References are required — please include at least one name and phone.' });
+
+  // Structured references: 3 required, each with name + phone + relationship.
+  const VALID_RELATIONSHIPS = new Set([
+    'previous_manager_moving', 'previous_manager_other',
+    'coworker', 'customer', 'other',
+  ]);
+  const refsIn = Array.isArray(payload.references_list) ? payload.references_list : [];
+  const refs = refsIn
+    .map(r => r && typeof r === 'object' ? {
+      name: String(r.name || '').trim(),
+      phone: String(r.phone || '').trim(),
+      relationship: VALID_RELATIONSHIPS.has(r.relationship) ? r.relationship : null,
+      company: r.company ? String(r.company).trim() : null,
+    } : null)
+    .filter(r => r && r.name && r.phone && r.relationship);
+  if (refs.length < 3) {
+    return respond(400, { error: 'Three complete references are required (name, phone, and relationship on each).' });
+  }
+  const workedForMovingCo = payload.worked_for_moving_co === true;
+  if (workedForMovingCo && !refs.some(r => r.relationship === 'previous_manager_moving')) {
+    return respond(400, { error: 'Since you worked at a moving company, one reference must be a previous manager from that company.' });
   }
 
   const zones = Array.isArray(payload.service_zones)
@@ -100,6 +119,8 @@ exports.handler = async (event) => {
     skills: skills,
     about: str(payload.about),
     references_text: str(payload.references_text),
+    references_list: refs,
+    worked_for_moving_co: workedForMovingCo,
     background_consent: true,
     consent_ip: event.headers['x-forwarded-for'] || event.headers['client-ip'] || null,
     consent_ua: event.headers['user-agent'] || null,
