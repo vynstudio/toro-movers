@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow">
+<title>Pay your balance — Toro Movers</title>
+<style>
+  :root { color-scheme: light only; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: #ffffff; color: #1C1C1E; margin: 0; padding: 48px 20px;
+    min-height: 100vh; display: flex; align-items: flex-start; justify-content: center;
+  }
+  .card {
+    max-width: 520px; width: 100%; background: #ffffff;
+    border: 1px solid #E5E7EB; border-radius: 16px; overflow: hidden;
+  }
+  .header { background: #C8102E; color: #ffffff; padding: 26px 28px; }
+  .brand { font-weight: 800; font-size: 22px; letter-spacing: -0.01em; }
+  .tagline { font-size: 12px; color: #FFE8EC; margin-top: 4px; }
+  .body { padding: 28px; }
+  h1 { font-size: 22px; font-weight: 800; margin: 0 0 8px 0; letter-spacing: -0.01em; }
+  .sub { color: #6B7280; font-size: 14px; margin: 0 0 24px 0; }
+  .section-label {
+    font-weight: 800; font-size: 12px; color: #1C1C1E;
+    text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px;
+  }
+  .tip-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 14px; }
+  .tip-btn {
+    appearance: none; border: 2px solid #E5E7EB; background: #ffffff;
+    border-radius: 12px; padding: 14px 10px; cursor: pointer;
+    font-family: inherit; font-weight: 700; font-size: 14px; color: #1C1C1E;
+    transition: all 120ms ease;
+  }
+  .tip-btn .pct { color: #6B7280; font-size: 12px; font-weight: 500; margin-top: 2px; }
+  .tip-btn:hover { border-color: #C8102E; }
+  .tip-btn.selected {
+    border-color: #C8102E; background: #FFF1F3; color: #C8102E;
+  }
+  .custom-row { display: flex; gap: 8px; align-items: center; margin-bottom: 20px; }
+  .custom-row input {
+    flex: 1; padding: 12px 14px; border: 2px solid #E5E7EB;
+    border-radius: 10px; font-size: 15px; font-family: inherit; color: #1C1C1E;
+  }
+  .custom-row input:focus { outline: none; border-color: #C8102E; }
+  .dollar-sign { color: #6B7280; font-weight: 700; font-size: 18px; }
+  .summary {
+    background: #FBF6E9; border-radius: 10px; padding: 14px 18px; margin-bottom: 18px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .summary .label { color: #6B7280; font-size: 13px; }
+  .summary .value { color: #C8102E; font-size: 22px; font-weight: 800; }
+  .pay-btn {
+    display: block; width: 100%; background: #C8102E; color: #ffffff;
+    border: none; border-radius: 9999px; padding: 16px 20px;
+    font-weight: 800; font-size: 15px; font-family: inherit; cursor: pointer;
+    letter-spacing: 0.01em;
+  }
+  .pay-btn:hover { background: #A50D26; }
+  .pay-btn:disabled { background: #D1D5DB; cursor: not-allowed; }
+  .foot { color: #6B7280; font-size: 12px; margin-top: 10px; text-align: center; }
+  .footer { background: #F9FAFB; padding: 14px 28px; text-align: center; color: #6B7280; font-size: 11px; }
+  a { color: #C8102E; font-weight: 700; text-decoration: none; }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="header">
+      <div class="brand">TORO MOVERS</div>
+      <div class="tagline">Thanks for choosing us</div>
+    </div>
+    <div class="body">
+      <h1 id="title">Finish paying for your move</h1>
+      <p class="sub">Pick a tip amount (or skip) and continue to secure Stripe checkout.</p>
+
+      <div id="loading" class="sub">Loading your balance…</div>
+
+      <div id="picker" class="hidden">
+        <div class="section-label">Add a tip for your crew</div>
+        <div class="tip-grid" id="tip-grid">
+          <button class="tip-btn" data-pct="0" data-amount="0"><div>No tip</div><div class="pct">—</div></button>
+          <button class="tip-btn" data-pct="15"><div>15%</div><div class="pct" data-amount-slot></div></button>
+          <button class="tip-btn" data-pct="18"><div>18%</div><div class="pct" data-amount-slot></div></button>
+          <button class="tip-btn" data-pct="20"><div>20%</div><div class="pct" data-amount-slot></div></button>
+        </div>
+        <div class="section-label">Or enter a custom tip</div>
+        <div class="custom-row">
+          <span class="dollar-sign">$</span>
+          <input type="number" id="custom-tip" min="0" step="1" placeholder="0">
+        </div>
+        <div class="summary">
+          <div>
+            <div class="label">Balance</div>
+            <div style="color:#1C1C1E;font-weight:700;font-size:15px" id="balance-line">—</div>
+            <div class="label" id="tip-line" style="margin-top:4px"></div>
+          </div>
+          <div>
+            <div class="label">Total</div>
+            <div class="value" id="total-line">—</div>
+          </div>
+        </div>
+        <button class="pay-btn" id="pay">Continue to secure checkout →</button>
+        <p class="foot">Or call <a href="tel:+13217580094">(321) 758-0094</a> to pay by phone.</p>
+      </div>
+
+      <div id="errmsg" class="hidden sub" style="color:#C8102E;font-weight:700"></div>
+    </div>
+    <div class="footer">TORO MOVERS · Orlando, FL · (321) 758-0094 · toromovers.net</div>
+  </div>
+
+<script>
+(function () {
+  const params = new URLSearchParams(location.search);
+  const jobId = params.get('j');
+  const loading = document.getElementById('loading');
+  const picker = document.getElementById('picker');
+  const errEl = document.getElementById('errmsg');
+
+  function showErr(msg) {
+    loading.classList.add('hidden');
+    picker.classList.add('hidden');
+    errEl.classList.remove('hidden');
+    errEl.textContent = msg;
+  }
+
+  if (!jobId) {
+    showErr('Missing job reference. Use the link from your balance email.');
+    return;
+  }
+
+  let balance = 0;
+  let selectedTip = 0; // dollars
+  const fmt = (n) => '$' + (Math.round(Number(n || 0) * 100) / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  function setTip(v, btn) {
+    selectedTip = Math.max(0, Math.round(Number(v || 0) * 100) / 100);
+    document.querySelectorAll('.tip-btn').forEach(b => b.classList.remove('selected'));
+    if (btn) btn.classList.add('selected');
+    document.getElementById('tip-line').textContent = selectedTip > 0 ? 'Tip: ' + fmt(selectedTip) : '';
+    document.getElementById('total-line').textContent = fmt(balance + selectedTip);
+  }
+
+  // Preset tip buttons
+  document.querySelectorAll('.tip-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const pct = Number(btn.dataset.pct);
+      const amount = pct === 0 ? 0 : Math.round(balance * (pct / 100));
+      document.getElementById('custom-tip').value = '';
+      setTip(amount, btn);
+    });
+  });
+
+  // Custom input
+  document.getElementById('custom-tip').addEventListener('input', (ev) => {
+    const v = Number(ev.target.value || 0);
+    document.querySelectorAll('.tip-btn').forEach(b => b.classList.remove('selected'));
+    setTip(v, null);
+  });
+
+  // Pay button
+  document.getElementById('pay').addEventListener('click', () => {
+    const url = '/.netlify/functions/balance-checkout?j=' + encodeURIComponent(jobId) +
+                (selectedTip > 0 ? '&tip=' + encodeURIComponent(selectedTip) : '');
+    location.href = url;
+  });
+
+  // Fetch the balance amount so we can show percentages.
+  fetch('/.netlify/functions/balance-info?j=' + encodeURIComponent(jobId))
+    .then(r => r.ok ? r.json() : r.json().then(e => { throw new Error(e.error || 'Job not found'); }))
+    .then(data => {
+      balance = Number(data.balance_due || 0);
+      if (balance <= 0) { showErr('This move is already paid in full. Thanks!'); return; }
+      loading.classList.add('hidden');
+      picker.classList.remove('hidden');
+      document.getElementById('balance-line').textContent = fmt(balance);
+      // Fill percentages
+      document.querySelectorAll('.tip-btn').forEach(btn => {
+        const pct = Number(btn.dataset.pct);
+        const slot = btn.querySelector('[data-amount-slot]');
+        if (slot && pct > 0) slot.textContent = fmt(balance * (pct / 100));
+      });
+      // Default: no tip selected
+      setTip(0, document.querySelector('.tip-btn[data-pct="0"]'));
+    })
+    .catch(e => showErr(e.message || 'Could not load your balance. Call (321) 758-0094 to pay by phone.'));
+})();
+</script>
+</body>
+</html>

@@ -100,20 +100,25 @@ async function handleBalancePaid(session, md) {
   const admin = getAdminClient();
   const jobId = md.job_id;
   if (!jobId) return;
-  const amountPaid = session.amount_total ? session.amount_total / 100 : 0;
+  const amountTotal = session.amount_total ? session.amount_total / 100 : 0;
+  const tipAmount = Number(md.tip_amount || 0);
+  const balancePart = Math.max(0, amountTotal - tipAmount);
   const paymentIntent = session.payment_intent || null;
 
   const { data: job } = await admin.from('jobs').select('*').eq('id', jobId).maybeSingle();
   if (!job) return;
 
-  const totalPaid = Number(job.deposit_paid || 0) + amountPaid;
-  const balanceDue = Math.max(0, Number(job.customer_total || 0) - totalPaid);
+  // Apply the balance portion to deposit_paid; tip is tracked separately.
+  const newPaid = Number(job.deposit_paid || 0) + balancePart;
+  const newBalanceDue = Math.max(0, Number(job.customer_total || 0) - newPaid);
+  const newTipAmount = Number(job.tip_amount || 0) + tipAmount;
 
   await admin.from('jobs').update({
-    deposit_paid: totalPaid,
-    balance_due: balanceDue,
+    deposit_paid: newPaid,
+    balance_due: newBalanceDue,
+    tip_amount: newTipAmount,
     payment_method: 'card',
-    payment_status: balanceDue <= 0 ? 'paid' : 'partial',
+    payment_status: newBalanceDue <= 0 ? 'paid' : 'partial',
     stripe_payment_intent_id: paymentIntent,
     payment_received_at: new Date().toISOString(),
   }).eq('id', jobId);
@@ -123,8 +128,27 @@ async function handleBalancePaid(session, md) {
     entity_id: jobId,
     actor_id: null,
     event_type: 'balance_paid',
-    payload: { amount: amountPaid, stripe_session: session.id, payment_intent: paymentIntent },
+    payload: {
+      amount_total: amountTotal,
+      balance_portion: balancePart,
+      tip: tipAmount,
+      stripe_session: session.id,
+      payment_intent: paymentIntent,
+    },
   });
+
+  if (tipAmount > 0) {
+    await notifyTelegramTeam([
+      '*Balance + Tip received*',
+      '',
+      `Total charged: *$${amountTotal.toFixed(2)}*`,
+      `Balance portion: $${balancePart.toFixed(2)}`,
+      `Tip for crew: *$${tipAmount.toFixed(2)}*`,
+      '',
+      `Job: \`${String(jobId).slice(0, 8)}\``,
+      paymentIntent ? `[Stripe](https://dashboard.stripe.com/payments/${paymentIntent})` : '',
+    ]);
+  }
 }
 
 module.exports = { handleCrmV2Event };

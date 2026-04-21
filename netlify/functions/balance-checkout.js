@@ -46,12 +46,38 @@ exports.handler = async (event) => {
   const balanceCents = Math.round(Number(job.balance_due || 0) * 100);
   if (balanceCents <= 0) return errPage('This move is already paid in full. Thanks!');
 
+  const tipParam = event.queryStringParameters && event.queryStringParameters.tip;
+  const tipCents = Math.max(0, Math.round(Number(tipParam || 0) * 100));
+
   const customer = job.leads && job.leads.customers ? job.leads.customers : {};
   const lang = customer.language_preference === 'es' ? 'es' : 'en';
   const productName = lang === 'es' ? 'Saldo final — Toro Movers' : 'Toro Movers Final Balance';
   const productDesc = lang === 'es'
     ? `Saldo final de tu mudanza. Total: ${fmtUsd(job.customer_total)}. Deposito ya pagado: ${fmtUsd(job.deposit_paid)}.`
     : `Final balance for your move. Total: ${fmtUsd(job.customer_total)}. Deposit already paid: ${fmtUsd(job.deposit_paid)}.`;
+
+  const lineItems = [{
+    price_data: {
+      currency: 'usd',
+      product_data: { name: productName, description: productDesc },
+      unit_amount: balanceCents,
+    },
+    quantity: 1,
+  }];
+
+  if (tipCents > 0) {
+    lineItems.push({
+      price_data: {
+        currency: 'usd',
+        product_data: {
+          name: lang === 'es' ? 'Propina para la cuadrilla' : 'Tip for the crew',
+          description: lang === 'es' ? '100% va directo a los movers.' : '100% goes straight to the movers.',
+        },
+        unit_amount: tipCents,
+      },
+      quantity: 1,
+    });
+  }
 
   const stripe = Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2024-10-28.acacia' });
   const origin = process.env.URL || `https://${event.headers.host}`;
@@ -60,20 +86,15 @@ exports.handler = async (event) => {
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
       payment_method_types: ['card'],
-      line_items: [{
-        price_data: {
-          currency: 'usd',
-          product_data: { name: productName, description: productDesc },
-          unit_amount: balanceCents,
-        },
-        quantity: 1,
-      }],
+      line_items: lineItems,
       customer_email: customer.email || undefined,
       metadata: {
         purpose: 'balance',
         job_id: j,
         lead_id: job.lead_id,
         quote_id: job.quote_id || '',
+        balance_amount: String(Number(job.balance_due || 0).toFixed(2)),
+        tip_amount: String((tipCents / 100).toFixed(2)),
       },
       success_url: `${origin}/reserved.html?session_id={CHECKOUT_SESSION_ID}&t=balance`,
       cancel_url: `${origin}/`,
@@ -85,7 +106,7 @@ exports.handler = async (event) => {
       entity_id: j,
       actor_id: null,
       event_type: 'balance_checkout_opened',
-      payload: { session_id: session.id, amount: balanceCents, language: lang },
+      payload: { session_id: session.id, balance_cents: balanceCents, tip_cents: tipCents, language: lang },
     });
 
     return { statusCode: 303, headers: { Location: session.url, 'Cache-Control': 'no-store' }, body: '' };
