@@ -80,7 +80,11 @@ const BOOKING_COPY = {
 function renderBookingHtml({ customer, lead, quote, amountPaid, lang }) {
   const L = BOOKING_COPY[lang];
   const firstName = String(customer.full_name || '').split(/\s+/)[0] || '';
-  const balance = Math.max(0, Number(quote.total || 0) - Number(amountPaid || 0));
+  const q = quote || {};
+  const crewSize = q.crew_size ?? '—';
+  const estHours = q.estimated_hours ?? '—';
+  const total = Number(q.total || 0);
+  const balance = Math.max(0, total - Number(amountPaid || 0));
   return `<!DOCTYPE html>
 <html lang="${lang}"><head>
 <meta charset="utf-8">
@@ -106,11 +110,11 @@ function renderBookingHtml({ customer, lead, quote, amountPaid, lang }) {
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
 <tr><td colspan="2" style="font-weight:800;font-size:14px;color:#1C1C1E;padding-bottom:10px">${L.summaryHeader}</td></tr>
 <tr><td class="tm-muted" style="padding:6px 0;color:#6B7280">${L.dateLabel}</td><td style="padding:6px 0;text-align:right;font-weight:700;color:#1C1C1E">${fmtDate(lead.move_date)}</td></tr>
-<tr><td class="tm-muted" style="padding:6px 0;color:#6B7280">${L.crewLabel}</td><td style="padding:6px 0;text-align:right;font-weight:700;color:#1C1C1E">${quote.crew_size}</td></tr>
-<tr><td class="tm-muted" style="padding:6px 0;color:#6B7280">${L.hoursLabel}</td><td style="padding:6px 0;text-align:right;font-weight:700;color:#1C1C1E">${quote.estimated_hours} h</td></tr>
+<tr><td class="tm-muted" style="padding:6px 0;color:#6B7280">${L.crewLabel}</td><td style="padding:6px 0;text-align:right;font-weight:700;color:#1C1C1E">${crewSize}${crewSize !== '—' ? ' movers' : ''}</td></tr>
+<tr><td class="tm-muted" style="padding:6px 0;color:#6B7280">${L.hoursLabel}</td><td style="padding:6px 0;text-align:right;font-weight:700;color:#1C1C1E">${estHours}${estHours !== '—' ? ' h' : ''}</td></tr>
 <tr><td class="tm-muted" style="padding:6px 0;color:#6B7280">${L.depositLabel}</td><td style="padding:6px 0;text-align:right;font-weight:700;color:#16A34A">${fmtMoney(amountPaid)}</td></tr>
 <tr><td class="tm-muted" style="padding:6px 0;color:#6B7280">${L.balanceLabel}</td><td style="padding:6px 0;text-align:right;font-weight:700;color:#1C1C1E">${fmtMoney(balance)}</td></tr>
-<tr><td style="padding:12px 0 0 0;color:#1C1C1E;font-weight:800;font-size:15px;border-top:1px solid #E5E7EB">${L.totalLabel}</td><td style="padding:12px 0 0 0;text-align:right;color:#C8102E;font-weight:800;font-size:22px;border-top:1px solid #E5E7EB">${fmtMoney(quote.total)}</td></tr>
+<tr><td style="padding:12px 0 0 0;color:#1C1C1E;font-weight:800;font-size:15px;border-top:1px solid #E5E7EB">${L.totalLabel}</td><td style="padding:12px 0 0 0;text-align:right;color:#C8102E;font-weight:800;font-size:22px;border-top:1px solid #E5E7EB">${fmtMoney(total)}</td></tr>
 </table>
 </td></tr></table>
 <p style="margin:0 0 18px 0;font-size:14px;line-height:1.55">${L.next}</p>
