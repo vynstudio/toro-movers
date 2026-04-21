@@ -966,10 +966,25 @@
         <!-- ===== CUSTOMERS VIEW ===== -->
         <div class="view-container" id="view-customers">
             <div class="panel">
-                <div class="panel-body" style="text-align:center;padding:60px 20px;color:var(--toro-gray-500)">
-                    <i class="fas fa-address-book" style="font-size:48px;color:var(--toro-gray-300);margin-bottom:16px;display:block"></i>
-                    <div style="font-weight:700;color:var(--toro-charcoal);margin-bottom:6px">Customers directory</div>
-                    <div style="font-size:13px">Wires up once Supabase is live.</div>
+                <div class="panel-header">
+                    <h5>Customers</h5>
+                    <input type="search" id="cust-search" placeholder="Search name, email, phone…" oninput="filterCustomers()"
+                           style="padding:6px 10px;border:1px solid var(--toro-gray-300);border-radius:6px;font-size:13px;width:260px">
+                </div>
+                <div class="panel-body" style="padding:0">
+                    <table class="table table-sm" style="margin:0;font-size:13px">
+                        <thead>
+                            <tr style="background:var(--toro-gray-50)">
+                                <th style="padding:10px 14px">Name</th>
+                                <th style="padding:10px 14px">Contact</th>
+                                <th style="padding:10px 14px">Language</th>
+                                <th style="padding:10px 14px;text-align:center">Leads</th>
+                                <th style="padding:10px 14px">Last activity</th>
+                                <th style="padding:10px 14px">Source</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customers-tbody"></tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -1967,6 +1982,7 @@ function switchView(view) {
     if (view === 'leads') renderLeadsTable();
     if (view === 'crews') renderCrewsView();
     if (view === 'calendar') renderCalendarView();
+    if (view === 'customers') renderCustomersView();
 }
 
 function toggleMobileSidebar() {
@@ -2836,6 +2852,90 @@ async function toggleTask(id, done) {
         alert('Update failed: ' + (e.message || e));
         const lead = state.leads.find(l => l.id === state.detailId);
         if (lead) loadTasksForLead(lead);
+    }
+}
+
+/* ========== 12d. CUSTOMERS ========== */
+let CUSTOMERS_CACHE = [];
+
+async function renderCustomersView() {
+    const tbody = document.getElementById('customers-tbody');
+    if (!tbody) return;
+    if (store !== supabaseStore) {
+        tbody.innerHTML = '<tr><td colspan="6" style="padding:28px;text-align:center;color:var(--toro-gray-500)">Sign in with Supabase to see customers.</td></tr>';
+        return;
+    }
+    tbody.innerHTML = '<tr><td colspan="6" style="padding:28px;text-align:center;color:var(--toro-gray-500)">Loading…</td></tr>';
+    try {
+        // Derive customer list from loaded leads (already joined with customers).
+        const byId = {};
+        for (const l of state.leads) {
+            const cid = l.customer_id || (l.customer && l.customer.id) || null;
+            if (!l.customer) continue;
+            const key = cid || (l.customer.email || l.customer.phone || l.customer.name);
+            if (!byId[key]) {
+                byId[key] = {
+                    id: cid,
+                    name: l.customer.name || '—',
+                    email: l.customer.email || '',
+                    phone: l.customer.phone || '',
+                    language: l.customer.language || 'en',
+                    sources: new Set(),
+                    leadIds: [],
+                    lastActivity: null,
+                };
+            }
+            byId[key].leadIds.push(l.id);
+            if (l.source) byId[key].sources.add(String(l.source).split('/')[0].trim());
+            const ts = new Date(l.created_at).getTime();
+            if (!byId[key].lastActivity || ts > byId[key].lastActivity) byId[key].lastActivity = ts;
+        }
+        CUSTOMERS_CACHE = Object.values(byId)
+            .sort((a, b) => (b.lastActivity || 0) - (a.lastActivity || 0));
+        renderCustomersTable(CUSTOMERS_CACHE);
+    } catch (e) {
+        tbody.innerHTML = '<tr><td colspan="6" style="padding:28px;text-align:center;color:var(--toro-gray-500)">' + (e.message || 'Could not load.') + '</td></tr>';
+    }
+}
+
+function renderCustomersTable(list) {
+    const tbody = document.getElementById('customers-tbody');
+    if (!list.length) {
+        tbody.innerHTML = '<tr><td colspan="6" style="padding:28px;text-align:center;color:var(--toro-gray-500)">No matches.</td></tr>';
+        return;
+    }
+    tbody.innerHTML = list.map(c => {
+        const when = c.lastActivity ? fmtDate(new Date(c.lastActivity).toISOString()) : '—';
+        const src = [...c.sources].filter(Boolean).join(', ') || '—';
+        return `<tr onclick="openCustomerLatestLead(${JSON.stringify(c.leadIds).replace(/"/g, '&quot;')})" style="cursor:pointer">
+            <td style="padding:10px 14px;font-weight:700">${escapeHtml(c.name)}</td>
+            <td style="padding:10px 14px">${c.phone ? escapeHtml(c.phone) : '—'}${c.email ? '<br><span style="color:var(--toro-gray-500);font-size:12px">' + escapeHtml(c.email) + '</span>' : ''}</td>
+            <td style="padding:10px 14px">${c.language === 'es' ? 'Spanish' : 'English'}</td>
+            <td style="padding:10px 14px;text-align:center;font-weight:700">${c.leadIds.length}</td>
+            <td style="padding:10px 14px">${when}</td>
+            <td style="padding:10px 14px">${escapeHtml(src)}</td>
+        </tr>`;
+    }).join('');
+}
+
+function filterCustomers() {
+    const q = document.getElementById('cust-search').value.trim().toLowerCase();
+    if (!q) { renderCustomersTable(CUSTOMERS_CACHE); return; }
+    const filtered = CUSTOMERS_CACHE.filter(c =>
+        (c.name || '').toLowerCase().includes(q)
+        || (c.email || '').toLowerCase().includes(q)
+        || (c.phone || '').toLowerCase().includes(q)
+    );
+    renderCustomersTable(filtered);
+}
+
+function openCustomerLatestLead(leadIds) {
+    if (!leadIds || !leadIds.length) return;
+    // Pick the most recent lead (they're in state.leads already, ordered by created_at desc).
+    const latest = state.leads.find(l => leadIds.includes(l.id));
+    if (latest) {
+        openDetail(latest.id);
+        $('#detailModal').modal('show');
     }
 }
 
