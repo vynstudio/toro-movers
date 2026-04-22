@@ -39,7 +39,7 @@ async function verifyUserJWT(authHeader) {
 
   const { data: profile, error: profErr } = await admin
     .from('users')
-    .select('id, email, role, active')
+    .select('id, email, role, active, is_owner')
     .eq('id', data.user.id)
     .maybeSingle();
   if (profErr) throw new Error('Role lookup failed: ' + profErr.message);

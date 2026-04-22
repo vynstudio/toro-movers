@@ -42,7 +42,10 @@ exports.handler = async (event) => {
   } catch (e) {
     return respond(401, { error: e.message || 'Unauthorized' });
   }
-  if (profile.role !== 'admin') return respond(403, { error: 'Admin only' });
+  // Owner-only. Being an admin is not enough — only the is_owner=true account
+  // (Diler) can create team logins. Prevents any compromised admin session
+  // (or a co-admin) from provisioning new accounts.
+  if (!profile.is_owner) return respond(403, { error: 'Owner only' });
 
   let payload = {};
   try { payload = JSON.parse(event.body || '{}'); } catch { return respond(400, { error: 'Invalid JSON' }); }
