@@ -1,7 +1,7 @@
 // TORO MOVERS — crew-apply
 // POST /.netlify/functions/crew-apply
 //   Public endpoint (no JWT). Body is the form submission from
-//   /work-with-us.html. Inserts a row into public.crew_applications,
+//   /apply (file at /work-with-us.html). Inserts a row into public.crew_applications,
 //   fires a Telegram alert to ops, sends a confirmation email.
 //
 // Env: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, RESEND_API_KEY,
@@ -206,7 +206,7 @@ exports.handler = async (event) => {
           applicant_name: `${row.first_name} ${row.last_name}`,
         },
         success_url: `${origin}/applied.html?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${origin}/work-with-us.html?abandoned=1`,
+        cancel_url: `${origin}/apply?abandoned=1`,
       });
       checkoutUrl = session.url;
       await admin.from('crew_applications')
