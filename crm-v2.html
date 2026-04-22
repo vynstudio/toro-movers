@@ -513,12 +513,42 @@
         margin-top: 1px;
     }
 
-    /* Quote builder (center column) */
-    .quote-builder {
-        background: var(--toro-gray-50);
-        border-radius: 8px;
-        padding: 14px;
-    }
+    /* Quote builder v3 — compact, phone-call-friendly */
+    .qb-v3 { background: var(--toro-gray-50); border-radius: 10px; padding: 14px 16px; }
+    .qb-v3 .qb-row { display: flex; align-items: center; gap: 12px; padding: 7px 0; border-bottom: 1px solid var(--toro-gray-200); }
+    .qb-v3 .qb-row:last-of-type { border-bottom: 0; padding-bottom: 10px; }
+    .qb-v3 .qb-label { flex: 0 0 70px; font-size: 12px; font-weight: 700; color: var(--toro-gray-700); margin: 0; text-transform: uppercase; letter-spacing: 0.04em; }
+    .qb-stepper { display: inline-flex; align-items: center; border: 1px solid var(--toro-gray-300); border-radius: 8px; background: #fff; overflow: hidden; }
+    .qb-stepper button { width: 30px; height: 32px; border: 0; background: transparent; font-size: 16px; font-weight: 700; color: var(--toro-red); cursor: pointer; line-height: 1; }
+    .qb-stepper button:hover { background: var(--toro-red-soft); }
+    .qb-stepper input { width: 48px; height: 32px; border: 0; border-inline: 1px solid var(--toro-gray-200); text-align: center; font-size: 14px; font-weight: 700; color: var(--toro-charcoal); background: transparent; outline: none; -moz-appearance: textfield; }
+    .qb-stepper input::-webkit-outer-spin-button, .qb-stepper input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    .qb-rate-input { display: inline-flex; align-items: center; border: 1px solid var(--toro-gray-300); border-radius: 8px; background: #fff; padding: 0 8px; height: 32px; }
+    .qb-rate-input input { width: 56px; border: 0; font-size: 14px; font-weight: 700; color: var(--toro-charcoal); text-align: right; background: transparent; outline: none; -moz-appearance: textfield; }
+    .qb-rate-input input::-webkit-outer-spin-button, .qb-rate-input input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    .qb-rate-prefix { color: var(--toro-gray-500); font-weight: 600; font-size: 13px; margin-right: 2px; }
+    .qb-rate-suffix { color: var(--toro-gray-500); font-weight: 600; font-size: 11px; margin-left: 4px; }
+    .qb-truck-toggle { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 600; color: var(--toro-charcoal); margin: 0; cursor: pointer; text-transform: none; letter-spacing: 0; }
+    .qb-truck-toggle input { margin: 0; width: 16px; height: 16px; accent-color: var(--toro-red); cursor: pointer; }
+
+    .qb-math { margin-top: 12px; padding: 10px 12px; background: #fff; border: 1px solid var(--toro-gray-200); border-radius: 8px; font-size: 12px; color: var(--toro-gray-700); font-variant-numeric: tabular-nums; }
+    .qb-math .qb-math-row { display: flex; justify-content: space-between; padding: 3px 0; }
+    .qb-math .qb-math-row strong { color: var(--toro-charcoal); font-weight: 700; }
+
+    .qb-total { display: flex; justify-content: space-between; align-items: center; background: var(--toro-charcoal); color: #fff; padding: 12px 16px; border-radius: 8px; margin-top: 10px; }
+    .qb-total > :first-child { font-size: 12px; opacity: 0.75; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700; }
+    .qb-total-amt { font-size: 22px; font-weight: 800; color: var(--toro-red); }
+
+    .qb-deposit-line { font-size: 11px; color: var(--toro-gray-500); text-align: center; margin: 6px 0 0; }
+    .qb-deposit-line strong { color: var(--toro-charcoal); font-weight: 700; }
+
+    .qb-actions { display: flex; gap: 10px; align-items: center; margin-top: 12px; }
+    .qb-actions .qb-send { flex: 1; padding: 10px 14px; font-size: 13px; }
+    .qb-actions .qb-preview { background: none; border: 0; color: var(--toro-gray-500); font-size: 12px; font-weight: 600; cursor: pointer; padding: 6px 10px; text-decoration: underline; }
+    .qb-actions .qb-preview:hover { color: var(--toro-charcoal); }
+
+    /* Legacy quote-builder shell — kept only for pages still using it */
+    .quote-builder { background: var(--toro-gray-50); border-radius: 8px; padding: 14px; }
     .quote-toggle {
         display: flex;
         gap: 4px;
@@ -1253,60 +1283,61 @@
                     <!-- CENTER: Quote builder -->
                     <div class="detail-col">
                         <h6>Quote</h6>
-                        <div class="quote-builder">
-                            <!-- Custom-only quote builder (packages removed per owner preference) -->
-                            <div id="qb-custom-mode">
-                                <div class="slider-row">
-                                    <label>Movers</label>
-                                    <input type="range" id="qb-movers" min="2" max="4" value="2" step="1" oninput="qbCompute()">
-                                    <div class="readout" id="qb-movers-out">2</div>
-                                </div>
-                                <div class="slider-row">
-                                    <label>Hours</label>
-                                    <input type="range" id="qb-hours" min="2" max="12" value="4" step="0.5" oninput="qbCompute()">
-                                    <div class="readout" id="qb-hours-out">4</div>
-                                </div>
-                                <div class="slider-row">
-                                    <label>Truck</label>
-                                    <div style="flex:1">
-                                        <label style="display:inline-flex;align-items:center;gap:6px;font-weight:500;font-size:12px;text-transform:none;letter-spacing:0">
-                                            <input type="checkbox" id="qb-truck" onchange="qbCompute()"> 26-ft box truck (+$275)
-                                        </label>
-                                    </div>
+                        <div class="quote-builder qb-v3">
+                            <div class="qb-row">
+                                <label class="qb-label">Movers</label>
+                                <div class="qb-stepper" role="group" aria-label="Movers">
+                                    <button type="button" onclick="qbStep('movers',-1)" aria-label="Fewer movers">−</button>
+                                    <input type="number" id="qb-movers" min="2" max="8" step="1" value="2" oninput="qbCompute()">
+                                    <button type="button" onclick="qbStep('movers',1)" aria-label="More movers">+</button>
                                 </div>
                             </div>
-
-                            <div style="margin-top:12px">
-                                <div class="quote-row">
-                                    <span class="label">Hourly rate</span>
-                                    <span class="value" id="qb-rate">$75.00 / mover</span>
-                                </div>
-                                <div class="quote-row">
-                                    <span class="label">Estimated hours</span>
-                                    <span class="value" id="qb-est-hours">4</span>
-                                </div>
-                                <div class="quote-row" id="qb-truck-row">
-                                    <span class="label">Truck fee</span>
-                                    <span class="value">$275.00</span>
-                                </div>
-                                <div class="quote-row">
-                                    <span class="label">Deposit</span>
-                                    <span class="value" id="qb-deposit">$125.00</span>
+                            <div class="qb-row">
+                                <label class="qb-label">Hours</label>
+                                <div class="qb-stepper" role="group" aria-label="Hours">
+                                    <button type="button" onclick="qbStep('hours',-0.5)" aria-label="Fewer hours">−</button>
+                                    <input type="number" id="qb-hours" min="1" max="24" step="0.5" value="3" oninput="qbCompute()">
+                                    <button type="button" onclick="qbStep('hours',0.5)" aria-label="More hours">+</button>
                                 </div>
                             </div>
-
-                            <div class="quote-total">
-                                <span class="label">Total</span>
-                                <span class="value" id="qb-total">$875.00</span>
+                            <div class="qb-row">
+                                <label class="qb-label">Rate / hr</label>
+                                <div class="qb-rate-input">
+                                    <span class="qb-rate-prefix">$</span>
+                                    <input type="number" id="qb-rate-input" min="40" max="300" step="5" value="75" oninput="qbCompute()">
+                                    <span class="qb-rate-suffix">/ mover</span>
+                                </div>
+                            </div>
+                            <div class="qb-row">
+                                <label class="qb-label">Truck</label>
+                                <label class="qb-truck-toggle">
+                                    <input type="checkbox" id="qb-truck" onchange="qbCompute()">
+                                    <span>26-ft box truck (+$275)</span>
+                                </label>
                             </div>
 
-                            <div style="display:flex;gap:6px;margin-top:12px">
-                                <button class="btn btn-sm btn-primary" style="flex:1" onclick="sendQuote()">
-                                    <i class="material-icons" style="font-size:14px;vertical-align:middle">send</i>
-                                    Send quote
+                            <div class="qb-math" id="qb-math"></div>
+
+                            <div class="qb-total">
+                                <span>Total</span>
+                                <span id="qb-total" class="qb-total-amt">$450</span>
+                            </div>
+                            <div class="qb-deposit-line">Deposit due on booking: <strong id="qb-deposit">$50</strong></div>
+
+                            <div class="qb-actions">
+                                <button class="btn btn-sm btn-primary qb-send" onclick="sendQuote()">
+                                    <i class="material-icons" style="font-size:16px;vertical-align:middle;margin-right:4px">send</i>
+                                    Send to client
                                 </button>
-                                <button class="btn btn-sm btn-outline-secondary" onclick="previewQuote()">Preview PDF</button>
+                                <button class="btn btn-sm btn-link qb-preview" onclick="previewQuote()">Preview PDF</button>
                             </div>
+
+                            <!-- Kept for backward compat with qbCurrentPayload (unused in UI) -->
+                            <span id="qb-movers-out" hidden></span>
+                            <span id="qb-hours-out" hidden></span>
+                            <span id="qb-est-hours" hidden></span>
+                            <span id="qb-rate" hidden></span>
+                            <span id="qb-truck-row" hidden></span>
                         </div>
 
                         <div style="margin-top:18px">
@@ -2437,16 +2468,17 @@ function openDetail(id) {
         </div>
     `).join('');
 
-    // Custom-only quote builder. If the lead has a saved quote, pre-fill from
-    // it; otherwise seed sensible defaults (2 movers × 4 hrs, no truck).
+    // Quote builder v3 pre-fill. Defaults: 2 movers × 3 hrs × brand rate, no truck.
     if (l.quote) {
         document.getElementById('qb-movers').value = l.quote.movers || 2;
-        document.getElementById('qb-hours').value = l.quote.hours || (l.quote.package === 'loading' ? 2 : 4);
+        document.getElementById('qb-hours').value = l.quote.hours || 3;
         document.getElementById('qb-truck').checked = !!l.quote.truck;
+        document.getElementById('qb-rate-input').value = l.quote.rate || CONFIG.brand.rate;
     } else {
         document.getElementById('qb-movers').value = 2;
-        document.getElementById('qb-hours').value = 4;
+        document.getElementById('qb-hours').value = 3;
         document.getElementById('qb-truck').checked = false;
+        document.getElementById('qb-rate-input').value = CONFIG.brand.rate;
     }
     qbCompute();
 
@@ -2475,39 +2507,52 @@ async function changeStage() {
 function qbSetMode() { state.qbMode = 'custom'; }
 function qbSelectPackage() { /* no-op: packages removed */ }
 
-function qbCompute() {
-    const movers = parseInt(document.getElementById('qb-movers').value, 10);
-    const hours = parseFloat(document.getElementById('qb-hours').value);
+function qbReadInputs() {
+    const movers = Math.max(1, Math.min(8, parseInt(document.getElementById('qb-movers').value, 10) || 2));
+    const hours = Math.max(1, Math.min(24, Math.round((parseFloat(document.getElementById('qb-hours').value) || 3) * 2) / 2));
+    const rate = Math.max(1, Math.round(parseFloat(document.getElementById('qb-rate-input').value) || CONFIG.brand.rate));
     const truck = document.getElementById('qb-truck').checked;
-    document.getElementById('qb-movers-out').textContent = movers;
-    document.getElementById('qb-hours-out').textContent = hours;
-
-    const labor = movers * hours * CONFIG.brand.rate;
-    const truckFee = truck ? CONFIG.brand.truckFee : 0;
-    const total = labor + truckFee;
-
-    document.getElementById('qb-est-hours').textContent = hours;
-    document.getElementById('qb-total').textContent = fmt$(total);
-    document.getElementById('qb-truck-row').style.display = truck ? 'flex' : 'none';
-    document.getElementById('qb-deposit').textContent = fmt$(truck ? CONFIG.brand.depositTruck : CONFIG.brand.depositLabor);
+    return { movers, hours, rate, truck };
 }
 
-/* ----- Quote PDF (Phase 3a) -----
-   Snapshots the quote builder state, POSTs to /quote-pdf with the
-   Supabase user JWT, opens the returned signed URL in a new tab.
-   Email delivery lands in Phase 3b. */
+function qbStep(field, delta) {
+    const el = document.getElementById('qb-' + field);
+    if (!el) return;
+    const step = Math.abs(delta);
+    const next = (parseFloat(el.value) || 0) + delta;
+    el.value = step >= 1 ? Math.max(1, Math.round(next)) : Math.max(1, Math.round(next * 2) / 2);
+    qbCompute();
+}
+
+function qbCompute() {
+    const { movers, hours, rate, truck } = qbReadInputs();
+    const labor = movers * hours * rate;
+    const truckFee = truck ? CONFIG.brand.truckFee : 0;
+    const total = labor + truckFee;
+    const deposit = truck ? CONFIG.brand.depositTruck : CONFIG.brand.depositLabor;
+
+    // Math breakdown
+    const math = document.getElementById('qb-math');
+    if (math) {
+        const rows = [
+            `<div class="qb-math-row"><span>Labor — ${movers} × ${hours}h × $${rate}</span><strong>${fmt$(labor)}</strong></div>`,
+            truck ? `<div class="qb-math-row"><span>26-ft truck</span><strong>+${fmt$(truckFee)}</strong></div>` : '',
+        ].filter(Boolean).join('');
+        math.innerHTML = rows;
+    }
+    document.getElementById('qb-total').textContent = fmt$(total);
+    document.getElementById('qb-deposit').textContent = fmt$(deposit);
+
+    // Mirror to legacy hidden spans (kept for backward compat)
+    const set = (id, v) => { const n = document.getElementById(id); if (n) n.textContent = v; };
+    set('qb-movers-out', movers);
+    set('qb-hours-out', hours);
+    set('qb-est-hours', hours);
+    set('qb-rate', `$${rate.toFixed(2)} / mover`);
+}
 
 function qbCurrentPayload() {
-    // Packages were retired — the builder is always "custom". Read the three
-    // sliders/checkbox from the DOM and construct the payload. Falls back to
-    // sane defaults if an element is missing so the quote can still be sent.
-    const moversEl = document.getElementById('qb-movers');
-    const hoursEl = document.getElementById('qb-hours');
-    const truckEl = document.getElementById('qb-truck');
-    const movers = Math.max(1, parseInt(moversEl?.value, 10) || 2);
-    const hours = Math.max(1, parseFloat(hoursEl?.value) || 2);
-    const truck = !!truckEl?.checked;
-    const rate = CONFIG.brand.rate;
+    const { movers, hours, rate, truck } = qbReadInputs();
     const total = (movers * hours * rate) + (truck ? CONFIG.brand.truckFee : 0);
     return {
         type: 'custom',
