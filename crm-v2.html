@@ -2499,31 +2499,22 @@ function qbCompute() {
    Email delivery lands in Phase 3b. */
 
 function qbCurrentPayload() {
-    if (state.qbMode === 'package') {
-        const pkgKey = document.querySelector('.package-option.selected')?.dataset.pkg;
-        if (!pkgKey) return null;
-        const pkg = CONFIG.packages[pkgKey];
-        return {
-            type: 'package',
-            package_key: pkgKey,
-            crew_size: pkg.movers,
-            estimated_hours: pkg.hours,
-            hourly_rate: CONFIG.brand.rate,
-            truck_included: !!pkg.truck,
-            truck_fee: CONFIG.brand.truckFee,
-            deposit_amount: pkg.truck ? CONFIG.brand.depositTruck : CONFIG.brand.depositLabor,
-            total: pkg.total,
-        };
-    }
-    const movers = parseInt(document.getElementById('qb-movers').value, 10);
-    const hours = parseFloat(document.getElementById('qb-hours').value);
-    const truck = document.getElementById('qb-truck').checked;
-    const total = (movers * hours * CONFIG.brand.rate) + (truck ? CONFIG.brand.truckFee : 0);
+    // Packages were retired — the builder is always "custom". Read the three
+    // sliders/checkbox from the DOM and construct the payload. Falls back to
+    // sane defaults if an element is missing so the quote can still be sent.
+    const moversEl = document.getElementById('qb-movers');
+    const hoursEl = document.getElementById('qb-hours');
+    const truckEl = document.getElementById('qb-truck');
+    const movers = Math.max(1, parseInt(moversEl?.value, 10) || 2);
+    const hours = Math.max(1, parseFloat(hoursEl?.value) || 2);
+    const truck = !!truckEl?.checked;
+    const rate = CONFIG.brand.rate;
+    const total = (movers * hours * rate) + (truck ? CONFIG.brand.truckFee : 0);
     return {
         type: 'custom',
         crew_size: movers,
         estimated_hours: hours,
-        hourly_rate: CONFIG.brand.rate,
+        hourly_rate: rate,
         truck_included: truck,
         truck_fee: CONFIG.brand.truckFee,
         deposit_amount: truck ? CONFIG.brand.depositTruck : CONFIG.brand.depositLabor,
@@ -2539,7 +2530,10 @@ async function callQuoteFn(endpoint) {
     const lead = state.leads.find(l => l.id === state.detailId);
     if (!lead) { alert('No lead selected.'); return null; }
     const quote = qbCurrentPayload();
-    if (!quote) { alert('Pick a package (or configure a custom quote) first.'); return null; }
+    if (!quote || !quote.total || quote.total <= 0) {
+        alert('Configure the quote (movers, hours, truck) before sending.');
+        return null;
+    }
     const session = await supabaseStore.getSession();
     if (!session) { alert('Session expired — please sign in again.'); return null; }
 
