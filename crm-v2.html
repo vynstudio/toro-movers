@@ -2398,12 +2398,12 @@ function openDetail(id) {
     // Crew assignment (booked/done leads, admin/dispatch only)
     loadCrewAssignmentForLead(l);
 
-    // "Send booking confirmation" button — booked leads only, admin/dispatch,
-    // and only if the customer has an email on file.
+    // "Send booking confirmation" button — any lead with a customer email,
+    // admin/dispatch only. Not gated to stage=booked anymore: dispatch often
+    // needs to resend the confirmation to a contacted/quoted lead manually.
     const sendBookingBtn = document.getElementById('dv-send-booking-email');
     if (sendBookingBtn) {
-        const canSend = l.stage === 'booked'
-            && store === supabaseStore
+        const canSend = store === supabaseStore
             && ['admin','dispatch'].includes(state.currentUser?.role)
             && !!l.customer?.email;
         sendBookingBtn.style.display = canSend ? '' : 'none';
