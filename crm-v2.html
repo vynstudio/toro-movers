@@ -862,7 +862,7 @@
                     <i class="material-icons" style="font-size:16px;vertical-align:middle;margin-right:2px">sync</i>
                     Backfill deposits
                 </button>
-                <button class="btn btn-sm btn-outline-secondary admin-only" onclick="addTeamMember()" title="Create a new CRM login" style="display:none">
+                <button class="btn btn-sm btn-outline-secondary owner-only" onclick="addTeamMember()" title="Create a new CRM login — owner only" style="display:none">
                     <i class="material-icons" style="font-size:16px;vertical-align:middle;margin-right:2px">person_add</i>
                     Add team member
                 </button>
@@ -1942,7 +1942,7 @@ const supabaseStore = {
     },
     async getMyProfile(userId) {
         const { data, error } = await this.client
-            .from('users').select('role, full_name').eq('id', userId).maybeSingle();
+            .from('users').select('role, full_name, is_owner').eq('id', userId).maybeSingle();
         if (error) return null;
         return data;
     },
@@ -2064,7 +2064,7 @@ async function doLogin() {
             if (!password) { err.textContent = 'Password required.'; return; }
             const user = await supabaseStore.signInWithPassword(email, password);
             const profile = await supabaseStore.getMyProfile(user.id);
-            state.currentUser = { email: user.email, id: user.id, role: profile?.role || 'sales' };
+            state.currentUser = { email: user.email, id: user.id, role: profile?.role || 'sales', is_owner: !!profile?.is_owner };
             showApp();
         } catch (e) {
             err.textContent = e.message || 'Sign-in failed.';
@@ -2122,7 +2122,7 @@ async function checkSession() {
             const session = await supabaseStore.getSession();
             if (session?.user) {
                 const profile = await supabaseStore.getMyProfile(session.user.id);
-                state.currentUser = { email: session.user.email, id: session.user.id, role: profile?.role || 'sales' };
+                state.currentUser = { email: session.user.email, id: session.user.id, role: profile?.role || 'sales', is_owner: !!profile?.is_owner };
                 showApp();
                 return;
             }
@@ -2411,6 +2411,9 @@ function openDetail(id) {
     // Preview button — admin-only, always visible on the open lead.
     document.querySelectorAll('.admin-only').forEach(el => {
         el.style.display = state.currentUser?.role === 'admin' ? '' : 'none';
+    });
+    document.querySelectorAll('.owner-only').forEach(el => {
+        el.style.display = state.currentUser?.is_owner ? '' : 'none';
     });
 
     // Job ops panel (booked/done leads only) + Tasks panel
@@ -2898,6 +2901,9 @@ async function initApp() {
     });
     document.querySelectorAll('.admin-only').forEach(el => {
         el.style.display = isAdmin ? '' : 'none';
+    });
+    document.querySelectorAll('.owner-only').forEach(el => {
+        el.style.display = state.currentUser?.is_owner ? '' : 'none';
     });
 }
 
