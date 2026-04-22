@@ -197,6 +197,25 @@
   to = "/message.html"
   status = 200
 
+# /apply — canonical crew-application URL (file stays at /work-with-us.html so
+# existing bookmarks still resolve via the 301s below). force=true so the rewrite
+# wins over any static-file match on /apply.
+[[redirects]]
+  from = "/apply"
+  to = "/work-with-us.html"
+  status = 200
+  force = true
+[[redirects]]
+  from = "/work-with-us"
+  to = "/apply"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/work-with-us.html"
+  to = "/apply"
+  status = 301
+  force = true
+
 # /quote → /quote.html
 [[redirects]]
   from = "/quote"
