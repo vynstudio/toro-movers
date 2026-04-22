@@ -56,7 +56,10 @@ const BOOKING_COPY = {
     balanceLabel: 'Balance due on move day',
     totalLabel: 'Estimated total',
     next: "We'll reach out within a few hours to confirm the crew and arrival window.",
-    cta: 'Questions? Call (321) 758-0094',
+    ctaChanges: 'Request changes',
+    ctaMessage: 'Message us',
+    ctaLine: 'Need to reschedule, add items, or ask us anything?',
+    phone: 'Questions? Call (321) 758-0094',
     footer: 'TORO MOVERS · Orlando, FL · (321) 758-0094 · toromovers.net',
   },
   es: {
@@ -72,7 +75,10 @@ const BOOKING_COPY = {
     balanceLabel: 'Saldo el dia de la mudanza',
     totalLabel: 'Total estimado',
     next: 'Te contactaremos en las proximas horas para confirmar la cuadrilla y la ventana de llegada.',
-    cta: '¿Preguntas? Llama al (321) 758-0094',
+    ctaChanges: 'Solicitar cambios',
+    ctaMessage: 'Escríbenos',
+    ctaLine: '¿Necesitas reprogramar, añadir cosas o preguntarnos algo?',
+    phone: '¿Preguntas? Llama al (321) 758-0094',
     footer: 'TORO MOVERS · Orlando, FL · (321) 758-0094 · toromovers.net',
   },
 };
@@ -85,6 +91,16 @@ function renderBookingHtml({ customer, lead, quote, amountPaid, lang }) {
   const estHours = q.estimated_hours ?? '—';
   const total = Number(q.total || 0);
   const balance = Math.max(0, total - Number(amountPaid || 0));
+  const base = process.env.SITE_BASE_URL || 'https://toromovers.net';
+  const messageUrl = (topic) => {
+    const params = new URLSearchParams({
+      lead: String(lead?.id || ''),
+      topic,
+      name: customer.full_name || '',
+      email: customer.email || '',
+    });
+    return `${base}/message?${params.toString()}`;
+  };
   return `<!DOCTYPE html>
 <html lang="${lang}"><head>
 <meta charset="utf-8">
@@ -118,7 +134,12 @@ function renderBookingHtml({ customer, lead, quote, amountPaid, lang }) {
 </table>
 </td></tr></table>
 <p style="margin:0 0 18px 0;font-size:14px;line-height:1.55">${L.next}</p>
-<p class="tm-muted" style="margin:0;font-size:13px;color:#6B7280">${L.cta}</p>
+<p style="margin:0 0 12px 0;font-size:14px;color:#1C1C1E">${L.ctaLine}</p>
+<table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 16px 0"><tr>
+<td style="padding-right:10px"><a href="${messageUrl('changes')}" style="display:inline-block;background:#C8102E;color:#ffffff;text-decoration:none;padding:11px 18px;border-radius:8px;font-weight:800;font-size:13px">${L.ctaChanges}</a></td>
+<td><a href="${messageUrl('chat')}" style="display:inline-block;background:#ffffff;color:#1C1C1E;text-decoration:none;padding:11px 18px;border-radius:8px;font-weight:800;font-size:13px;border:1px solid #E5E7EB">${L.ctaMessage}</a></td>
+</tr></table>
+<p class="tm-muted" style="margin:0;font-size:13px;color:#6B7280">${L.phone}</p>
 </td></tr>
 <tr><td class="tm-footer-bg" style="background:#F9FAFB;padding:14px 28px;text-align:center;color:#6B7280;font-size:11px">${L.footer}</td></tr>
 </table></td></tr></table>
