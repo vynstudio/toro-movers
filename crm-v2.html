@@ -862,6 +862,10 @@
                     <i class="material-icons" style="font-size:16px;vertical-align:middle;margin-right:2px">sync</i>
                     Backfill deposits
                 </button>
+                <button class="btn btn-sm btn-outline-secondary admin-only" onclick="addTeamMember()" title="Create a new CRM login" style="display:none">
+                    <i class="material-icons" style="font-size:16px;vertical-align:middle;margin-right:2px">person_add</i>
+                    Add team member
+                </button>
                 <button class="btn btn-sm btn-primary" onclick="openAddLeadModal()">
                     <i class="material-icons" style="font-size:16px;vertical-align:middle;margin-right:4px">add</i>
                     New lead
@@ -2772,6 +2776,40 @@ async function previewBookingEmail() {
         return;
     }
     alert('Preview sent to ' + state.currentUser.email + '. Check your inbox.');
+}
+
+/* Admin-only: create a new CRM login via create-user endpoint. Shows the
+   one-time temp password so the admin can share it with the new team member
+   out-of-band (no email sent — Resend sender is customer-facing). */
+async function addTeamMember() {
+    if (store !== supabaseStore) { alert('Supabase mode required.'); return; }
+    const email = prompt('New team member email:');
+    if (!email) return;
+    const fullName = prompt('Full name (optional):', email.split('@')[0]) || '';
+    const role = (prompt('Role — admin, dispatch, or sales?', 'admin') || 'admin').toLowerCase().trim();
+    if (!['admin', 'dispatch', 'sales'].includes(role)) { alert('Invalid role.'); return; }
+    const session = await supabaseStore.getSession();
+    if (!session) { alert('Session expired — please sign in again.'); return; }
+    try {
+        const r = await fetch('/.netlify/functions/create-user', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + session.access_token },
+            body: JSON.stringify({ email, full_name: fullName, role }),
+        });
+        const out = await r.json();
+        if (!r.ok) { alert('Failed: ' + (out.error || r.status)); return; }
+        const pw = out.temp_password;
+        const msg = [
+            `Created ${out.user.email} as ${out.user.role}.`,
+            pw ? `\nTemp password (share once, they should change it):\n\n${pw}` : '',
+            '\nLogin at: https://toromovers.net/crm',
+        ].join('');
+        alert(msg);
+        // Also log to console so the admin can copy easily.
+        console.log('NEW USER:', out);
+    } catch (e) {
+        alert('Request failed: ' + (e.message || e));
+    }
 }
 
 /* Wire up dirty-tracking once the DOM is built — any .dv-edit change shows
