@@ -84,6 +84,18 @@
   [headers.values]
     X-Robots-Tag = "noindex, nofollow"
 
+# Customer reply form — linked from transactional emails only, not meant for
+# organic indexing.
+[[headers]]
+  for = "/message"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/message.html"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
 # ============================================================
 # CACHE
 # ============================================================
@@ -178,6 +190,12 @@
   to = "https://toromovers.net/:splat"
   status = 301
   force = true
+
+# /message → /message.html (customer reply/changes form, linked from booking emails)
+[[redirects]]
+  from = "/message"
+  to = "/message.html"
+  status = 200
 
 # /quote → /quote.html
 [[redirects]]
