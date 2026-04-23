@@ -99,7 +99,7 @@ exports.handler = async (event) => {
       success_url: `${origin}/reserved.html?session_id={CHECKOUT_SESSION_ID}&t=balance`,
       cancel_url: `${origin}/`,
       locale: lang === 'es' ? 'es' : 'en',
-    });
+    }, { idempotencyKey: require('crypto').randomUUID() });
 
     await admin.from('activity_log').insert({
       entity_type: 'job',

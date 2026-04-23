@@ -164,7 +164,7 @@ exports.handler = async (event) => {
       },
       success_url: 'https://toromovers.net/thanks?payment=success&session_id={CHECKOUT_SESSION_ID}',
       cancel_url: 'https://toromovers.net/mini/toro',
-    });
+    }, { idempotencyKey: require('crypto').randomUUID() });
     checkoutUrl = session.url;
   } catch (err) {
     console.error('Stripe error:', err.message);

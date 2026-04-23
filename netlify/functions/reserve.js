@@ -97,7 +97,7 @@ exports.handler = async (event) => {
       success_url: `${origin}/reserved.html?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/`,
       locale: lang === 'es' ? 'es' : 'en',
-    });
+    }, { idempotencyKey: require('crypto').randomUUID() });
 
     // Log the checkout initiation
     await admin.from('activity_log').insert({

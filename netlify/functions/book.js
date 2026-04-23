@@ -94,7 +94,7 @@ exports.handler = async (event) => {
       },
       success_url: 'https://toromovers.net/thanks?payment=success&session_id={CHECKOUT_SESSION_ID}',
       cancel_url: `https://toromovers.net/quote?booked=cancelled&${new URLSearchParams(q).toString()}`,
-    });
+    }, { idempotencyKey: require('crypto').randomUUID() });
 
     return {
       statusCode: 302,
