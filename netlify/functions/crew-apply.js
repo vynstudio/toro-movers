@@ -207,7 +207,7 @@ exports.handler = async (event) => {
         },
         success_url: `${origin}/applied.html?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${origin}/apply?abandoned=1`,
-      });
+      }, { idempotencyKey: require('crypto').randomUUID() });
       checkoutUrl = session.url;
       await admin.from('crew_applications')
         .update({ bg_fee_stripe_session_id: session.id })

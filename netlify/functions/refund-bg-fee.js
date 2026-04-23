@@ -58,6 +58,11 @@ exports.handler = async (event) => {
         application_id,
         refunded_by: profile.email || profile.id,
       },
+    }, {
+      // Deterministic key — ensures one refund per application, ever.
+      // Duplicate function invocations (network retry, double-click) return
+      // the original refund instead of creating a second one.
+      idempotencyKey: `bg_fee_refund:${application_id}`,
     });
   } catch (e) {
     return respond(500, { error: 'Refund failed: ' + e.message });
