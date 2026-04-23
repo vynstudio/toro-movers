@@ -1620,11 +1620,6 @@ const CONFIG = {
         depositLabor: 50.00,
         depositTruck: 125.00,
     },
-    packages: {
-        loading: { movers: 2, hours: 2, truck: false, total: 300 },
-        intown:  { movers: 2, hours: 4, truck: true,  total: 875 },
-        big:     { movers: 3, hours: 4, truck: true,  total: 1175 },
-    },
     stageOrder: ['new', 'contacted', 'quoted', 'booked', 'done', 'lost'],
     stageLabels: {
         new: 'New', contacted: 'Contacted', quoted: 'Quoted',
@@ -2502,10 +2497,6 @@ async function changeStage() {
 }
 
 /* ========== 9. QUOTE BUILDER (custom-only) ========== */
-// Kept as no-op stubs so any old code paths that still reference them don't
-// crash — the Package mode and its DOM are gone.
-function qbSetMode() { state.qbMode = 'custom'; }
-function qbSelectPackage() { /* no-op: packages removed */ }
 
 function qbReadInputs() {
     const movers = Math.max(1, Math.min(8, parseInt(document.getElementById('qb-movers').value, 10) || 2));
