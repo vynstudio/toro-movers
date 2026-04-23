@@ -23,7 +23,8 @@
 //     email: "maria@email.com"
 //   }
 
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const { getStripe } = require('./_lib/stripe-client');
+const stripe = getStripe();
 
 exports.handler = async (event) => {
   const headers = {

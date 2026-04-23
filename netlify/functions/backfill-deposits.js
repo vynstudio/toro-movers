@@ -13,7 +13,7 @@
 // Use when a migrated lead never got its deposit recorded (e.g. imported from
 // the v1 CRM after the Stripe payment had already cleared).
 
-const Stripe = require('stripe');
+const { getStripe } = require('./_lib/stripe-client');
 const { getAdminClient, verifyUserJWT } = require('./_lib/supabase-admin');
 const { sendBookingConfirmationEmail } = require('./_lib/crm-notifications');
 
@@ -57,7 +57,7 @@ exports.handler = async (event) => {
 
   const stripeKey = process.env.STRIPE_SECRET_KEY;
   if (!stripeKey) return respond(500, { error: 'STRIPE_SECRET_KEY not set' });
-  const stripe = Stripe(stripeKey);
+  const stripe = getStripe();
   const admin = getAdminClient();
 
   const sendEmail = payload.send_email !== false; // default: send booking confirmation on commit

@@ -9,7 +9,8 @@
 //   movers, hours, name, email, phone, zip_from, zip_to, size, stairs, date
 //   source    — short tag for attribution (e.g. "home-package", "email_book_now")
 
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const { getStripe } = require('./_lib/stripe-client');
+const stripe = getStripe();
 
 exports.handler = async (event) => {
   const q = event.queryStringParameters || {};
