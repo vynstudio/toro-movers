@@ -7,6 +7,8 @@
 const { Resend } = require('resend');
 const { createLead, notifyTelegram } = require('./_lib/leads');
 
+const { checkRateLimit } = require('./_lib/rate-limit');
+
 exports.handler = async (event) => {
   const headers = {
     'Access-Control-Allow-Origin': '*',
@@ -20,6 +22,11 @@ exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, headers, body: 'Method not allowed' };
   }
+
+  // Public quote submissions. 5 per IP per 5 min guards against spammers
+  // using the estimator to flood Stael's Telegram + CRM.
+  const rl = checkRateLimit(event, { bucket: 'send-quote', max: 5, windowMs: 5 * 60_000 });
+  if (rl.blocked) return rl.response;
 
   const apiKey = process.env.RESEND_API_KEY;
   const fromEmail = process.env.RESEND_FROM_EMAIL || 'hello@toromovers.net';

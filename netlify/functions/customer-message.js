@@ -28,9 +28,16 @@ const TOPIC_LABEL = {
   chat: '💬 Customer message',
 };
 
+const { checkRateLimit } = require('./_lib/rate-limit');
+
 exports.handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') return { statusCode: 204, headers: CORS, body: '' };
   if (event.httpMethod !== 'POST') return respond(405, { error: 'Method not allowed' });
+
+  // Customer inbound messages (change requests, questions) — 5 per IP per
+  // 5 minutes. Anything more and we're likely in a spam burst.
+  const rl = checkRateLimit(event, { bucket: 'customer-message', max: 5, windowMs: 5 * 60_000 });
+  if (rl.blocked) return rl.response;
 
   let payload = {};
   try { payload = JSON.parse(event.body || '{}'); } catch { return respond(400, { error: 'Invalid JSON' }); }
