@@ -2265,14 +2265,14 @@ function renderDashboard() {
     // Recent activity
     const recent = [...state.leads].sort((a,b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 5);
     document.getElementById('dash-activity').innerHTML = recent.map(l => `
-        <div class="timeline-item" style="padding:10px 0" onclick="openDetail('${l.id}')" role="button" tabindex="0">
+        <div class="timeline-item" style="padding:10px 0" onclick="openDetail('${escapeHtml(l.id)}')" role="button" tabindex="0">
             <span class="timeline-dot ${l.stage === 'new' ? 'red' : ''}"></span>
             <div class="timeline-content" style="display:flex;justify-content:space-between;align-items:center;width:100%">
                 <div>
-                    <div class="action">${l.customer.name}</div>
-                    <div class="meta">${CONFIG.sizeLabels[l.size]} &middot; ${CONFIG.zoneLabels[l.from_zone]} &rarr; ${CONFIG.zoneLabels[l.to_zone]}</div>
+                    <div class="action">${escapeHtml(l.customer.name)}</div>
+                    <div class="meta">${escapeHtml(CONFIG.sizeLabels[l.size] || '')} &middot; ${escapeHtml(CONFIG.zoneLabels[l.from_zone] || '')} &rarr; ${escapeHtml(CONFIG.zoneLabels[l.to_zone] || '')}</div>
                 </div>
-                <span class="stage-badge s-${l.stage}">${CONFIG.stageLabels[l.stage]}</span>
+                <span class="stage-badge s-${l.stage}">${escapeHtml(CONFIG.stageLabels[l.stage] || '')}</span>
             </div>
         </div>
     `).join('');
@@ -2283,12 +2283,12 @@ function renderDashboard() {
         .sort((a,b) => new Date(a.move_date) - new Date(b.move_date))
         .slice(0, 5);
     document.getElementById('dash-upcoming').innerHTML = upcoming.length ? upcoming.map(l => `
-        <div class="timeline-item" style="padding:10px 0" onclick="openDetail('${l.id}')" role="button" tabindex="0">
+        <div class="timeline-item" style="padding:10px 0" onclick="openDetail('${escapeHtml(l.id)}')" role="button" tabindex="0">
             <span class="timeline-dot" style="background:var(--s-booked)"></span>
             <div class="timeline-content" style="display:flex;justify-content:space-between;align-items:center;width:100%">
                 <div>
-                    <div class="action">${l.customer.name} &middot; ${fmtDate(l.move_date)}</div>
-                    <div class="meta">${CONFIG.sizeLabels[l.size]} &middot; ${CONFIG.zoneLabels[l.from_zone]} &rarr; ${CONFIG.zoneLabels[l.to_zone]}</div>
+                    <div class="action">${escapeHtml(l.customer.name)} &middot; ${escapeHtml(fmtDate(l.move_date))}</div>
+                    <div class="meta">${escapeHtml(CONFIG.sizeLabels[l.size] || '')} &middot; ${escapeHtml(CONFIG.zoneLabels[l.from_zone] || '')} &rarr; ${escapeHtml(CONFIG.zoneLabels[l.to_zone] || '')}</div>
                 </div>
                 <strong style="color:var(--s-booked);font-size:14px">${fmt$(l.estimated_value)}</strong>
             </div>
@@ -2355,10 +2355,10 @@ function renderKanbanCard(l) {
     const valuePart = l.estimated_value ? `<span class="total">${fmt$(l.estimated_value)}</span>` : '';
     const langTag = l.customer.language === 'es' ? '<span class="tag">ES</span>' : '';
     return `
-        <div class="kanban-card s-${l.stage}" data-id="${l.id}">
-            <div class="name">${l.customer.name} ${langTag}</div>
+        <div class="kanban-card s-${l.stage}" data-id="${escapeHtml(l.id)}">
+            <div class="name">${escapeHtml(l.customer.name)} ${langTag}</div>
             <div class="meta">
-                <span>${CONFIG.sizeLabels[l.size]} &middot; ${moveInfo}</span>
+                <span>${escapeHtml(CONFIG.sizeLabels[l.size] || '')} &middot; ${escapeHtml(moveInfo)}</span>
                 ${valuePart}
             </div>
         </div>
@@ -2378,17 +2378,17 @@ function renderLeadsTable() {
     rows.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
     const tbody = document.getElementById('leads-tbody');
     tbody.innerHTML = rows.length ? rows.map(l => `
-        <tr onclick="openDetail('${l.id}')">
+        <tr onclick="openDetail('${escapeHtml(l.id)}')">
             <td>
-                <div class="cust-name">${l.customer.name}</div>
-                <div class="cust-sub">${l.customer.phone}</div>
+                <div class="cust-name">${escapeHtml(l.customer.name)}</div>
+                <div class="cust-sub">${escapeHtml(l.customer.phone)}</div>
             </td>
-            <td><span class="stage-badge s-${l.stage}">${CONFIG.stageLabels[l.stage]}</span></td>
-            <td>${fmtDate(l.move_date)}</td>
-            <td style="font-size:12px">${CONFIG.zoneLabels[l.from_zone]}<br><span style="color:var(--toro-gray-500)">&rarr; ${CONFIG.zoneLabels[l.to_zone]}</span></td>
-            <td>${CONFIG.sizeLabels[l.size]}</td>
+            <td><span class="stage-badge s-${l.stage}">${escapeHtml(CONFIG.stageLabels[l.stage] || '')}</span></td>
+            <td>${escapeHtml(fmtDate(l.move_date))}</td>
+            <td style="font-size:12px">${escapeHtml(CONFIG.zoneLabels[l.from_zone] || '')}<br><span style="color:var(--toro-gray-500)">&rarr; ${escapeHtml(CONFIG.zoneLabels[l.to_zone] || '')}</span></td>
+            <td>${escapeHtml(CONFIG.sizeLabels[l.size] || '')}</td>
             <td class="text-right"><strong>${fmt$(l.estimated_value)}</strong></td>
-            <td style="color:var(--toro-gray-500);font-size:12px">${l.owner}</td>
+            <td style="color:var(--toro-gray-500);font-size:12px">${escapeHtml(l.owner || '')}</td>
         </tr>
     `).join('') : '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--toro-gray-500)">No leads match those filters.</td></tr>';
 }
@@ -2462,8 +2462,8 @@ function openDetail(id) {
         <div class="timeline-item">
             <span class="timeline-dot ${e.dot}"></span>
             <div class="timeline-content">
-                <div class="action">${e.action}</div>
-                <div class="meta">${e.meta} · ${fmtDate(e.date)}</div>
+                <div class="action">${escapeHtml(e.action)}</div>
+                <div class="meta">${escapeHtml(e.meta)} · ${escapeHtml(fmtDate(e.date))}</div>
             </div>
         </div>
     `).join('');
