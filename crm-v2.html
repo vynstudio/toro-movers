@@ -2626,23 +2626,25 @@ async function logCall() {
     if (!lead) { alert('No lead selected.'); return; }
     const note = prompt('Call notes (optional):', '');
     if (note === null) return; // cancelled
+
+    const session = await supabaseStore.getSession();
+    if (!session) { alert('Session expired — please sign in again.'); return; }
     try {
-        const { error } = await supabaseStore.client.from('activity_log').insert({
-            entity_type: 'lead',
-            entity_id: lead.id,
-            event_type: 'call_logged',
-            payload: { note: note || null, at: new Date().toISOString() },
+        const res = await fetch('/.netlify/functions/log-call', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + session.access_token,
+            },
+            body: JSON.stringify({ lead_id: lead.id, note }),
         });
-        if (error) throw error;
-        // First-time contact: set first_contact_at + bump stage new→contacted.
-        await supabaseStore.client.from('leads')
-            .update({ first_contact_at: new Date().toISOString() })
-            .eq('id', lead.id)
-            .is('first_contact_at', null);
-        if (lead.stage === 'new') {
-            await supabaseStore.updateStage(lead.id, 'contacted');
-            lead.stage = 'contacted';
+        if (!res.ok) {
+            let msg = 'Log call failed';
+            try { msg = (await res.json()).error || msg; } catch (_) {}
+            throw new Error(msg + ' (HTTP ' + res.status + ')');
         }
+        const out = await res.json();
+        if (out.bumped) lead.stage = 'contacted';
         alert('Call logged.');
         openDetail(lead.id);
         renderDashboard(); renderKanban(); renderLeadsTable();
