@@ -8,7 +8,8 @@
 // token (per-app). We validate it here before trusting any user claim.
 
 const crypto = require('crypto');
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const { getStripe } = require('./_lib/stripe-client');
+const stripe = getStripe();
 const { createLead } = require('./_lib/leads');
 
 const TG_TOKEN = process.env.TELEGRAM_BOT_TOKEN;

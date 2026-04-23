@@ -6,7 +6,8 @@
 //
 // Deposit logic: truck=true → $125, truck=false → $50
 
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const { getStripe } = require('./_lib/stripe-client');
+const stripe = getStripe();
 
 exports.handler = async (event) => {
   if (!process.env.STRIPE_SECRET_KEY) {

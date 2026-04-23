@@ -47,6 +47,12 @@ exports.handler = async (event) => {
   if (!action) return page({ title: 'Unknown action', message: 'This link is invalid. Please reply to the dispatch email instead.' });
 
   const token = (event.queryStringParameters || {}).t;
+  // Defense in depth: the token is a UUID minted by dispatch-crew.js. Validate
+  // the format before we hit the DB — catches fuzzing / obvious invalid links
+  // early, avoids noisy Postgres lookups on garbage.
+  if (!token || !/^[0-9a-f-]{36}$/i.test(token)) {
+    return page({ title: 'Invalid link', message: 'This link is malformed. Open the dispatch email again or call ops.' });
+  }
 
   const admin = getAdminClient();
   const { data: job, error } = await admin

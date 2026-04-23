@@ -163,11 +163,15 @@ exports.handler = async (event) => {
   if (crew.email && process.env.RESEND_API_KEY) {
     try {
       const resend = new Resend(process.env.RESEND_API_KEY);
+      // Strip control chars from customer name before interpolating into the
+      // email subject — newlines could theoretically fold the subject line
+      // into spurious headers on misbehaving relays.
+      const safeCustomerName = (customer.full_name || 'Customer').replace(/[\r\n\t\x00-\x1F\x7F]/g, ' ').trim().slice(0, 80);
       const { error: sendErr } = await resend.emails.send({
         from: `Toro Dispatch <${FROM_EMAIL}>`,
         to: [crew.email],
         replyTo: profile.email || FROM_EMAIL,
-        subject: `Job offer — ${customer.full_name || 'Customer'} · ${fmtDate(job.scheduled_date)}`,
+        subject: `Job offer — ${safeCustomerName} · ${fmtDate(job.scheduled_date)}`,
         html: renderCrewEmail({ crew, customer, lead, job, responseBase }),
       });
       if (sendErr) return respond(500, { error: 'Email send failed: ' + (sendErr.message || '') });

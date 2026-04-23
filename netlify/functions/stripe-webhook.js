@@ -2,7 +2,8 @@
 // the matching lead as Booked + deposit paid.
 // Env: STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET
 
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const { STRIPE_API_VERSION } = require('./_lib/stripe-client');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY, { apiVersion: STRIPE_API_VERSION });
 const { getStore } = require('@netlify/blobs'); // surface for Netlify scanner
 const { listLeads, updateLead, notifyTelegram, getLead } = require('./_lib/leads');
 const { sendBookingConfirmation } = require('./_lib/emails');
