@@ -10,19 +10,30 @@ const { sendSms } = require('./_lib/sms');
 const { handleCrmV2Event } = require('./_lib/crm-stripe');
 
 exports.handler = async (event) => {
-  const sig = event.headers['stripe-signature'];
-  const secret = process.env.STRIPE_WEBHOOK_SECRET;
-  let evt;
+  if (event.httpMethod !== 'POST') {
+    return { statusCode: 405, body: 'Method not allowed' };
+  }
 
+  const secret = process.env.STRIPE_WEBHOOK_SECRET;
+  if (!secret) {
+    // No secret means we cannot trust any event — fail closed, force an ops
+    // response rather than silently processing unsigned payloads (audit
+    // 2026-04-23: forged checkout.session.completed was a financial fraud
+    // vector via the old JSON.parse fallback).
+    console.error('STRIPE_WEBHOOK_SECRET not configured — refusing to process');
+    return { statusCode: 503, body: 'Webhook endpoint not configured' };
+  }
+
+  const sig = event.headers['stripe-signature'] || event.headers['Stripe-Signature'];
+  if (!sig) {
+    return { statusCode: 400, body: 'Missing stripe-signature header' };
+  }
+
+  let evt;
   try {
-    if (secret && sig) {
-      evt = stripe.webhooks.constructEvent(event.body, sig, secret);
-    } else {
-      // No signature verification configured — parse best-effort (dev mode)
-      evt = JSON.parse(event.body);
-    }
+    evt = stripe.webhooks.constructEvent(event.body, sig, secret);
   } catch (err) {
-    console.error('Webhook signature failed:', err.message);
+    console.error('Webhook signature verification failed:', err.message);
     return { statusCode: 400, body: `Webhook Error: ${err.message}` };
   }
 
