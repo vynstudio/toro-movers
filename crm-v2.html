@@ -888,7 +888,7 @@
             <h4 id="navbar-title">Dashboard</h4>
             <div class="stat-strip d-none d-md-flex" id="stat-strip"></div>
             <div class="ml-auto d-flex" style="gap:8px">
-                <button class="btn btn-sm btn-outline-secondary admin-only" id="btn-backfill-deposits" onclick="runBackfillDeposits()" title="Match paid Stripe sessions to migrated leads" style="display:none">
+                <button class="btn btn-sm btn-outline-secondary owner-only" id="btn-backfill-deposits" onclick="runBackfillDeposits()" title="Match paid Stripe sessions to migrated leads (owner only)" style="display:none">
                     <i class="material-icons" style="font-size:16px;vertical-align:middle;margin-right:2px">sync</i>
                     Backfill deposits
                 </button>
@@ -3545,10 +3545,12 @@ function openApplicationDetail(id) {
     const header = document.querySelector('#applicationModal .modal-header .modal-title');
     if (header) header.insertAdjacentHTML('beforeend',
         ` <span style="background:${feeBadge.bg};color:${feeBadge.fg};font-size:10px;font-weight:800;letter-spacing:0.05em;text-transform:uppercase;padding:3px 9px;border-radius:9999px;margin-left:8px;vertical-align:middle">${feeBadge.label}</span>`);
-    // Enable refund button only when paid + not refunded + admin
+    // Enable refund button only when paid + not refunded + OWNER. Admins
+    // can't refund — guards against a compromised admin account draining
+    // funds. Matches the server-side owner check in refund-bg-fee.js.
     const refundBtn = document.getElementById('refund-bg-fee-btn');
     if (refundBtn) refundBtn.style.display =
-        (state.currentUser?.role === 'admin' && feeStatus === 'paid') ? '' : 'none';
+        (state.currentUser?.is_owner && feeStatus === 'paid') ? '' : 'none';
     $('#applicationModal').modal('show');
 }
 

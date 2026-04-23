@@ -30,7 +30,10 @@ exports.handler = async (event) => {
   try {
     ({ profile } = await verifyUserJWT(event.headers.authorization || event.headers.Authorization));
   } catch (e) { return respond(401, { error: e.message }); }
-  if (profile.role !== 'admin') return respond(403, { error: 'Admin only' });
+  // Owner-only: refunds move money out of Stael's Stripe account. Admins
+  // (incl. Stephanie) are not authorised — prevents a compromised admin
+  // session from draining funds. Diler = is_owner=true is the sole gate.
+  if (!profile.is_owner) return respond(403, { error: 'Owner only — refunds are restricted to the business owner' });
 
   let payload;
   try { payload = JSON.parse(event.body || '{}'); } catch { return respond(400, { error: 'Invalid JSON' }); }

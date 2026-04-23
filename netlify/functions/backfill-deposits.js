@@ -43,7 +43,11 @@ exports.handler = async (event) => {
   } catch (e) {
     return respond(401, { error: e.message || 'Unauthorized' });
   }
-  if (profile.role !== 'admin') return respond(403, { error: 'Admin only' });
+  // Owner-only: backfill touches Stripe charge history + writes deposit
+  // amounts to jobs. Admins (Stephanie + future managers) don't need this;
+  // keeping it owner-gated limits blast radius if an admin session is taken
+  // over.
+  if (!profile.is_owner) return respond(403, { error: 'Owner only — deposit backfill is restricted to the business owner' });
 
   let payload = {};
   try { payload = JSON.parse(event.body || '{}'); } catch { /* ignore */ }
