@@ -8,7 +8,7 @@
 // will also update crew_applications.bg_fee_refunded_at, but this
 // function sets it immediately in case the webhook is delayed.
 
-const Stripe = require('stripe');
+const { getStripe } = require('./_lib/stripe-client');
 const { getAdminClient, verifyUserJWT } = require('./_lib/supabase-admin');
 const { notifyTelegramTeam } = require('./_lib/crm-notifications');
 
@@ -47,7 +47,7 @@ exports.handler = async (event) => {
   if (!app.bg_fee_payment_intent_id) return respond(400, { error: 'No bg-fee payment on file for this applicant.' });
   if (app.bg_fee_refunded_at) return respond(400, { error: 'Fee was already refunded.' });
 
-  const stripe = Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2024-10-28.acacia' });
+  const stripe = getStripe();
   let refund;
   try {
     refund = await stripe.refunds.create({

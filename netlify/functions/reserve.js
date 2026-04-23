@@ -9,7 +9,7 @@
 // Prefer a test-mode key (sk_test_...) on the preview Netlify site so
 // customers can't accidentally be charged during CRM testing.
 
-const Stripe = require('stripe');
+const { getStripe } = require('./_lib/stripe-client');
 const { getAdminClient } = require('./_lib/supabase-admin');
 
 function fmtUsd(n) {
@@ -64,7 +64,7 @@ exports.handler = async (event) => {
     return errPage('Deposit amount missing on this quote. Please call us to book.');
   }
 
-  const stripe = Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2024-10-28.acacia' });
+  const stripe = getStripe();
   const lang = quote.language === 'es' ? 'es' : 'en';
   const productName = lang === 'es' ? 'Deposito — Toro Movers' : 'Toro Movers Deposit';
   const productDesc = lang === 'es'
