@@ -132,7 +132,32 @@
 </script>
 
 <!-- Tracking: Meta Pixel + GA4 + CAPI relay -->
-<script src="assets/js/tracking.js" defer></script>
+<link rel="preconnect" href="https://connect.facebook.net" crossorigin>
+<link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+<script>
+  // Load tracking lazily so it never blocks LCP. Fires on first user
+  // interaction (so ad-click PageViews still attribute before navigation)
+  // or after idle, whichever comes first.
+  (function () {
+    var loaded = false;
+    function load() {
+      if (loaded) return;
+      loaded = true;
+      var s = document.createElement('script');
+      s.src = 'assets/js/tracking.js';
+      s.async = true;
+      document.head.appendChild(s);
+    }
+    ['pointerdown', 'touchstart', 'keydown', 'scroll'].forEach(function (ev) {
+      window.addEventListener(ev, load, { once: true, passive: true, capture: true });
+    });
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(load, { timeout: 2500 });
+    } else {
+      setTimeout(load, 2500);
+    }
+  })();
+</script>
 <noscript><img height="1" width="1" style="display:none" alt="" src="https://www.facebook.com/tr?id=1637703184084307&ev=PageView&noscript=1"/><img height="1" width="1" style="display:none" alt="" src="https://www.facebook.com/tr?id=985575491098437&ev=PageView&noscript=1"/></noscript>
 
 <style>
