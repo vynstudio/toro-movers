@@ -6,7 +6,7 @@
 // remaining balance and 303-redirects. The existing stripe-webhook.js
 // routes metadata.purpose='balance' to handleBalancePaid in _lib/crm-stripe.js.
 
-const Stripe = require('stripe');
+const { getStripe } = require('./_lib/stripe-client');
 const { getAdminClient } = require('./_lib/supabase-admin');
 
 function fmtUsd(n) {
@@ -86,7 +86,7 @@ exports.handler = async (event) => {
     });
   }
 
-  const stripe = Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2024-10-28.acacia' });
+  const stripe = getStripe();
   const origin = process.env.URL || `https://${event.headers.host}`;
 
   try {

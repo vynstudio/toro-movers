@@ -7,7 +7,7 @@
 // Env: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, RESEND_API_KEY,
 //      RESEND_FROM_EMAIL (optional), TELEGRAM_* (optional).
 
-const Stripe = require('stripe');
+const { getStripe } = require('./_lib/stripe-client');
 const { Resend } = require('resend');
 const { getAdminClient } = require('./_lib/supabase-admin');
 const { notifyTelegramTeam } = require('./_lib/crm-notifications');
@@ -189,7 +189,7 @@ exports.handler = async (event) => {
   let checkoutUrl = null;
   if (process.env.STRIPE_SECRET_KEY) {
     try {
-      const stripe = Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2024-10-28.acacia' });
+      const stripe = getStripe();
       const origin = process.env.URL || `https://${event.headers.host}`;
       const session = await stripe.checkout.sessions.create({
         mode: 'payment',

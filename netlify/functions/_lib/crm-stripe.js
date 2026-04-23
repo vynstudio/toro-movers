@@ -117,7 +117,22 @@ async function handleDepositPaid(session, md) {
       p_payment_method: 'card',
       p_tip_amount: 0,
     });
-    if (rpcErr) console.error('apply_job_payment (deposit) failed:', rpcErr);
+    if (rpcErr) {
+      console.error('apply_job_payment (deposit) failed:', rpcErr);
+      // Webhook observability: money landed at Stripe but we couldn't record
+      // it. Alert the team so the job can be reconciled manually before the
+      // customer notices.
+      await notifyTelegramTeam([
+        '*⚠️ DEPOSIT WRITE FAILED*',
+        '',
+        `Amount: *${fmtMoney(amountPaid)}*`,
+        `Job: \`${String(job.id).slice(0, 8)}\``,
+        paymentIntent ? `Stripe PI: \`${paymentIntent}\`` : '',
+        `Error: \`${rpcErr.message || rpcErr.code || 'unknown'}\``,
+        '',
+        '*The customer has been charged but the job was NOT updated.* Reconcile in Stripe + the CRM before they call.',
+      ]).catch(() => { /* don't mask the original failure */ });
+    }
     // RPC returns setof — take first row for logging/notify downstream.
     if (applied && applied.length) Object.assign(job, applied[0]);
   }
@@ -176,7 +191,19 @@ async function handleBalancePaid(session, md) {
     p_payment_method: 'card',
     p_tip_amount: tipAmount,
   });
-  if (rpcErr) console.error('apply_job_payment (balance) failed:', rpcErr);
+  if (rpcErr) {
+    console.error('apply_job_payment (balance) failed:', rpcErr);
+    await notifyTelegramTeam([
+      '*⚠️ BALANCE WRITE FAILED*',
+      '',
+      `Amount charged: *${fmtMoney(amountTotal)}* (tip ${fmtMoney(tipAmount)})`,
+      `Job: \`${String(jobId).slice(0, 8)}\``,
+      paymentIntent ? `Stripe PI: \`${paymentIntent}\`` : '',
+      `Error: \`${rpcErr.message || rpcErr.code || 'unknown'}\``,
+      '',
+      '*The customer was charged but the job was NOT updated.* Reconcile before they call.',
+    ]).catch(() => {});
+  }
   const newState = applied && applied.length ? applied[0] : {};
   const newPaid = Number(newState.deposit_paid ?? 0);
   const newBalanceDue = Number(newState.balance_due ?? 0);
