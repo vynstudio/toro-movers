@@ -104,20 +104,22 @@ async function handleDepositPaid(session, md) {
     .from('leads').select('*, customers(*)').eq('id', leadId).maybeSingle();
   const customer = lead && lead.customers ? lead.customers : null;
 
-  // 3. Find the jobs row and record the deposit.
+  // 3. Find the jobs row and record the deposit atomically via RPC
+  //    (idempotent on stripe_payment_intent_id; row-locked to avoid
+  //    lost updates when Stripe retries — see migration 020).
   const { data: job } = await admin
-    .from('jobs').select('*').eq('quote_id', quoteId).maybeSingle();
+    .from('jobs').select('id, quote_id').eq('quote_id', quoteId).maybeSingle();
   if (job) {
-    const depositPaid = Number(job.deposit_paid || 0) + amountPaid;
-    const balanceDue = Math.max(0, Number(job.customer_total || 0) - depositPaid);
-    await admin.from('jobs').update({
-      deposit_paid: depositPaid,
-      balance_due: balanceDue,
-      payment_method: 'card',
-      payment_status: balanceDue <= 0 ? 'paid' : 'partial',
-      stripe_payment_intent_id: paymentIntent,
-      payment_received_at: nowIso,
-    }).eq('id', job.id);
+    const { data: applied, error: rpcErr } = await admin.rpc('apply_job_payment', {
+      p_job_id: job.id,
+      p_amount: amountPaid,
+      p_payment_intent: paymentIntent,
+      p_payment_method: 'card',
+      p_tip_amount: 0,
+    });
+    if (rpcErr) console.error('apply_job_payment (deposit) failed:', rpcErr);
+    // RPC returns setof — take first row for logging/notify downstream.
+    if (applied && applied.length) Object.assign(job, applied[0]);
   }
 
   // 4. Activity log.
@@ -162,23 +164,23 @@ async function handleBalancePaid(session, md) {
   const balancePart = Math.max(0, amountTotal - tipAmount);
   const paymentIntent = session.payment_intent || null;
 
-  const { data: job } = await admin.from('jobs').select('*').eq('id', jobId).maybeSingle();
+  const { data: job } = await admin.from('jobs').select('id, customer_total').eq('id', jobId).maybeSingle();
   if (!job) return;
 
-  // Apply the balance portion to deposit_paid; tip is tracked separately.
-  const newPaid = Number(job.deposit_paid || 0) + balancePart;
-  const newBalanceDue = Math.max(0, Number(job.customer_total || 0) - newPaid);
-  const newTipAmount = Number(job.tip_amount || 0) + tipAmount;
-
-  await admin.from('jobs').update({
-    deposit_paid: newPaid,
-    balance_due: newBalanceDue,
-    tip_amount: newTipAmount,
-    payment_method: 'card',
-    payment_status: newBalanceDue <= 0 ? 'paid' : 'partial',
-    stripe_payment_intent_id: paymentIntent,
-    payment_received_at: new Date().toISOString(),
-  }).eq('id', jobId);
+  // Atomic + idempotent apply via migration 020. Balance portion goes
+  // into deposit_paid; tip is tracked separately on the same row.
+  const { data: applied, error: rpcErr } = await admin.rpc('apply_job_payment', {
+    p_job_id: jobId,
+    p_amount: balancePart,
+    p_payment_intent: paymentIntent,
+    p_payment_method: 'card',
+    p_tip_amount: tipAmount,
+  });
+  if (rpcErr) console.error('apply_job_payment (balance) failed:', rpcErr);
+  const newState = applied && applied.length ? applied[0] : {};
+  const newPaid = Number(newState.deposit_paid ?? 0);
+  const newBalanceDue = Number(newState.balance_due ?? 0);
+  const newTipAmount = Number(newState.tip_amount ?? tipAmount);
 
   await admin.from('activity_log').insert({
     entity_type: 'job',
