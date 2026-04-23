@@ -31,6 +31,8 @@ const prettyPhone = (p) => {
   return p || '';
 };
 
+const { checkRateLimit } = require('./_lib/rate-limit');
+
 exports.handler = async (event) => {
   const headers = {
     'Access-Control-Allow-Origin': '*',
@@ -40,6 +42,11 @@ exports.handler = async (event) => {
 
   if (event.httpMethod === 'OPTIONS') return { statusCode: 204, headers, body: '' };
   if (event.httpMethod !== 'POST') return { statusCode: 405, headers, body: 'Method not allowed' };
+
+  // Public form endpoint. 5 per IP per 5 minutes stops obvious spam bursts
+  // without punishing a real prospect who re-submits a correction.
+  const rl = checkRateLimit(event, { bucket: 'notify-callback', max: 5, windowMs: 5 * 60_000 });
+  if (rl.blocked) return rl.response;
 
   const apiKey = process.env.RESEND_API_KEY;
   const fromEmail = process.env.RESEND_FROM_EMAIL || 'hello@toromovers.net';

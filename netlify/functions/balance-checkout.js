@@ -29,9 +29,16 @@ function errPage(message) {
   };
 }
 
+const { checkRateLimit } = require('./_lib/rate-limit');
+
 exports.handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') return { statusCode: 204, headers: { 'Access-Control-Allow-Origin': '*' }, body: '' };
   if (event.httpMethod !== 'GET') return { statusCode: 405, body: 'Method not allowed' };
+
+  // Balance checkout creates a Stripe session per hit. 10 per IP per 10 min
+  // so a bot iterating job IDs can't thrash Stripe.
+  const rl = checkRateLimit(event, { bucket: 'balance-checkout', max: 10, windowMs: 10 * 60_000 });
+  if (rl.blocked) return rl.response;
 
   if (!process.env.STRIPE_SECRET_KEY) return errPage('Payments are not configured yet. Please call us to pay.');
 

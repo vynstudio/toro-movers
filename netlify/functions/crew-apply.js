@@ -45,9 +45,16 @@ function renderApplicantEmail(app) {
 </table></td></tr></table></body></html>`;
 }
 
+const { checkRateLimit } = require('./_lib/rate-limit');
+
 exports.handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') return { statusCode: 204, headers: CORS, body: '' };
   if (event.httpMethod !== 'POST') return respond(405, { error: 'Method not allowed' });
+
+  // Crew applications create a Stripe checkout + insert a row. 3 per IP
+  // per 5 minutes — generous for a real applicant, brutal for a bot.
+  const rl = checkRateLimit(event, { bucket: 'crew-apply', max: 3, windowMs: 5 * 60_000 });
+  if (rl.blocked) return rl.response;
 
   let payload;
   try { payload = JSON.parse(event.body || '{}'); }
