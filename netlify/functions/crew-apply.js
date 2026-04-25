@@ -39,7 +39,7 @@ function renderApplicantEmail(app) {
 <p style="margin:0 0 16px 0;font-size:15px;line-height:1.55">Thanks for applying to work with Toro Movers. Your application + <strong>$49 refundable background-check fee</strong> are in.</p>
 <p style="margin:0 0 16px 0;font-size:15px;line-height:1.55">Next: our background-check vendor (Checkr or similar) will email you a secure link to finish. You enter your SSN directly with them — we never touch it.</p>
 <p style="margin:0 0 16px 0;padding:12px 14px;background:#FBF6E9;border-radius:8px;font-size:14px;line-height:1.55">The <strong>$49 comes back to your card</strong> once you pass the check and complete your first Toro job.</p>
-<p style="margin:0;font-size:14px;color:#6B7280">Questions? Call or text <a href="tel:+13217580094" style="color:#C8102E;font-weight:700">(321) 758-0094</a>.</p>
+<p style="margin:0;font-size:14px;color:#6B7280">Questions? Call or text <a href="tel:+16896002720" style="color:#C8102E;font-weight:700">(689) 600-2720</a>.</p>
 </td></tr>
 <tr><td style="background:#F9FAFB;padding:14px 28px;text-align:center;color:#6B7280;font-size:11px">TORO MOVERS · Orlando, FL · toromovers.net</td></tr>
 </table></td></tr></table></body></html>`;
@@ -149,7 +149,7 @@ exports.handler = async (event) => {
     .from('crew_applications').insert(row).select().single();
   if (error) {
     console.error('crew_applications insert failed:', error);
-    return respond(500, { error: 'Sorry — could not save your application. Please try again or call (321) 758-0094.' });
+    return respond(500, { error: 'Sorry — could not save your application. Please try again or call (689) 600-2720.' });
   }
 
   // Team Telegram alert

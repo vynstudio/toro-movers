@@ -204,7 +204,7 @@ h1,h2,h3{font-weight:800;line-height:1.1;letter-spacing:-.02em}
 <!-- HEADER -->
 <div class="hd">
   <a href="/" class="hd-logo"><img src="assets/img/toro-logo.svg" alt="">TORO <span class="a">MOVERS</span></a>
-  <a href="tel:3217580094" class="hd-call"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span>(321) 758-0094</span></a>
+  <a href="tel:6896002720" class="hd-call"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span>(689) 600-2720</span></a>
 </div>
 
 <!-- BLOCK 1: PATTERN INTERRUPT -->
@@ -339,7 +339,7 @@ h1,h2,h3{font-weight:800;line-height:1.1;letter-spacing:-.02em}
 <!-- STICKY MOBILE -->
 <div class="sticky">
   <a href="#quiz" class="sticky-btn sticky-q">Get Free Quote</a>
-  <a href="tel:3217580094" class="sticky-btn sticky-c">Call Now</a>
+  <a href="tel:6896002720" class="sticky-btn sticky-c">Call Now</a>
 </div>
 
 <!-- QUIZ ENGINE (same as lp.html) -->
@@ -413,12 +413,12 @@ function sub(){
   .then(function(res){
     if(res.success){
       try{if(window.ToroTrack)window.ToroTrack.lead({name:D.name,email:D.email,phone:D.phone})}catch(x){}
-      c.innerHTML='<div class="qty"><div class="qty-ck"><svg fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><h4>Quote sent!</h4><p>Check your inbox at <strong>'+D.email+'</strong> for your detailed estimate.</p><p style="font-size:13px">A member of our team will follow up shortly.</p><a href="tel:3217580094" class="qty-call">Call (321) 758-0094</a><p class="qty-cd">Redirecting in <span id="qty-cd">5</span>s...</p></div>';
+      c.innerHTML='<div class="qty"><div class="qty-ck"><svg fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><h4>Quote sent!</h4><p>Check your inbox at <strong>'+D.email+'</strong> for your detailed estimate.</p><p style="font-size:13px">A member of our team will follow up shortly.</p><a href="tel:6896002720" class="qty-call">Call (689) 600-2720</a><p class="qty-cd">Redirecting in <span id="qty-cd">5</span>s...</p></div>';
       var s=5;var iv=setInterval(function(){s--;var el=document.getElementById('qty-cd');if(el)el.textContent=s;if(s<=0){clearInterval(iv);window.location.href='/';}},1000);
     }else{fail(btn,st);}
   }).catch(function(){fail(btn,st);});
 }
-function fail(btn,st){if(st){st.textContent='Something went wrong. Call (321) 758-0094.';st.className='q-status err';st.style.display='';}if(btn){btn.disabled=false;btn.textContent='Get My Free Quote \u2192';}}
+function fail(btn,st){if(st){st.textContent='Something went wrong. Call (689) 600-2720.';st.className='q-status err';st.style.display='';}if(btn){btn.disabled=false;btn.textContent='Get My Free Quote \u2192';}}
 render();
 </script>
 </body>

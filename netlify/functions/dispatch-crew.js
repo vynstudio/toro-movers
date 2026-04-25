@@ -104,9 +104,9 @@ ${job.notes ? `<p style="margin:0 0 6px 0;font-size:13px;color:#6B7280">JOB NOTE
 <a href="${rUrl('info')}" style="display:inline-block;background:#ffffff;color:#C8102E;font-weight:700;font-size:15px;text-decoration:none;padding:12px 22px;border-radius:9999px;border:2px solid #C8102E;margin:4px 4px">Ask for info</a>
 </td></tr></table>
 
-<p style="margin:10px 0 0 0;font-size:13px;color:#6B7280;text-align:center">Or call ops: <a href="tel:+13217580094" style="color:#C8102E">(321) 758-0094</a>.</p>
+<p style="margin:10px 0 0 0;font-size:13px;color:#6B7280;text-align:center">Or call ops: <a href="tel:+16896002720" style="color:#C8102E">(689) 600-2720</a>.</p>
 </td></tr>
-<tr><td style="background:#F9FAFB;padding:14px 28px;text-align:center;color:#6B7280;font-size:11px">TORO MOVERS · Orlando, FL · (321) 758-0094 · toromovers.net</td></tr>
+<tr><td style="background:#F9FAFB;padding:14px 28px;text-align:center;color:#6B7280;font-size:11px">TORO MOVERS · Orlando, FL · (689) 600-2720 · toromovers.net</td></tr>
 </table></td></tr></table>
 </body></html>`;
 }

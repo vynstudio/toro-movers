@@ -62,7 +62,7 @@ exports.handler = async (event) => {
         </ol>
         ${total ? '<p style="margin:16px 0;color:#3a3a3a;font-size:15px">Your estimated total: <strong>$'+total+'</strong> ($75/mover/hour, no hidden fees).</p>' : ''}
         ${bookCta}
-        <p style="margin:16px 0;color:#3a3a3a;font-size:15px">Questions? Just reply to this email or call <a href="tel:+13217580094" style="color:#C8102E;font-weight:700">(321) 758-0094</a>.</p>
+        <p style="margin:16px 0;color:#3a3a3a;font-size:15px">Questions? Just reply to this email or call <a href="tel:+16896002720" style="color:#C8102E;font-weight:700">(689) 600-2720</a>.</p>
       `,
     },
     day2: {
@@ -91,7 +91,7 @@ exports.handler = async (event) => {
           <li><strong>Family-owned</strong> — we treat your home like ours</li>
         </ul>
         ${bookCta}
-        <p style="margin:16px 0;color:#3a3a3a;font-size:15px">Or reply here / call <a href="tel:+13217580094" style="color:#C8102E;font-weight:700">(321) 758-0094</a>.</p>
+        <p style="margin:16px 0;color:#3a3a3a;font-size:15px">Or reply here / call <a href="tel:+16896002720" style="color:#C8102E;font-weight:700">(689) 600-2720</a>.</p>
       `,
     },
     day4: {
@@ -154,7 +154,7 @@ exports.handler = async (event) => {
         <hr style="margin:28px 0 18px;border:none;border-top:1px solid #e5e5e5">
         <div style="font-size:12px;color:#9ca3af;line-height:1.6">
           <strong>Toro Movers</strong> · Orlando, FL · Licensed &amp; insured<br>
-          <a href="tel:+13217580094" style="color:#9ca3af">(321) 758-0094</a> ·
+          <a href="tel:+16896002720" style="color:#9ca3af">(689) 600-2720</a> ·
           <a href="mailto:hello@toromovers.net" style="color:#9ca3af">hello@toromovers.net</a> ·
           <a href="https://toromovers.net/" style="color:#9ca3af">toromovers.net</a>
         </div>

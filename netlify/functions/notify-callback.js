@@ -346,7 +346,7 @@ exports.handler = async (event) => {
 
           <h3 style="margin:28px 0 10px;font-size:13px;color:#6b7280;text-transform:uppercase;letter-spacing:1.5px">Need us sooner?</h3>
           <p style="margin:0 0 14px;color:#3a3a3a;font-size:14px">If it's urgent, call us directly — we answer fast.</p>
-          <a href="tel:3217580094" style="display:inline-block;background:#C8102E;color:#fff;padding:14px 24px;border-radius:999px;text-decoration:none;font-weight:700;font-size:15px">📞 (321) 758-0094</a>
+          <a href="tel:6896002720" style="display:inline-block;background:#C8102E;color:#fff;padding:14px 24px;border-radius:999px;text-decoration:none;font-weight:700;font-size:15px">📞 (689) 600-2720</a>
 
           <hr style="margin:32px 0 20px;border:none;border-top:1px solid #e5e5e5">
           <div style="font-size:12px;color:#9ca3af;line-height:1.6">
@@ -571,7 +571,7 @@ function dripEmail(stage, fullName, estimate, bookNowUrl, fromEmail){
         <p style="margin:0 0 18px;color:#3a3a3a;font-size:15px;line-height:1.6">${copy.body}</p>
         <div style="text-align:center;margin:24px 0">
           ${bookBtn}
-          <div style="font-size:12px;color:#6b7280">or call <a href="tel:3217580094" style="color:#C8102E;font-weight:700">(321) 758-0094</a></div>
+          <div style="font-size:12px;color:#6b7280">or call <a href="tel:6896002720" style="color:#C8102E;font-weight:700">(689) 600-2720</a></div>
         </div>
         <hr style="margin:28px 0 18px;border:none;border-top:1px solid #e5e5e5">
         <div style="font-size:12px;color:#9ca3af;line-height:1.6">

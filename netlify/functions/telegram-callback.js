@@ -387,7 +387,7 @@ async function cmdPublicWelcome(chatId){
       inline_keyboard: [[
         { text: '🚚 Quote & Reserve', web_app: { url: 'https://toromovers.net/mini/toro' } },
       ], [
-        { text: '📞 Call (321) 758-0094', url: 'tel:+13217580094' },
+        { text: '📞 Call (689) 600-2720', url: 'tel:+16896002720' },
       ]],
     },
   });

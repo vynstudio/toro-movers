@@ -85,7 +85,7 @@ async function sendBookingConfirmation(lead, depositAmount){
           </ul>
 
           <div style="background:#fef3c7;border:1px solid #fbbf24;border-radius:10px;padding:14px 16px;margin:20px 0;font-size:14px;color:#78350f">
-            <strong>Need to change something?</strong> Reply to this email or call <a href="tel:+13217580094" style="color:#78350f;font-weight:700">(321) 758-0094</a>. Please give 24h notice for reschedules.
+            <strong>Need to change something?</strong> Reply to this email or call <a href="tel:+16896002720" style="color:#78350f;font-weight:700">(689) 600-2720</a>. Please give 24h notice for reschedules.
           </div>
 
           <p style="margin:22px 0 6px;color:#3a3a3a;font-size:15px">We'll text you the morning of your move with the crew's ETA.</p>
@@ -94,7 +94,7 @@ async function sendBookingConfirmation(lead, depositAmount){
           <hr style="margin:28px 0 18px;border:none;border-top:1px solid #e5e5e5">
           <div style="font-size:12px;color:#9ca3af;line-height:1.6">
             <strong>Toro Movers</strong> · Orlando, FL · Licensed &amp; insured<br>
-            <a href="tel:+13217580094" style="color:#9ca3af">(321) 758-0094</a> ·
+            <a href="tel:+16896002720" style="color:#9ca3af">(689) 600-2720</a> ·
             <a href="mailto:hello@toromovers.net" style="color:#9ca3af">hello@toromovers.net</a> ·
             <a href="https://toromovers.net/" style="color:#9ca3af">toromovers.net</a>
           </div>

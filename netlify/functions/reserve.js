@@ -28,7 +28,7 @@ function errPage(message) {
   return {
     statusCode: 200,
     headers: { 'Content-Type': 'text/html; charset=utf-8' },
-    body: `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>Toro Movers</title><style>body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#ffffff;color:#1C1C1E;margin:0;padding:48px 20px;text-align:center}h1{color:#C8102E;margin:0 0 16px 0;font-weight:800;letter-spacing:-0.01em}a{color:#C8102E;font-weight:700;text-decoration:none}</style></head><body><h1>TORO MOVERS</h1><p style="font-size:16px;line-height:1.5;max-width:460px;margin:0 auto;color:#3A3A3D">${escapeHtml(message)}</p><p style="margin-top:28px;color:#6B7280;font-size:14px">Call us at <a href="tel:+13217580094">(321) 758-0094</a>.</p></body></html>`,
+    body: `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>Toro Movers</title><style>body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#ffffff;color:#1C1C1E;margin:0;padding:48px 20px;text-align:center}h1{color:#C8102E;margin:0 0 16px 0;font-weight:800;letter-spacing:-0.01em}a{color:#C8102E;font-weight:700;text-decoration:none}</style></head><body><h1>TORO MOVERS</h1><p style="font-size:16px;line-height:1.5;max-width:460px;margin:0 auto;color:#3A3A3D">${escapeHtml(message)}</p><p style="margin-top:28px;color:#6B7280;font-size:14px">Call us at <a href="tel:+16896002720">(689) 600-2720</a>.</p></body></html>`,
   };
 }
 
@@ -114,6 +114,6 @@ exports.handler = async (event) => {
       body: '',
     };
   } catch (e) {
-    return errPage('We hit a glitch creating your secure checkout page. Please call (321) 758-0094 — we can book you manually.');
+    return errPage('We hit a glitch creating your secure checkout page. Please call (689) 600-2720 — we can book you manually.');
   }
 };

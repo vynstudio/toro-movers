@@ -50,7 +50,7 @@ at the rate we quoted — no surprise fees, no fuel surcharges, no stairs charge
   <li>Top-rated on Google</li>
 </ul>
 
-<p>Questions? Reply to this email or call us at <a href="tel:3217580094">(321) 758-0094</a>.</p>
+<p>Questions? Reply to this email or call us at <a href="tel:6896002720">(689) 600-2720</a>.</p>
 
 <p>— The Toro Movers family</p>
 ```
@@ -122,7 +122,7 @@ from the family that actually does the work:</p>
   </a>
 </p>
 
-<p>Or call us directly at <a href="tel:3217580094">(321) 758-0094</a>.</p>
+<p>Or call us directly at <a href="tel:6896002720">(689) 600-2720</a>.</p>
 
 <p>— The Toro Movers family</p>
 ```
@@ -176,7 +176,7 @@ number and we'll take it from there.</p>
 <p>Either way — thanks for considering us. We hope your move goes smoothly.</p>
 
 <p>— The Toro Movers family<br>
-<a href="tel:3217580094">(321) 758-0094</a> · <a href="mailto:hello@toromovers.net">hello@toromovers.net</a></p>
+<a href="tel:6896002720">(689) 600-2720</a> · <a href="mailto:hello@toromovers.net">hello@toromovers.net</a></p>
 ```
 
 ### Send rule
