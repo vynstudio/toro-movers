@@ -1326,8 +1326,12 @@
 
                             <div class="qb-actions">
                                 <button class="btn btn-sm btn-primary qb-send" onclick="sendQuote()">
-                                    <i class="material-icons" style="font-size:16px;vertical-align:middle;margin-right:4px">send</i>
-                                    Send to client
+                                    <i class="material-icons" style="font-size:16px;vertical-align:middle;margin-right:4px">email</i>
+                                    Email quote
+                                </button>
+                                <button class="btn btn-sm btn-outline-primary qb-send-sms" onclick="sendQuoteSms()">
+                                    <i class="material-icons" style="font-size:16px;vertical-align:middle;margin-right:4px">sms</i>
+                                    Text quote
                                 </button>
                                 <button class="btn btn-sm btn-link qb-preview" onclick="previewQuote()">Preview PDF</button>
                             </div>
@@ -2603,7 +2607,24 @@ async function sendQuote() {
     if (!confirm('Send quote PDF to ' + lead.customer.email + '?')) return;
     const out = await callQuoteFn('quote-send');
     if (!out) return;
-    // Reflect the stage bump in the UI if the server flipped it.
+    bumpStageToQuoted(lead);
+    alert('Quote sent to ' + out.sent_to + '.');
+}
+
+async function sendQuoteSms() {
+    const lead = state.leads.find(l => l.id === state.detailId);
+    if (!lead?.customer?.phone) {
+        alert('No phone on file for this customer — add one first.');
+        return;
+    }
+    if (!confirm('Text quote to ' + lead.customer.phone + '?')) return;
+    const out = await callQuoteFn('quote-send-sms');
+    if (!out) return;
+    bumpStageToQuoted(lead);
+    alert('Quote texted to ' + out.sent_to + '.');
+}
+
+function bumpStageToQuoted(lead) {
     if (lead.stage === 'new' || lead.stage === 'contacted') {
         lead.stage = 'quoted';
         renderDashboard(); renderKanban(); renderLeadsTable();
@@ -2615,7 +2636,6 @@ async function sendQuote() {
         const sel = document.getElementById('dv-stage');
         if (sel) sel.value = 'quoted';
     }
-    alert('Quote sent to ' + out.sent_to + '.');
 }
 async function logCall() {
     if (store !== supabaseStore) {
