@@ -16,6 +16,7 @@
 const { getAdminClient, verifyUserJWT } = require('./_lib/supabase-admin');
 const { createQuote } = require('./_lib/quote-flow');
 const { sendSms } = require('./_lib/sms');
+const { upsertContactFromLead } = require('./_lib/quo');
 const { notifyTelegramTeam } = require('./_lib/crm-notifications');
 
 const CORS = {
@@ -86,6 +87,22 @@ exports.handler = async (event) => {
   if (!phone) return respond(400, { error: 'Customer has no phone on file' });
   if (out.customer.sms_opted_out) {
     return respond(409, { error: 'Customer has opted out of SMS' });
+  }
+
+  // Make sure the customer exists as a Quo contact BEFORE the SMS goes out.
+  // Without this, Quo's inbox shows just the phone number and Diler can't tell
+  // who's replying. Dedupe by phone happens inside the helper, so re-sends
+  // are safe.
+  try {
+    const r = await upsertContactFromLead({
+      id: lead_id,
+      name: out.customer.full_name,
+      phone: out.customer.phone,
+      email: out.customer.email,
+    });
+    console.log('[quote-send-sms] quo contact:', JSON.stringify(r));
+  } catch (e) {
+    console.error('[quote-send-sms] quo contact failed:', e.message);
   }
 
   const origin = process.env.URL

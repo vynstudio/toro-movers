@@ -464,20 +464,12 @@ exports.handler = async (event) => {
     console.error('[notify] SMS FAILED:', e.message);
   }
 
-  // Quo contact upsert — so the Quo inbox shows the customer's name when
-  // they reply, instead of just a phone number. Fire-and-forget; dedupe
-  // by phone happens inside the helper.
+  // Quo contact upsert + CRM v2 bridge. Both must be awaited — Netlify
+  // Functions freeze the container as soon as the handler returns, so
+  // fire-and-forget promises get killed mid-request and silently lose
+  // data. Run them in parallel and wait for both.
   if (!isAbandon && phone) {
     const leadForContact = savedLead || { ...payload, name: fullName, phone, email };
-    upsertContactFromLead(leadForContact)
-      .then(r => console.log('[notify] quo contact:', JSON.stringify(r)))
-      .catch(e => console.error('[notify] quo contact FAILED:', e.message));
-  }
-
-  // CRM v2 bridge — every callback / quote submission also lands as a
-  // customer + lead row in Supabase so the v2 UI is the source of truth.
-  // Skip abandons (we don't want phantom rows for click-but-leave traffic).
-  if (!isAbandon && phone) {
     const v2Payload = {
       ...payload,
       name: fullName,
@@ -488,9 +480,12 @@ exports.handler = async (event) => {
       stairs: stairs_elev,
       estimate,
     };
-    upsertCrmLeadFromPublic(v2Payload)
-      .then(r => console.log('[notify] crm v2 bridge:', JSON.stringify(r)))
-      .catch(e => console.error('[notify] crm v2 bridge FAILED:', e.message));
+    const [contactRes, v2Res] = await Promise.allSettled([
+      upsertContactFromLead(leadForContact),
+      upsertCrmLeadFromPublic(v2Payload),
+    ]);
+    console.log('[notify] quo contact:', JSON.stringify(contactRes.status === 'fulfilled' ? contactRes.value : { ok: false, error: String(contactRes.reason && contactRes.reason.message || contactRes.reason) }));
+    console.log('[notify] crm v2 bridge:', JSON.stringify(v2Res.status === 'fulfilled' ? v2Res.value : { ok: false, error: String(v2Res.reason && v2Res.reason.message || v2Res.reason) }));
   }
 
   try {

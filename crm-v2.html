@@ -540,6 +540,16 @@
     .qb-total-amt { font-size: 22px; font-weight: 800; color: var(--toro-red); }
 
     .qb-deposit-line { font-size: 11px; color: var(--toro-gray-500); text-align: center; margin: 6px 0 0; }
+
+    /* Lead detail tabs: split Sales (quote) from Job ops (post-move) */
+    .lead-tab {
+      background: transparent; border: 0; border-bottom: 2px solid transparent;
+      padding: 10px 16px; font-size: 13px; font-weight: 700; color: var(--toro-gray-500);
+      cursor: pointer; letter-spacing: 0.02em; border-radius: 0;
+    }
+    .lead-tab:hover { color: var(--toro-charcoal); }
+    .lead-tab.is-active { color: var(--toro-red); border-bottom-color: var(--toro-red); }
+    .lead-tab:focus { outline: none; box-shadow: 0 0 0 2px rgba(200,16,46,.15); }
     .qb-deposit-line strong { color: var(--toro-charcoal); font-weight: 700; }
 
     .qb-actions { display: flex; gap: 10px; align-items: center; margin-top: 12px; }
@@ -1201,7 +1211,12 @@
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
             <div class="modal-body p-0">
-                <div class="detail-grid">
+                <!-- Tabs: Sales (quote/customer/activity) | Job ops (post-move ops) -->
+                <div class="lead-tabs" role="tablist" style="display:flex;gap:4px;padding:8px 16px 0;border-bottom:1px solid var(--toro-gray-200);background:#fff">
+                    <button type="button" class="lead-tab is-active" data-lead-tab="sales" role="tab" onclick="switchLeadTab('sales')">Sales</button>
+                    <button type="button" class="lead-tab" id="lead-tab-jobops" data-lead-tab="jobops" role="tab" onclick="switchLeadTab('jobops')" style="display:none">Job ops</button>
+                </div>
+                <div class="detail-grid" data-lead-pane="sales">
                     <!-- LEFT: Customer + move details -->
                     <div class="detail-col">
                         <h6>Customer</h6>
@@ -1401,8 +1416,8 @@
                     </div>
                 </div>
 
-                <!-- ===== JOB OPS (booked/done only) ===== -->
-                <div id="job-ops-wrap" style="display:none;border-top:1px solid var(--toro-gray-200);padding:20px 24px;background:var(--toro-gray-50)">
+                <!-- ===== JOB OPS (booked/done only — controlled by Job ops tab) ===== -->
+                <div id="job-ops-wrap" data-lead-pane="jobops" style="display:none;padding:20px 24px;background:var(--toro-gray-50)">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
                         <h6 style="margin:0">Job ops</h6>
                         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
@@ -3182,20 +3197,43 @@ async function changeCrewAssignment() {
 /* ========== 12b. JOB OPS ========== */
 let CURRENT_JOB = null;
 
+// Switch the lead-detail panel between the Sales (quote/customer/activity)
+// and Job ops (post-move) tabs. Hides the inactive pane and toggles the
+// is-active class on the tab buttons.
+function switchLeadTab(name) {
+    document.querySelectorAll('.lead-tab').forEach(btn => {
+        btn.classList.toggle('is-active', btn.dataset.leadTab === name);
+        btn.setAttribute('aria-selected', btn.dataset.leadTab === name ? 'true' : 'false');
+    });
+    document.querySelectorAll('[data-lead-pane]').forEach(pane => {
+        const show = pane.dataset.leadPane === name;
+        // Preserve the original display value for the sales pane (grid),
+        // and toggle the job-ops pane between block and none.
+        if (pane.id === 'job-ops-wrap') pane.style.display = show ? '' : 'none';
+        else pane.style.display = show ? '' : 'none';
+    });
+}
+
 async function loadJobOpsForLead(l) {
     const wrap = document.getElementById('job-ops-wrap');
+    const tab = document.getElementById('lead-tab-jobops');
     if (!wrap) return;
-    if (store !== supabaseStore || !['booked','done'].includes(l.stage)) {
+    const eligible = store === supabaseStore && ['booked','done'].includes(l.stage);
+    if (!eligible) {
         wrap.style.display = 'none';
+        if (tab) tab.style.display = 'none';
         CURRENT_JOB = null;
+        // Reset to Sales tab whenever we open a non-eligible lead
+        switchLeadTab('sales');
         return;
     }
-    wrap.style.display = '';
+    if (tab) tab.style.display = '';
+    // Default to Sales tab on lead open — Job ops is a click away, not the
+    // first thing the user sees.
+    switchLeadTab('sales');
     try {
         CURRENT_JOB = await supabaseStore.fetchJobByLead(l.id);
-    } catch (e) {
-        wrap.style.display = 'none'; return;
-    }
+    } catch (e) { return; }
     if (!CURRENT_JOB) {
         // No job row (e.g. booked with no prior quote). Show panel with empty fields.
         CURRENT_JOB = { id: null, hourly_rate: 75, deposit_paid: 0, customer_total: 0, balance_due: 0 };

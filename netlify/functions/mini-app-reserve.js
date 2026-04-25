@@ -133,19 +133,25 @@ exports.handler = async (event) => {
     console.error('createLead failed:', e.message);
   }
 
-  // CRM v2 bridge — additive, fire-and-forget
-  upsertCrmLeadFromPublic({
-    name, email, phone,
-    move_date,
-    page: 'mini-app',
-    utm_source: 'telegram',
-    estimate: {
-      movers: mv, hours: hr,
-      total: parseInt(total, 10) || (mv * hr * 75 + (hasTruck ? 275 : 0)),
-      truck: hasTruck,
-    },
-  }).then(r => console.log('[mini-app] crm v2 bridge:', JSON.stringify(r)))
-    .catch(e => console.error('[mini-app] crm v2 bridge FAILED:', e.message));
+  // CRM v2 bridge — must be awaited so the function doesn't return before
+  // it completes (Netlify freezes the container on response, killing
+  // any in-flight fire-and-forget promise).
+  try {
+    const r = await upsertCrmLeadFromPublic({
+      name, email, phone,
+      move_date,
+      page: 'mini-app',
+      utm_source: 'telegram',
+      estimate: {
+        movers: mv, hours: hr,
+        total: parseInt(total, 10) || (mv * hr * 75 + (hasTruck ? 275 : 0)),
+        truck: hasTruck,
+      },
+    });
+    console.log('[mini-app] crm v2 bridge:', JSON.stringify(r));
+  } catch (e) {
+    console.error('[mini-app] crm v2 bridge FAILED:', e.message);
+  }
 
   // Create Stripe Checkout session for deposit
   let checkoutUrl = null;
