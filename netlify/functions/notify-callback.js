@@ -100,9 +100,12 @@ exports.handler = async (event) => {
                     : 'Callback Request';
 
   // ===== QUOTE ESTIMATE CALCULATOR =====
-  // Returns { movers, hoursLow, hoursHigh, totalLow, totalHigh } or null
+  // Returns { movers, hours, total, rate } or null. Compute whenever the
+  // submission has furniture_size (bedrooms) — earlier we required zip /
+  // boxes too, but city LP top-forms only collect bedrooms and were
+  // shipping the customer email with an empty price block.
   function calcEstimate() {
-    if (!isQuoteForm || isPartial || isAbandon) return null;
+    if (isPartial || isAbandon) return null;
     if (!furniture_size) return null;
 
     var RATE = 75; // $/mover/hour
