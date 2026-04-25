@@ -8,6 +8,7 @@ const { Resend } = require('resend');
 const { getStore } = require('@netlify/blobs'); // surfaced here so Netlify's scanner enables Blobs for this function
 const { createLead, notifyTelegram } = require('./_lib/leads');
 const { sendSms } = require('./_lib/sms');
+const { upsertContactFromLead } = require('./_lib/quo');
 
 const esc = (v) =>
   String(v == null ? '' : v)
@@ -460,6 +461,16 @@ exports.handler = async (event) => {
     }
   } catch(e) {
     console.error('[notify] SMS FAILED:', e.message);
+  }
+
+  // Quo contact upsert — so the Quo inbox shows the customer's name when
+  // they reply, instead of just a phone number. Fire-and-forget; dedupe
+  // by phone happens inside the helper.
+  if (!isAbandon && phone) {
+    const leadForContact = savedLead || { ...payload, name: fullName, phone, email };
+    upsertContactFromLead(leadForContact)
+      .then(r => console.log('[notify] quo contact:', JSON.stringify(r)))
+      .catch(e => console.error('[notify] quo contact FAILED:', e.message));
   }
 
   try {

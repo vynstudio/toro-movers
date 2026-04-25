@@ -10,7 +10,7 @@
 | **Category** | Moving company (local + long-distance) |
 | **Location** | Orlando & Central Florida (20 cities) |
 | **Website** | toromovers.net |
-| **Phone** | (321) 758-0094 |
+| **Phone** | (689) 600-2720 |
 | **Founded** | Family-owned, Orlando-based |
 | **License** | Licensed & insured in Florida |
 
@@ -244,7 +244,7 @@
 
 ### Urgency / Availability
 - "Moving this week? We can be there Saturday."
-- "Same-week scheduling. Call (321) 758-0094."
+- "Same-week scheduling. Call (689) 600-2720."
 
 ---
 

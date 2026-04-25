@@ -124,7 +124,8 @@ async function updateLead(id, patch){
     'assembly','wrapping','move_date','move_time','estimate','crew_assigned',
     'truck_assigned','depositPaid','stripeSessionId','deposit','page',
     'utm_source','utm_medium','utm_campaign','utm_content','utm_term',
-    'fbclid','gclid','timelineEntry'];
+    'fbclid','gclid','timelineEntry',
+    'sms_opted_out','sms_opted_out_at','quo_contact_id'];
   const safe = {};
   for (const k of Object.keys(patch)) { if (ALLOWED.includes(k)) safe[k] = patch[k]; }
   Object.assign(lead, safe, { updatedAt: now });
@@ -181,6 +182,18 @@ async function listLeads(){
     if (raw) return JSON.parse(raw);
   } catch(e){}
   return [];
+}
+
+// Find the most recent lead matching a given phone number. Used by the
+// inbound-SMS webhook to attach replies to the right lead.
+function digits(p){ return String(p || '').replace(/\D/g, '').replace(/^1/, ''); }
+async function findLeadByPhone(phone){
+  const target = digits(phone);
+  if (!target) return null;
+  const idx = await listLeads();
+  const match = idx.find(l => digits(l.phone) === target);
+  if (!match) return null;
+  return getLead(match.id);
 }
 
 async function addNote(id, text, author){
@@ -327,5 +340,5 @@ async function deleteLead(id){
 }
 
 module.exports = {
-  createLead, updateLead, getLead, listLeads, addNote, setStatus, notifyTelegram, deleteLead,
+  createLead, updateLead, getLead, listLeads, findLeadByPhone, addNote, setStatus, notifyTelegram, deleteLead,
 };

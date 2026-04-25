@@ -38,7 +38,7 @@ const COPY = {
     hi: 'Hi',
     body: "Hope the move went smoothly. We're a small family-owned crew — a quick Google review goes a long way for us.",
     cta: 'Leave a review',
-    fallback: 'Or call (321) 758-0094 if anything needs fixing.',
+    fallback: 'Or call (689) 600-2720 if anything needs fixing.',
     tagline: 'Moving People Forward',
   },
   es: {
@@ -46,7 +46,7 @@ const COPY = {
     hi: 'Hola',
     body: 'Esperamos que tu mudanza haya salido bien. Somos una cuadrilla familiar — una resena rapida en Google nos ayuda muchisimo.',
     cta: 'Dejar una resena',
-    fallback: 'O llama al (321) 758-0094 si algo necesita arreglarse.',
+    fallback: 'O llama al (689) 600-2720 si algo necesita arreglarse.',
     tagline: 'Mudanzas honestas. Manos fuertes.',
   },
 };
@@ -79,7 +79,7 @@ function renderHtml({ firstName, lang }) {
 </td></tr></table>
 <p style="margin:2px 0 0 0;font-size:12px;color:#6B7280;text-align:center">${L.fallback}</p>
 </td></tr>
-<tr><td class="tm-footer-bg" style="background:#F9FAFB;padding:14px 28px;text-align:center;color:#6B7280;font-size:11px">TORO MOVERS · Orlando, FL · (321) 758-0094 · toromovers.net</td></tr>
+<tr><td class="tm-footer-bg" style="background:#F9FAFB;padding:14px 28px;text-align:center;color:#6B7280;font-size:11px">TORO MOVERS · Orlando, FL · (689) 600-2720 · toromovers.net</td></tr>
 </table>
 </td></tr></table>
 </body></html>`;

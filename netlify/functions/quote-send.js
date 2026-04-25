@@ -47,7 +47,7 @@ const EMAIL_COPY = {
     crew: 'Crew', hours: 'Hours', rate: 'Hourly rate',
     truck: 'Truck (26-ft)', deposit: 'Deposit', total: 'Total',
     cta: 'Reserve my spot now',
-    fallback: 'Or call (321) 758-0094 — same-week scheduling.',
+    fallback: 'Or call (689) 600-2720 — same-week scheduling.',
     tagline: 'Moving People Forward',
     perMoverHr: '/ mover / hr',
   },
@@ -59,7 +59,7 @@ const EMAIL_COPY = {
     crew: 'Cuadrilla', hours: 'Horas', rate: 'Tarifa por hora',
     truck: 'Camion (26 pies)', deposit: 'Deposito', total: 'Total',
     cta: 'Reservar mi lugar',
-    fallback: 'O llama al (321) 758-0094 — agenda esta misma semana.',
+    fallback: 'O llama al (689) 600-2720 — agenda esta misma semana.',
     tagline: 'Mudanzas honestas. Manos fuertes.',
     perMoverHr: '/ mov. / h',
   },
@@ -130,7 +130,7 @@ ${truckLine}
 
 </td></tr>
 
-<tr><td class="tm-footer-bg" style="background:#F9FAFB;padding:14px 28px;text-align:center;color:#6B7280;font-size:11px">TORO MOVERS · Orlando, FL · (321) 758-0094 · toromovers.net</td></tr>
+<tr><td class="tm-footer-bg" style="background:#F9FAFB;padding:14px 28px;text-align:center;color:#6B7280;font-size:11px">TORO MOVERS · Orlando, FL · (689) 600-2720 · toromovers.net</td></tr>
 
 </table>
 </td></tr></table>

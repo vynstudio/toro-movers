@@ -295,7 +295,7 @@ Right now the booking form (`/orlando-movers#book` and similar) submits to Netli
 **Recommended next step:** Add a Zapier or Make.com webhook that:
 1. Receives Netlify Forms webhook on new submission
 2. Pushes lead to Google Sheet (for the dashboard data source)
-3. Sends SMS to (321) 758-0094 for instant alerts
+3. Sends SMS to (689) 600-2720 for instant alerts
 4. Optional: Adds lead to a CRM like HubSpot Free or GoHighLevel (we already use GHL for Soligo)
 
 This is the natural next phase after analytics is set up.

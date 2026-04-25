@@ -241,11 +241,11 @@ exports.handler = async () => {
     actions.push({ id: lead.id, name: lead.name, slot: current.key, sent: true });
 
     // Customer SMS — only at T-3h (heads-up) and T-0:30 (imminent arrival).
-    // No-op until Twilio env vars are set.
-    if ((current.key === 'T-3:00' || current.key === 'T-0:30') && lead.phone) {
+    // No-op until Twilio env vars are set. Skip if customer opted out via STOP.
+    if ((current.key === 'T-3:00' || current.key === 'T-0:30') && lead.phone && !lead.sms_opted_out) {
       const sms = current.key === 'T-3:00'
         ? `Toro Movers — your crew is on schedule for ${lead.move_date} at ${timeHHMM}. We'll call if anything changes. Reply to this text with questions.`
-        : `Toro Movers — your crew will arrive in ~30 min. Call (321) 758-0094 if you need us.`;
+        : `Toro Movers — your crew will arrive in ~30 min. Call (689) 600-2720 if you need us.`;
       const r = await sendSms(lead.phone, sms);
       actions.push({ id: lead.id, sms_slot: current.key, sms_ok: r.ok, sms_reason: r.reason || null });
     }

@@ -29,7 +29,7 @@ const COPY = {
     hi: 'Hi',
     lead: (amount, total) => `Thanks again for moving with Toro. Your remaining balance of <strong>${amount}</strong> (of ${total}) is ready to pay online.`,
     cta: 'Pay balance now',
-    fallback: 'Or call (321) 758-0094 — we can also take payment by phone.',
+    fallback: 'Or call (689) 600-2720 — we can also take payment by phone.',
     tagline: 'Moving People Forward',
   },
   es: {
@@ -37,7 +37,7 @@ const COPY = {
     hi: 'Hola',
     lead: (amount, total) => `Gracias de nuevo por mudarte con Toro. Tu saldo pendiente de <strong>${amount}</strong> (de ${total}) ya esta listo para pagar en linea.`,
     cta: 'Pagar saldo ahora',
-    fallback: 'O llama al (321) 758-0094 — tambien recibimos pago por telefono.',
+    fallback: 'O llama al (689) 600-2720 — tambien recibimos pago por telefono.',
     tagline: 'Mudanzas honestas. Manos fuertes.',
   },
 };
@@ -67,7 +67,7 @@ function renderHtml({ firstName, lang, payUrl, balance, total }) {
 </td></tr></table>
 <p style="margin:4px 0 0 0;font-size:12px;color:#6B7280;text-align:center">${L.fallback}</p>
 </td></tr>
-<tr><td class="tm-footer-bg" style="background:#F9FAFB;padding:14px 28px;text-align:center;color:#6B7280;font-size:11px">TORO MOVERS · Orlando, FL · (321) 758-0094 · toromovers.net</td></tr>
+<tr><td class="tm-footer-bg" style="background:#F9FAFB;padding:14px 28px;text-align:center;color:#6B7280;font-size:11px">TORO MOVERS · Orlando, FL · (689) 600-2720 · toromovers.net</td></tr>
 </table></td></tr></table>
 </body></html>`;
 }

@@ -59,8 +59,8 @@ const BOOKING_COPY = {
     ctaChanges: 'Request changes',
     ctaMessage: 'Message us',
     ctaLine: 'Need to reschedule, add items, or ask us anything?',
-    phone: 'Questions? Call (321) 758-0094',
-    footer: 'TORO MOVERS · Orlando, FL · (321) 758-0094 · toromovers.net',
+    phone: 'Questions? Call (689) 600-2720',
+    footer: 'TORO MOVERS · Orlando, FL · (689) 600-2720 · toromovers.net',
   },
   es: {
     subject: (amount) => `Reservado con Toro Movers — deposito ${amount} recibido`,
@@ -78,8 +78,8 @@ const BOOKING_COPY = {
     ctaChanges: 'Solicitar cambios',
     ctaMessage: 'Escríbenos',
     ctaLine: '¿Necesitas reprogramar, añadir cosas o preguntarnos algo?',
-    phone: '¿Preguntas? Llama al (321) 758-0094',
-    footer: 'TORO MOVERS · Orlando, FL · (321) 758-0094 · toromovers.net',
+    phone: '¿Preguntas? Llama al (689) 600-2720',
+    footer: 'TORO MOVERS · Orlando, FL · (689) 600-2720 · toromovers.net',
   },
 };
 

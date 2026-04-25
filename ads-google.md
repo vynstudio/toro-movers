@@ -108,7 +108,7 @@ These will appear in Google Ads as observation/targeting audiences within ~24 ho
 9. 4.9★ Google Reviews
 10. Free Quote in 60 Seconds
 11. Real Prices on the Page
-12. (321) 758-0094
+12. (689) 600-2720
 13. Honest Hourly Pricing
 14. 2-Mover Crew, $75/hour
 15. Reserve Your Move Today
@@ -116,7 +116,7 @@ These will appear in Google Ads as observation/targeting audiences within ~24 ho
 **Descriptions (4):**
 1. Family-owned, licensed, and insured. We load your rented truck — you drive. $75 per mover, per hour. 2-hour minimum. Same-week scheduling.
 2. Strong, insured movers in Orlando. No fuel fees, no stair fees, no surprises. The number you book is the number you pay.
-3. 4.9★ Google rating from 29 real Orlando customers. Free quote in 60 seconds. Call (321) 758-0094.
+3. 4.9★ Google rating from 29 real Orlando customers. Free quote in 60 seconds. Call (689) 600-2720.
 4. We bring dollies, blankets, straps, and the muscle. You bring the truck. Same fair hourly rate every job.
 
 **Final URL:** `https://toromovers.net/orlando-movers?utm_source=google&utm_medium=cpc&utm_campaign=tm-danielle&utm_content={creative}&utm_term={keyword}`
@@ -129,7 +129,7 @@ These will appear in Google Ads as observation/targeting audiences within ~24 ho
 - "Service Areas" → `/orlando-movers#area`
 - "FAQ" → `/orlando-movers#faq`
 
-**Call Extensions:** `(321) 758-0094` — call-only on mobile
+**Call Extensions:** `(689) 600-2720` — call-only on mobile
 **Location Extensions:** Linked via Google Business Profile
 **Callout Extensions:** "Licensed & Insured", "Family-Owned", "Same-Week Available", "No Hidden Fees", "Free Quotes"
 **Structured Snippets:** Service catalog: Loading, Unloading, Furniture Wrapping, Same-Week Service
@@ -174,7 +174,7 @@ These will appear in Google Ads as observation/targeting audiences within ~24 ho
 9. No Hidden Fees Ever
 10. Lake Mary Movers
 11. Free Quote — 60 Sec
-12. (321) 758-0094
+12. (689) 600-2720
 
 **Descriptions:**
 1. Two movers, four hours, our truck — $875 flat. Loading, drive, unloading. No fuel fees, no surprises. Family-owned in Central Florida.
@@ -229,7 +229,7 @@ These will appear in Google Ads as observation/targeting audiences within ~24 ho
 8. We Handle Pianos & Antiques
 9. No Nickel-and-Diming
 10. Free On-Site Quote Available
-11. (321) 758-0094
+11. (689) 600-2720
 12. Free Quote in 60 Seconds
 
 **Descriptions:**
@@ -284,7 +284,7 @@ These will appear in Google Ads as observation/targeting audiences within ~24 ho
 7. Long-Distance Senior Moves
 8. 4.9★ — Real Reviews
 9. Licensed & Insured Florida
-10. Call (321) 758-0094
+10. Call (689) 600-2720
 11. Honest Pricing, No Surprises
 12. Family-Owned Since Day One
 

@@ -115,8 +115,9 @@ exports.handler = async (event) => {
           } catch(e) { console.error('booking confirmation email failed:', e); }
         }
 
-        // Send SMS confirmation — no-op until TWILIO_* env vars are set
-        if (updated?.phone) {
+        // Send SMS confirmation — no-op until TWILIO_* env vars are set.
+        // Skip if customer opted out via STOP.
+        if (updated?.phone && !updated.sms_opted_out) {
           try {
             const moveDate = updated.move_date || '';
             const moveTime = updated.move_time || '';
@@ -124,7 +125,7 @@ exports.handler = async (event) => {
             const sms =
               `Toro Movers — booking confirmed${when ? ' for ' + when : ''}. ` +
               `Deposit $${amount} received. Confirmation emailed. ` +
-              `Call (321) 758-0094 if you need to change anything.`;
+              `Call (689) 600-2720 if you need to change anything.`;
             await sendSms(updated.phone, sms);
           } catch(e) { console.error('booking confirmation SMS failed:', e); }
         }

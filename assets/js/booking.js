@@ -336,13 +336,13 @@
           if (data.url) {
             window.location.href = data.url;
           } else {
-            alert('Something went wrong. Please call (321) 758-0094 to book.');
+            alert('Something went wrong. Please call (689) 600-2720 to book.');
             btn.disabled = false;
             btn.textContent = 'Reserve This Move →';
           }
         })
         .catch(function () {
-          alert('Something went wrong. Please call (321) 758-0094 to book.');
+          alert('Something went wrong. Please call (689) 600-2720 to book.');
           btn.disabled = false;
           btn.textContent = 'Reserve This Move →';
         });

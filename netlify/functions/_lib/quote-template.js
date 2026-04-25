@@ -44,7 +44,7 @@ const COPY = {
       'Valid for 30 days. Licensed and insured in Florida.',
     ],
     tagline: 'Moving People Forward',
-    cta: 'To book: reply to this email or call (321) 758-0094.',
+    cta: 'To book: reply to this email or call (689) 600-2720.',
     perMoverHr: '/ mover / hr',
     notIncluded: 'Not included',
   },
@@ -69,7 +69,7 @@ const COPY = {
       'Valida por 30 dias. Con licencia y seguro en Florida.',
     ],
     tagline: 'Mudanzas honestas. Manos fuertes.',
-    cta: 'Para reservar: responde a este correo o llama al (321) 758-0094.',
+    cta: 'Para reservar: responde a este correo o llama al (689) 600-2720.',
     perMoverHr: '/ mov. / h',
     notIncluded: 'No incluido',
   },
@@ -131,7 +131,7 @@ function renderQuotePdf({ lead, customer, quote }) {
   doc.fillColor('#FFFFFF').font('Helvetica-Bold').fontSize(26).text('TORO MOVERS', 54, 28);
   doc.font('Helvetica').fontSize(11).fillColor(RED_SOFT_HEADER_TINT).text(L.tagline, 54, 60);
   doc.fillColor('#FFFFFF').font('Helvetica-Bold').fontSize(11)
-    .text('(321) 758-0094', 54, 30, { align: 'right', width: innerW });
+    .text('(689) 600-2720', 54, 30, { align: 'right', width: innerW });
   doc.font('Helvetica').fontSize(9).fillColor(RED_SOFT_HEADER_TINT)
     .text('Licensed & insured · FL', 54, 46, { align: 'right', width: innerW })
     .text('toromovers.net', 54, 60, { align: 'right', width: innerW });
@@ -226,7 +226,7 @@ function renderQuotePdf({ lead, customer, quote }) {
   // ===== Footer =====
   const footerY = doc.page.height - 46;
   doc.fillColor(GRAY_500).font('Helvetica').fontSize(9)
-    .text('TORO MOVERS · Orlando, FL · (321) 758-0094 · toromovers.net', 54, footerY, {
+    .text('TORO MOVERS · Orlando, FL · (689) 600-2720 · toromovers.net', 54, footerY, {
       width: innerW, align: 'center',
     });
 
