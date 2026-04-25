@@ -9,6 +9,7 @@ const { getStore } = require('@netlify/blobs'); // surfaced here so Netlify's sc
 const { createLead, notifyTelegram } = require('./_lib/leads');
 const { sendSms } = require('./_lib/sms');
 const { upsertContactFromLead } = require('./_lib/quo');
+const { upsertCrmLeadFromPublic } = require('./_lib/crm-leads');
 
 const esc = (v) =>
   String(v == null ? '' : v)
@@ -471,6 +472,25 @@ exports.handler = async (event) => {
     upsertContactFromLead(leadForContact)
       .then(r => console.log('[notify] quo contact:', JSON.stringify(r)))
       .catch(e => console.error('[notify] quo contact FAILED:', e.message));
+  }
+
+  // CRM v2 bridge — every callback / quote submission also lands as a
+  // customer + lead row in Supabase so the v2 UI is the source of truth.
+  // Skip abandons (we don't want phantom rows for click-but-leave traffic).
+  if (!isAbandon && phone) {
+    const v2Payload = {
+      ...payload,
+      name: fullName,
+      phone,
+      email,
+      page,
+      bedrooms: furniture_size,
+      stairs: stairs_elev,
+      estimate,
+    };
+    upsertCrmLeadFromPublic(v2Payload)
+      .then(r => console.log('[notify] crm v2 bridge:', JSON.stringify(r)))
+      .catch(e => console.error('[notify] crm v2 bridge FAILED:', e.message));
   }
 
   try {

@@ -11,6 +11,7 @@ const crypto = require('crypto');
 const { getStripe } = require('./_lib/stripe-client');
 const stripe = getStripe();
 const { createLead } = require('./_lib/leads');
+const { upsertCrmLeadFromPublic } = require('./_lib/crm-leads');
 
 const TG_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TG_CHAT = process.env.TELEGRAM_CHAT_ID;
@@ -131,6 +132,20 @@ exports.handler = async (event) => {
   } catch (e) {
     console.error('createLead failed:', e.message);
   }
+
+  // CRM v2 bridge — additive, fire-and-forget
+  upsertCrmLeadFromPublic({
+    name, email, phone,
+    move_date,
+    page: 'mini-app',
+    utm_source: 'telegram',
+    estimate: {
+      movers: mv, hours: hr,
+      total: parseInt(total, 10) || (mv * hr * 75 + (hasTruck ? 275 : 0)),
+      truck: hasTruck,
+    },
+  }).then(r => console.log('[mini-app] crm v2 bridge:', JSON.stringify(r)))
+    .catch(e => console.error('[mini-app] crm v2 bridge FAILED:', e.message));
 
   // Create Stripe Checkout session for deposit
   let checkoutUrl = null;
