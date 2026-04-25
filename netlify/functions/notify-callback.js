@@ -7,6 +7,7 @@
 const { Resend } = require('resend');
 const { getStore } = require('@netlify/blobs'); // surfaced here so Netlify's scanner enables Blobs for this function
 const { createLead, notifyTelegram } = require('./_lib/leads');
+const { sendSms } = require('./_lib/sms');
 
 const esc = (v) =>
   String(v == null ? '' : v)
@@ -445,6 +446,20 @@ exports.handler = async (event) => {
     }
   } catch(e) {
     console.error('[notify] Telegram FAILED:', e.message, e.stack);
+  }
+
+  // Owner SMS — redundant alert alongside Telegram. No-ops if Quo env missing.
+  try {
+    const ownerPhone = process.env.OPENPHONE_OWNER_PHONE;
+    if (ownerPhone && !isAbandon) {
+      const tag = isPartial ? 'partial lead' : (isQuoteForm ? 'quote' : 'callback');
+      const priceLine = estimate ? ` $${estimate.total}` : '';
+      const smsBody = `Toro: new ${tag} — ${fullName} ${prettyPhone(phone)}${priceLine} (${page || 'web'})`;
+      const r = await sendSms(ownerPhone, smsBody);
+      console.log('[notify] sms result:', JSON.stringify(r));
+    }
+  } catch(e) {
+    console.error('[notify] SMS FAILED:', e.message);
   }
 
   try {
