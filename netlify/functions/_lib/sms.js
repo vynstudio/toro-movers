@@ -39,13 +39,15 @@ async function sendSms(to, body, opts = {}) {
   // charged per segment. Truncate defensively.
   const safeBody = String(body).slice(0, 1600);
 
-  // Payload shape per https://www.openphone.com/docs/api-reference/messages/create-message
+  // Payload shape per Quo (formerly OpenPhone) docs at https://quo.com/docs.
+  // Quo's API requires `from` (E.164). Older OpenPhone API accepted
+  // `phoneNumberId`; we keep that as a fallback but prefer `from`.
   const payload = {
     content: safeBody,
     to: [normalizedTo],
   };
-  if (phoneId) payload.phoneNumberId = phoneId;
-  else payload.from = fromNum;
+  if (fromNum) payload.from = fromNum;
+  else if (phoneId) payload.phoneNumberId = phoneId;
   if (opts.setInboxStatus) payload.setInboxStatus = opts.setInboxStatus; // e.g. 'done'
 
   try {
