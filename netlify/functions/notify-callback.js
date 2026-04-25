@@ -10,6 +10,8 @@ const { createLead, notifyTelegram } = require('./_lib/leads');
 const { sendSms } = require('./_lib/sms');
 const { upsertContactFromLead } = require('./_lib/quo');
 const { upsertCrmLeadFromPublic } = require('./_lib/crm-leads');
+const { autoSendQuote } = require('./_lib/auto-quote');
+const { getAdminClient } = require('./_lib/supabase-admin');
 
 const esc = (v) =>
   String(v == null ? '' : v)
@@ -468,6 +470,7 @@ exports.handler = async (event) => {
   // Functions freeze the container as soon as the handler returns, so
   // fire-and-forget promises get killed mid-request and silently lose
   // data. Run them in parallel and wait for both.
+  let v2BridgeResult = null;
   if (!isAbandon && phone) {
     const leadForContact = savedLead || { ...payload, name: fullName, phone, email };
     const v2Payload = {
@@ -486,12 +489,51 @@ exports.handler = async (event) => {
     ]);
     console.log('[notify] quo contact:', JSON.stringify(contactRes.status === 'fulfilled' ? contactRes.value : { ok: false, error: String(contactRes.reason && contactRes.reason.message || contactRes.reason) }));
     console.log('[notify] crm v2 bridge:', JSON.stringify(v2Res.status === 'fulfilled' ? v2Res.value : { ok: false, error: String(v2Res.reason && v2Res.reason.message || v2Res.reason) }));
+    if (v2Res.status === 'fulfilled' && v2Res.value && v2Res.value.ok) v2BridgeResult = v2Res.value;
+  }
+
+  // Auto-send the quote. Only fires when:
+  //   - this is a real quote submission (estimate exists, not partial/abandon)
+  //   - the v2 bridge succeeded (we have a real lead_id + customer)
+  //   - Supabase is configured
+  // Creates a quote row + PDF, emails it, texts it, bumps stage='quoted'.
+  // Errors are collected but never break the response — the form still
+  // sees success even if email/SMS send fails.
+  let autoQuoteResult = null;
+  if (
+    estimate && estimate.total > 0 &&
+    !isPartial && !isAbandon &&
+    v2BridgeResult && v2BridgeResult.lead_id &&
+    process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY
+  ) {
+    try {
+      const admin = getAdminClient();
+      const { data: cust } = await admin.from('customers').select('*').eq('id', v2BridgeResult.customer_id).maybeSingle();
+      autoQuoteResult = await autoSendQuote({
+        admin,
+        lead_id: v2BridgeResult.lead_id,
+        customer: cust || { full_name: fullName, phone, email, language_preference: v2BridgeResult.language },
+        estimate: {
+          movers: estimate.movers,
+          hours: estimate.hours,
+          rate: estimate.rate || 75,
+          total: estimate.total,
+          truck: !!estimate.truck,
+        },
+      });
+      console.log('[notify] auto-quote:', JSON.stringify(autoQuoteResult));
+    } catch (e) {
+      console.error('[notify] auto-quote FAILED:', e.message);
+    }
   }
 
   try {
     await resend.emails.send(internalEmail);
 
-    if (customerEmail) {
+    // Skip the legacy customer estimate email if the auto-quote already
+    // emailed the official PDF — otherwise the customer gets two near-
+    // identical messages.
+    if (customerEmail && !(autoQuoteResult && autoQuoteResult.email_sent)) {
       try { await resend.emails.send(customerEmail); }
       catch (e) { console.error('Customer email failed:', e.message); }
     }
