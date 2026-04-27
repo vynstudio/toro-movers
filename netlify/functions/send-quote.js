@@ -93,9 +93,12 @@ exports.handler = async (event) => {
   try {
     lead = await createLead(leadPayload);
     console.log('[send-quote] lead created:', lead.id, 'status=' + lead.status);
-    notifyTelegram(lead)
-      .then(r => console.log('[send-quote] telegram result:', JSON.stringify(r)))
-      .catch(e => console.error('[send-quote] Telegram failed:', e.message));
+    try {
+      const tgRes = await notifyTelegram(lead);
+      console.log('[send-quote] telegram result:', JSON.stringify(tgRes));
+    } catch (tgErr) {
+      console.error('[send-quote] Telegram failed:', tgErr.message);
+    }
   } catch (e) {
     console.error('[send-quote] createLead failed:', e.message);
   }
