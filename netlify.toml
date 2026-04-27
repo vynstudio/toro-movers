@@ -25,6 +25,11 @@
 [functions."vyn-bot-daily"]
   schedule = "0 12 * * *"
 
+# IG organic posts — daily at 6pm Eastern (22:00 UTC EDT).
+# No-ops on dates not in the schedule inside ig-scheduled-post.js.
+[functions."ig-scheduled-post"]
+  schedule = "0 22 * * *"
+
 # Escalating move-day reminders — every 15 min
 # T-3h first, then every 30m to T-1h, then every 15m in the final hour.
 # Idempotent via lead.reminders_sent[]. Fires only for booked leads with
