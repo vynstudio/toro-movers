@@ -92,9 +92,12 @@ exports.handler = async (event) => {
   let lead = null;
   try {
     lead = await createLead(leadPayload);
-    notifyTelegram(lead).catch(e => console.error('Telegram failed:', e.message));
+    console.log('[send-quote] lead created:', lead.id, 'status=' + lead.status);
+    notifyTelegram(lead)
+      .then(r => console.log('[send-quote] telegram result:', JSON.stringify(r)))
+      .catch(e => console.error('[send-quote] Telegram failed:', e.message));
   } catch (e) {
-    console.error('createLead failed:', e.message);
+    console.error('[send-quote] createLead failed:', e.message);
   }
 
   // CRM v2 bridge — mirror this lead into Supabase (public.customers + public.leads)
