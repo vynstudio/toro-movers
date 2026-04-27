@@ -6,8 +6,16 @@
 
 const { Resend } = require('resend');
 const { createLead, notifyTelegram } = require('./_lib/leads');
+const { sendSms } = require('./_lib/sms');
 
 const { checkRateLimit } = require('./_lib/rate-limit');
+
+const prettyPhone = (p) => {
+  const d = String(p || '').replace(/\D/g, '');
+  if (d.length === 10) return `(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}`;
+  if (d.length === 11 && d.startsWith('1')) return `+1 (${d.slice(1,4)}) ${d.slice(4,7)}-${d.slice(7)}`;
+  return p || '';
+};
 
 exports.handler = async (event) => {
   const headers = {
@@ -101,6 +109,19 @@ exports.handler = async (event) => {
     }
   } catch (e) {
     console.error('[send-quote] createLead failed:', e.message);
+  }
+
+  // Owner SMS via Quo — redundant alert alongside Telegram. No-ops if env missing.
+  // Awaited so Netlify doesn't freeze the worker before Quo finishes the send.
+  try {
+    const ownerPhone = process.env.OPENPHONE_OWNER_PHONE;
+    if (ownerPhone) {
+      const smsBody = `Toro: new quote — ${name} ${prettyPhone(phone)} $${total} (${page || '/lp'})`;
+      const r = await sendSms(ownerPhone, smsBody);
+      console.log('[send-quote] sms result:', JSON.stringify(r));
+    }
+  } catch (e) {
+    console.error('[send-quote] SMS failed:', e.message);
   }
 
   // CRM v2 bridge — mirror this lead into Supabase (public.customers + public.leads)
