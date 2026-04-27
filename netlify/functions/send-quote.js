@@ -10,13 +10,6 @@ const { sendSms } = require('./_lib/sms');
 
 const { checkRateLimit } = require('./_lib/rate-limit');
 
-const prettyPhone = (p) => {
-  const d = String(p || '').replace(/\D/g, '');
-  if (d.length === 10) return `(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}`;
-  if (d.length === 11 && d.startsWith('1')) return `+1 (${d.slice(1,4)}) ${d.slice(4,7)}-${d.slice(7)}`;
-  return p || '';
-};
-
 exports.handler = async (event) => {
   const headers = {
     'Access-Control-Allow-Origin': '*',
@@ -111,17 +104,22 @@ exports.handler = async (event) => {
     console.error('[send-quote] createLead failed:', e.message);
   }
 
-  // Owner SMS via Quo — redundant alert alongside Telegram. No-ops if env missing.
-  // Awaited so Netlify doesn't freeze the worker before Quo finishes the send.
+  // Customer SMS via Quo — full quote summary. Awaited so Netlify doesn't
+  // freeze the worker before Quo finishes the send. No-ops if Quo env missing
+  // or no phone on the lead.
   try {
-    const ownerPhone = process.env.OPENPHONE_OWNER_PHONE;
-    if (ownerPhone) {
-      const smsBody = `Toro: new quote — ${name} ${prettyPhone(phone)} $${total} (${page || '/lp'})`;
-      const r = await sendSms(ownerPhone, smsBody);
-      console.log('[send-quote] sms result:', JSON.stringify(r));
+    if (phone) {
+      const first = String(name).split(/\s+/)[0] || 'there';
+      const truckLine = truck ? ` + truck` : '';
+      const customerSmsBody =
+        `Hi ${first}, your Toro Movers quote: $${total} (${movers} movers × ${hours}h${truckLine}). ` +
+        `Lock your date: https://toromovers.net/book — or call (689) 600-2720. ` +
+        `Reply STOP to opt out.`;
+      const r = await sendSms(phone, customerSmsBody);
+      console.log('[send-quote] customer sms result:', JSON.stringify(r));
     }
   } catch (e) {
-    console.error('[send-quote] SMS failed:', e.message);
+    console.error('[send-quote] customer SMS failed:', e.message);
   }
 
   // CRM v2 bridge — mirror this lead into Supabase (public.customers + public.leads)
@@ -234,26 +232,8 @@ exports.handler = async (event) => {
       };
     }
 
-    // Send lead notification to Toro Movers team
-    const teamRes = await resend.emails.send({
-      from: `Toro Movers Leads <${fromEmail}>`,
-      to: [fromEmail],
-      subject: `New Quote Lead: ${name} — $${total} (${movers} movers, ${hours}hrs)`,
-      html: `
-        <h2>New lead from the move calculator</h2>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Phone:</strong> ${phone}</p>
-        <p><strong>Quote:</strong> $${total} (${movers} movers × ${hours} hrs${truck ? ' + truck' : ''}${packing !== 'none' ? ' + packing: ' + packing : ''})</p>
-        <p><strong>Source page:</strong> ${page}</p>
-        <p><a href="tel:${phone}">Call ${name} now</a></p>
-      `,
-    });
-    if (teamRes && teamRes.error) {
-      // Customer already got their quote at this point; log but still return
-      // success so the customer-facing UI doesn't show an error.
-      console.error('[send-quote] Resend team-notify email failed:', JSON.stringify(teamRes.error));
-    }
+    // Owner-side notifications are Telegram-only (handled above). Customer
+    // also gets a full-quote SMS via Quo (handled above).
 
     return {
       statusCode: 200,
