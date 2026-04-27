@@ -195,16 +195,26 @@ exports.handler = async (event) => {
   const resend = new Resend(apiKey);
 
   try {
-    // Send quote to customer
-    await resend.emails.send({
+    // Send quote to customer. Resend SDK returns { data, error } — a non-thrown
+    // error (e.g. invalid API key, unverified domain) lands in `error`, so we
+    // must check it explicitly rather than relying on the await to throw.
+    const customerRes = await resend.emails.send({
       from: `Toro Movers <${fromEmail}>`,
       to: [email],
       subject: `Your Moving Quote — $${total} Estimate | Toro Movers`,
       html: htmlEmail,
     });
+    if (customerRes && customerRes.error) {
+      console.error('[send-quote] Resend customer email failed:', JSON.stringify(customerRes.error));
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({ error: 'Email failed', detail: customerRes.error.message || String(customerRes.error) }),
+      };
+    }
 
     // Send lead notification to Toro Movers team
-    await resend.emails.send({
+    const teamRes = await resend.emails.send({
       from: `Toro Movers Leads <${fromEmail}>`,
       to: [fromEmail],
       subject: `New Quote Lead: ${name} — $${total} (${movers} movers, ${hours}hrs)`,
@@ -218,6 +228,11 @@ exports.handler = async (event) => {
         <p><a href="tel:${phone}">Call ${name} now</a></p>
       `,
     });
+    if (teamRes && teamRes.error) {
+      // Customer already got their quote at this point; log but still return
+      // success so the customer-facing UI doesn't show an error.
+      console.error('[send-quote] Resend team-notify email failed:', JSON.stringify(teamRes.error));
+    }
 
     return {
       statusCode: 200,
@@ -225,7 +240,7 @@ exports.handler = async (event) => {
       body: JSON.stringify({ success: true }),
     };
   } catch (err) {
-    console.error('Resend error:', err.message);
+    console.error('[send-quote] Resend threw:', err.message);
     return {
       statusCode: 500,
       headers,
