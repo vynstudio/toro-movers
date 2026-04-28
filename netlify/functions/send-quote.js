@@ -119,14 +119,16 @@ exports.handler = async (event) => {
     console.error('[send-quote] createLead failed:', e.message);
   }
 
-  // Customer SMS via Quo — full quote summary plus a personalised /book link
-  // that carries the quote forward so the deposit page knows the move type
-  // ($50 labor-only vs $125 with truck) without re-asking. Awaited so Netlify
-  // doesn't freeze the worker mid-flight.
+  // Customer SMS via Quo — closer-style copy: clear quote, deposit reframed
+  // as "applied to final bill", action-first link, soft urgency, then opt-out.
+  // Personalised /book link carries the quote forward so the deposit page
+  // knows the move type ($50 labor-only vs $125 with truck) without re-asking.
+  // Awaited so Netlify doesn't freeze the worker mid-flight.
   try {
     if (phone) {
       const first = String(name).split(/\s+/)[0] || 'there';
-      const truckLine = truck ? ` + truck` : '';
+      const truckLine = truck ? ' · truck included' : ' · labor only';
+      const deposit = truck ? 125 : 50;
       const params = new URLSearchParams({
         truck: String(!!truck),
         total: String(total),
@@ -138,8 +140,11 @@ exports.handler = async (event) => {
       });
       const bookLink = `https://toromovers.net/book?${params.toString()}`;
       const customerSmsBody =
-        `Hi ${first}, your Toro Movers quote: $${total} (${movers} movers × ${hours}h${truckLine}). ` +
-        `Lock your date: ${bookLink} — or call (689) 600-2720. ` +
+        `Hi ${first} — Toro Movers here. Your quote:\n\n` +
+        `$${total} (${movers} movers · ${hours}h${truckLine})\n\n` +
+        `Reserve your date with a $${deposit} deposit. It's applied to your final bill, not extra.\n\n` +
+        `Lock it in: ${bookLink}\n\n` +
+        `Or call (689) 600-2720. Refundable with 24h notice. Licensed & insured.\n\n` +
         `Reply STOP to opt out.`;
       const r = await sendSms(phone, customerSmsBody);
       console.log('[send-quote] customer sms result:', JSON.stringify(r));
