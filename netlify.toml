@@ -30,6 +30,12 @@
 [functions."ig-scheduled-post"]
   schedule = "0 22 * * *"
 
+# /lp + /lp-es health monitor — every 4 hours.
+# Hits both LPs, fires a synthetic test lead through send-quote (the probe is
+# short-circuited before side effects), pings Telegram on failure.
+[functions."lp-health-monitor"]
+  schedule = "0 */4 * * *"
+
 # Escalating move-day reminders — every 15 min
 # T-3h first, then every 30m to T-1h, then every 15m in the final hour.
 # Idempotent via lead.reminders_sent[]. Fires only for booked leads with

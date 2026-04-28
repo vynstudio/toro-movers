@@ -43,6 +43,21 @@ exports.handler = async (event) => {
     return { statusCode: 400, headers, body: 'Invalid JSON' };
   }
 
+  // Health-monitor probes short-circuit before any side effects so they don't
+  // create CRM leads, ping Telegram, fire Resend, or text the owner phone.
+  // The probe still validates Resend SDK construction below by reaching this
+  // point with a valid API key.
+  const isHealthCheck = !!(payload && payload.health_check) ||
+                       (event.headers && (event.headers['x-health-check'] === '1' || event.headers['X-Health-Check'] === '1'));
+  if (isHealthCheck) {
+    console.log('[send-quote] health-check probe acknowledged');
+    return {
+      statusCode: 200,
+      headers: { ...headers, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ success: true, health_check: true }),
+    };
+  }
+
   const {
     name = 'Customer',
     email = '',
