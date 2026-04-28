@@ -86,13 +86,20 @@ h1{font-size:clamp(1.6rem,5vw,2.2rem);margin-bottom:8px}
   // quote details forward so we can show the right deposit and prefill the
   // Stripe Checkout session.
   var p = new URLSearchParams(window.location.search);
-  var truck   = p.get('truck') === 'true';
-  var movers  = p.get('movers') || '';
-  var hours   = p.get('hours')  || '';
-  var total   = parseInt(p.get('total'), 10) || 0;
-  var name    = p.get('name')   || '';
-  var email   = p.get('email')  || '';
-  var phone   = p.get('phone')  || '';
+  var truck    = p.get('truck') === 'true';
+  var movers   = p.get('movers') || '';
+  var hours    = p.get('hours')  || '';
+  var total    = parseInt(p.get('total'), 10) || 0;
+  var truckFee = parseInt(p.get('truckFee'), 10);
+  var labor    = parseInt(p.get('labor'), 10);
+  var name     = p.get('name')   || '';
+  var email    = p.get('email')  || '';
+  var phone    = p.get('phone')  || '';
+
+  // Fall back to derived values when the URL didn't carry them (e.g. older
+  // links generated before the truckFee/labor params were added).
+  if (isNaN(truckFee)) truckFee = truck ? 275 : 0;
+  if (isNaN(labor))    labor    = Math.max(0, total - truckFee);
 
   // Required-fields guard. If the link is bare (e.g. someone typed
   // toromovers.net/book), we can't compute a deposit — send them to the
@@ -136,6 +143,8 @@ h1{font-size:clamp(1.6rem,5vw,2.2rem);margin-bottom:8px}
       '<div class="summary-row"><span class="lbl">Service</span><span class="val">' + moveLabel + '</span></div>' +
       '<div class="summary-row"><span class="lbl">Crew</span><span class="val">' + escapeHtml(movers) + ' movers</span></div>' +
       '<div class="summary-row"><span class="lbl">Estimated time</span><span class="val">' + escapeHtml(hours) + ' hours</span></div>' +
+      '<div class="summary-row"><span class="lbl">Labor ($75/mover/hr)</span><span class="val">$' + labor + '</span></div>' +
+      (truckFee > 0 ? '<div class="summary-row"><span class="lbl">Truck fee</span><span class="val">$' + truckFee + '</span></div>' : '') +
       '<div class="summary-row"><span class="lbl">Estimated total</span><span class="val">$' + total + '</span></div>' +
       '<div class="summary-row"><span class="lbl">Deposit today</span><span class="val">−$' + deposit + '</span></div>' +
       '<div class="summary-total"><span>Remaining after the move</span><span class="val">$' + (total - deposit) + '</span></div>' +
