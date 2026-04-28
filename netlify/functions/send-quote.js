@@ -119,16 +119,27 @@ exports.handler = async (event) => {
     console.error('[send-quote] createLead failed:', e.message);
   }
 
-  // Customer SMS via Quo — full quote summary. Awaited so Netlify doesn't
-  // freeze the worker before Quo finishes the send. No-ops if Quo env missing
-  // or no phone on the lead.
+  // Customer SMS via Quo — full quote summary plus a personalised /book link
+  // that carries the quote forward so the deposit page knows the move type
+  // ($50 labor-only vs $125 with truck) without re-asking. Awaited so Netlify
+  // doesn't freeze the worker mid-flight.
   try {
     if (phone) {
       const first = String(name).split(/\s+/)[0] || 'there';
       const truckLine = truck ? ` + truck` : '';
+      const params = new URLSearchParams({
+        truck: String(!!truck),
+        total: String(total),
+        movers: String(movers),
+        hours: String(hours),
+        name: name || '',
+        email: email || '',
+        phone: phone || '',
+      });
+      const bookLink = `https://toromovers.net/book?${params.toString()}`;
       const customerSmsBody =
         `Hi ${first}, your Toro Movers quote: $${total} (${movers} movers × ${hours}h${truckLine}). ` +
-        `Lock your date: https://toromovers.net/book — or call (689) 600-2720. ` +
+        `Lock your date: ${bookLink} — or call (689) 600-2720. ` +
         `Reply STOP to opt out.`;
       const r = await sendSms(phone, customerSmsBody);
       console.log('[send-quote] customer sms result:', JSON.stringify(r));

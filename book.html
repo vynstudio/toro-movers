@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Lock your move · Toro Movers</title>
+<meta name="description" content="Confirm your move with Toro Movers. Pay your deposit and lock your date.">
+<meta name="robots" content="noindex,follow">
+<meta name="theme-color" content="#C8102E">
+<link rel="canonical" href="https://toromovers.net/book">
+<link rel="icon" href="assets/img/toro-logo.svg">
+<style>
+:root{--red:#C8102E;--red-dark:#A50D26;--charcoal:#1C1C1E;--charcoal-soft:#3a3a3d;--white:#FFF;--gray-50:#F9FAFB;--gray-100:#F3F4F6;--gray-200:#E5E7EB;--gray-500:#6B7280;--ease:cubic-bezier(.16,1,.3,1)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--gray-50);color:var(--charcoal);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+h1,h2,h3{font-weight:800;line-height:1.1;letter-spacing:-.02em}
+
+.hd{position:sticky;top:0;background:var(--white);border-bottom:1px solid var(--gray-100);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;z-index:10}
+.hd-logo{display:flex;align-items:center;gap:8px;font-weight:800;font-size:17px;text-transform:uppercase}
+.hd-logo img{height:26px;width:auto}
+.hd-logo .a{color:var(--red)}
+.hd-call{display:inline-flex;align-items:center;gap:6px;background:var(--red);color:#fff;font-weight:700;font-size:13px;padding:9px 16px;border-radius:999px;white-space:nowrap}
+.hd-call svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+
+main{flex:1;display:flex;align-items:center;justify-content:center;padding:48px 20px}
+.card{max-width:520px;width:100%;background:var(--white);border:1px solid var(--gray-200);border-radius:24px;padding:32px;box-shadow:0 12px 48px rgba(0,0,0,0.06)}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.6px;color:var(--red);background:rgba(200,16,46,0.08);padding:6px 14px;border-radius:999px;margin-bottom:18px}
+.eyebrow svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+h1{font-size:clamp(1.6rem,5vw,2.2rem);margin-bottom:8px}
+.lead{color:var(--charcoal-soft);font-size:15px;margin-bottom:24px}
+
+.summary{background:var(--gray-50);border:1px solid var(--gray-100);border-radius:16px;padding:20px;margin-bottom:24px}
+.summary h3{font-size:13px;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:1.4px;margin-bottom:12px}
+.summary-row{display:flex;justify-content:space-between;padding:7px 0;font-size:15px;border-top:1px solid var(--gray-200)}
+.summary-row:first-of-type{border-top:0}
+.summary-row .lbl{color:var(--charcoal-soft)}
+.summary-row .val{font-weight:700;font-variant-numeric:tabular-nums}
+.summary-total{display:flex;justify-content:space-between;padding-top:14px;margin-top:10px;border-top:2px solid var(--charcoal);font-size:16px;font-weight:800}
+.summary-total .val{color:var(--red);font-variant-numeric:tabular-nums}
+
+.deposit{background:var(--charcoal);color:#fff;border-radius:18px;padding:22px;margin-bottom:20px;text-align:center;position:relative;overflow:hidden}
+.deposit::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(200,16,46,.18),transparent 60%);pointer-events:none}
+.deposit-inner{position:relative;z-index:1}
+.deposit-amount{font-size:clamp(2rem,7vw,2.8rem);font-weight:800;color:#fff;letter-spacing:-.02em;line-height:1}
+.deposit-label{font-size:12px;font-weight:600;color:rgba(255,255,255,.65);text-transform:uppercase;letter-spacing:1.4px;margin-top:6px}
+.deposit-note{font-size:13px;color:rgba(255,255,255,.7);margin-top:10px}
+
+.pay-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:18px;background:var(--red);color:#fff;border:0;border-radius:999px;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 8px 28px rgba(200,16,46,0.4);transition:all .15s var(--ease);font-family:inherit}
+.pay-btn:hover{background:var(--red-dark);transform:translateY(-1px)}
+.pay-btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.pay-btn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+
+.trust{display:flex;justify-content:center;gap:18px;margin-top:18px;flex-wrap:wrap;font-size:12px;color:var(--gray-500)}
+.trust span{display:inline-flex;align-items:center;gap:4px}
+.trust svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+
+.fallback{padding:24px 0;text-align:center}
+.fallback h2{font-size:1.4rem;margin-bottom:10px}
+.fallback p{color:var(--charcoal-soft);font-size:14px;margin-bottom:18px}
+.fallback .btn{display:inline-flex;align-items:center;justify-content:center;padding:14px 26px;background:var(--red);color:#fff;border-radius:999px;font-weight:700}
+
+.foot{text-align:center;padding:24px;color:var(--gray-500);font-size:12px}
+.foot a{color:var(--red);font-weight:700}
+</style>
+</head>
+<body>
+<header class="hd">
+  <a href="/" class="hd-logo"><img src="assets/img/toro-logo.svg" alt="">TORO <span class="a">MOVERS</span></a>
+  <a href="tel:6896002720" class="hd-call"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span>(689) 600-2720</span></a>
+</header>
+
+<main>
+  <div class="card" id="card">
+    <!-- Filled by JS based on URL params -->
+  </div>
+</main>
+
+<div class="foot">Toro Movers · Licensed & insured · Central Florida · <a href="tel:6896002720">(689) 600-2720</a></div>
+
+<script>
+(function(){
+  // Parse query params. The /book link is sent via SMS / email and carries the
+  // quote details forward so we can show the right deposit and prefill the
+  // Stripe Checkout session.
+  var p = new URLSearchParams(window.location.search);
+  var truck   = p.get('truck') === 'true';
+  var movers  = p.get('movers') || '';
+  var hours   = p.get('hours')  || '';
+  var total   = parseInt(p.get('total'), 10) || 0;
+  var name    = p.get('name')   || '';
+  var email   = p.get('email')  || '';
+  var phone   = p.get('phone')  || '';
+
+  // Required-fields guard. If the link is bare (e.g. someone typed
+  // toromovers.net/book), we can't compute a deposit — send them to the
+  // calculator first so they can quote a real move.
+  var hasQuote = !!(movers && hours && total);
+
+  var card = document.getElementById('card');
+
+  if (!hasQuote) {
+    card.innerHTML = '<div class="fallback">' +
+      '<div class="eyebrow"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>Lock your move</div>' +
+      '<h2>Need a quote first?</h2>' +
+      '<p>Tell us about your move in 7 quick questions and we\'ll send your estimate plus your booking link.</p>' +
+      '<a href="/lp" class="btn">Get my free quote →</a>' +
+    '</div>';
+    return;
+  }
+
+  var deposit = truck ? 125 : 50;
+  var moveLabel = truck ? 'Move with Truck' : 'Labor Only';
+
+  // Build deposit URL → reserve-from-email creates the Stripe Checkout Session.
+  var depositUrl = '/.netlify/functions/reserve-from-email?' +
+    'truck='   + encodeURIComponent(truck) +
+    '&total='  + encodeURIComponent(total) +
+    '&movers=' + encodeURIComponent(movers) +
+    '&hours='  + encodeURIComponent(hours) +
+    '&name='   + encodeURIComponent(name) +
+    '&email='  + encodeURIComponent(email) +
+    '&phone='  + encodeURIComponent(phone);
+
+  var first = (name || '').split(/\s+/)[0] || 'there';
+
+  card.innerHTML =
+    '<div class="eyebrow"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M9 16l2 2 4-4"/></svg>Lock your move</div>' +
+    '<h1>You\'re almost there, ' + escapeHtml(first) + '.</h1>' +
+    '<p class="lead">Pay your deposit to lock your date and crew. The rest is billed after the move at $75/mover/hour — exactly what we quoted.</p>' +
+
+    '<div class="summary">' +
+      '<h3>Your move</h3>' +
+      '<div class="summary-row"><span class="lbl">Service</span><span class="val">' + moveLabel + '</span></div>' +
+      '<div class="summary-row"><span class="lbl">Crew</span><span class="val">' + escapeHtml(movers) + ' movers</span></div>' +
+      '<div class="summary-row"><span class="lbl">Estimated time</span><span class="val">' + escapeHtml(hours) + ' hours</span></div>' +
+      '<div class="summary-total"><span>Estimated total</span><span class="val">$' + total + '</span></div>' +
+    '</div>' +
+
+    '<div class="deposit">' +
+      '<div class="deposit-inner">' +
+        '<div class="deposit-amount">$' + deposit + '</div>' +
+        '<div class="deposit-label">Refundable deposit · locks your date</div>' +
+        '<div class="deposit-note">' + (truck ? 'Includes truck reservation.' : 'Labor-only / hauling reservation.') + '</div>' +
+      '</div>' +
+    '</div>' +
+
+    '<a href="' + depositUrl + '" class="pay-btn" id="pay">' +
+      '<svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>' +
+      'Pay $' + deposit + ' deposit & lock my date' +
+    '</a>' +
+
+    '<div class="trust">' +
+      '<span><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>Refundable with 24h notice</span>' +
+      '<span><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Encrypted via Stripe</span>' +
+    '</div>';
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function(c){
+      return ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c];
+    });
+  }
+})();
+</script>
+</body>
+</html>
