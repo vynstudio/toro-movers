@@ -249,6 +249,13 @@
   to = "/mudanca.html"
   status = 200
 
+# Premium calculator LP — Spanish variant. /lp serves lp.html via the generic
+# .html-strip rule below, but /lp-es needs an explicit pretty-URL redirect.
+[[redirects]]
+  from = "/lp-es"
+  to = "/lp-es.html"
+  status = 200
+
 # /privacy → /privacy.html
 [[redirects]]
   from = "/privacy"
