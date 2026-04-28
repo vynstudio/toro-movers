@@ -129,21 +129,23 @@ h1{font-size:clamp(1.6rem,5vw,2.2rem);margin-bottom:8px}
   card.innerHTML =
     '<div class="eyebrow"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M9 16l2 2 4-4"/></svg>Lock your move</div>' +
     '<h1>You\'re almost there, ' + escapeHtml(first) + '.</h1>' +
-    '<p class="lead">Pay your deposit to lock your date and crew. The rest is billed after the move at $75/mover/hour — exactly what we quoted.</p>' +
+    '<p class="lead">Pay your deposit to lock your date and crew. <strong>The deposit is applied to your final bill</strong> — it\'s not an extra charge. The remainder is billed after the move at $75/mover/hour, exactly what we quoted.</p>' +
 
     '<div class="summary">' +
       '<h3>Your move</h3>' +
       '<div class="summary-row"><span class="lbl">Service</span><span class="val">' + moveLabel + '</span></div>' +
       '<div class="summary-row"><span class="lbl">Crew</span><span class="val">' + escapeHtml(movers) + ' movers</span></div>' +
       '<div class="summary-row"><span class="lbl">Estimated time</span><span class="val">' + escapeHtml(hours) + ' hours</span></div>' +
-      '<div class="summary-total"><span>Estimated total</span><span class="val">$' + total + '</span></div>' +
+      '<div class="summary-row"><span class="lbl">Estimated total</span><span class="val">$' + total + '</span></div>' +
+      '<div class="summary-row"><span class="lbl">Deposit today</span><span class="val">−$' + deposit + '</span></div>' +
+      '<div class="summary-total"><span>Remaining after the move</span><span class="val">$' + (total - deposit) + '</span></div>' +
     '</div>' +
 
     '<div class="deposit">' +
       '<div class="deposit-inner">' +
         '<div class="deposit-amount">$' + deposit + '</div>' +
-        '<div class="deposit-label">Refundable deposit · locks your date</div>' +
-        '<div class="deposit-note">' + (truck ? 'Includes truck reservation.' : 'Labor-only / hauling reservation.') + '</div>' +
+        '<div class="deposit-label">Deposit · applied to your final bill</div>' +
+        '<div class="deposit-note">' + (truck ? 'Includes truck reservation. Refundable with 24h notice.' : 'Labor-only / hauling reservation. Refundable with 24h notice.') + '</div>' +
       '</div>' +
     '</div>' +
 
@@ -153,8 +155,9 @@ h1{font-size:clamp(1.6rem,5vw,2.2rem);margin-bottom:8px}
     '</a>' +
 
     '<div class="trust">' +
-      '<span><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>Refundable with 24h notice</span>' +
+      '<span><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>Counted toward final bill</span>' +
       '<span><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Encrypted via Stripe</span>' +
+      '<span><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Refundable 24h notice</span>' +
     '</div>';
 
   function escapeHtml(s) {

@@ -218,8 +218,9 @@ exports.handler = async (event) => {
 
   <!-- CTA -->
   <tr><td style="padding:0 32px 32px;text-align:center">
-    <p style="margin:0 0 16px;font-size:14px;color:#374151;font-weight:600">Ready to lock in your date?</p>
-    <a href="https://toromovers.net/.netlify/functions/reserve-from-email?truck=${truck}&total=${total}&movers=${movers}&hours=${hours}&name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&phone=${encodeURIComponent(phone)}" style="display:inline-block;background:#C8102E;color:#fff;font-weight:800;font-size:16px;padding:18px 48px;border-radius:999px;text-decoration:none;box-shadow:0 6px 20px rgba(200,16,46,0.3)">Book now</a>
+    <p style="margin:0 0 8px;font-size:14px;color:#374151;font-weight:600">Ready to lock in your date?</p>
+    <p style="margin:0 0 16px;font-size:13px;color:#6B7280">A small refundable deposit reserves your slot — and it's <strong style="color:#1C1C1E">applied to your final bill</strong>, not added on top.</p>
+    <a href="https://toromovers.net/book?truck=${truck}&total=${total}&movers=${movers}&hours=${hours}&name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&phone=${encodeURIComponent(phone)}" style="display:inline-block;background:#C8102E;color:#fff;font-weight:800;font-size:16px;padding:18px 48px;border-radius:999px;text-decoration:none;box-shadow:0 6px 20px rgba(200,16,46,0.3)">Book now</a>
     <p style="margin:16px 0 0;font-size:13px;color:#6B7280">Or call <a href="tel:6896002720" style="color:#C8102E;font-weight:700;text-decoration:none">(689) 600-2720</a></p>
   </td></tr>
 
