@@ -262,6 +262,14 @@
   to = "/lp-es.html"
   status = 200
 
+# Public booking-funnel shortlink. /book is referenced from IG/FB scheduled
+# posts and from the customer SMS body ("Lock your date: …/book"), so it must
+# always resolve. Sends users to the polished move-calculator LP.
+[[redirects]]
+  from = "/book"
+  to = "/lp"
+  status = 301
+
 # /privacy → /privacy.html
 [[redirects]]
   from = "/privacy"
