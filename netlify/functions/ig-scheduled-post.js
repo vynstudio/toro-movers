@@ -30,7 +30,7 @@ That's the Toro difference — one team, start to finish. Local, long-distance, 
   { date: '2026-04-30', image: 'post-3.png', caption:
 `Furniture wrapped. Floors protected. Boxes where you want them. 📦
 
-Loading, unloading, packing, unpacking — Toro does it all at $75/mover/hour. Licensed and insured in Florida.
+Loading, unloading, packing, unpacking — Toro does it all at $75/mover/hour. Family-owned in Central Florida.
 
 📅 Book online: https://toromovers.net/book
 📞 Or call us: (689) 600-2720` },
@@ -59,7 +59,7 @@ const POST_1 = {
   caption:
 `Moving day shouldn't feel like moving mountains. 💪
 
-Toro Movers — family-owned, fully insured, and built for Central Florida.
+Toro Movers — family-owned and built for Central Florida.
 $75/mover/hr · 2-hour minimum · No surprise fees.
 
 📅 Book online: https://toromovers.net/book
@@ -68,6 +68,29 @@ $75/mover/hr · 2-hour minimum · No surprise fees.
 const ALL_POSTS = [POST_1, ...POSTS];
 
 const GRAPH = 'https://graph.facebook.com/v19.0';
+
+async function waitForContainerReady(containerId, { maxMs = 60000, intervalMs = 3000 } = {}) {
+  // Meta's IG container goes IN_PROGRESS → FINISHED (or ERROR/EXPIRED) before
+  // it can be published. Without this poll, calling media_publish too early
+  // returns: code 9007 / subcode 2207027 "Media is not ready for publishing".
+  // Observed in prod 2026-04-29 — three consecutive failures.
+  const deadline = Date.now() + maxMs;
+  let lastStatus = null;
+  while (Date.now() < deadline) {
+    const r = await fetch(
+      `${GRAPH}/${containerId}?fields=status_code,status&access_token=${encodeURIComponent(TOKEN)}`,
+    );
+    const j = await r.json();
+    if (!r.ok || j.error) throw new Error('status check failed: ' + JSON.stringify(j));
+    lastStatus = j.status_code;
+    if (lastStatus === 'FINISHED') return;
+    if (lastStatus === 'ERROR' || lastStatus === 'EXPIRED') {
+      throw new Error('container ' + lastStatus + ': ' + JSON.stringify(j));
+    }
+    await new Promise((r) => setTimeout(r, intervalMs));
+  }
+  throw new Error('container not ready after ' + maxMs + 'ms (last status: ' + lastStatus + ')');
+}
 
 async function publishToIG({ imageUrl, caption }) {
   // 1) Create container
@@ -79,7 +102,10 @@ async function publishToIG({ imageUrl, caption }) {
   const cj = await c.json();
   if (!c.ok || cj.error) throw new Error('container failed: ' + JSON.stringify(cj));
 
-  // 2) Publish
+  // 2) Wait for the container to reach FINISHED before publishing
+  await waitForContainerReady(cj.id);
+
+  // 3) Publish
   const p = await fetch(`${GRAPH}/${IG_USER_ID}/media_publish`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
