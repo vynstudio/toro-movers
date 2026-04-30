@@ -469,10 +469,10 @@ exports.handler = async (event) => {
     console.error('[notify] SMS FAILED:', e.message);
   }
 
-  // Quo contact upsert + CRM v2 bridge. Both must be awaited — Netlify
-  // Functions freeze the container as soon as the handler returns, so
-  // fire-and-forget promises get killed mid-request and silently lose
-  // data. Run them in parallel and wait for both.
+  // Quo contact upsert + CRM v2 bridge + Toro CRM (new SaaS). All must be awaited —
+  // Netlify Functions freeze the container as soon as the handler returns, so
+  // fire-and-forget promises get killed mid-request and silently lose data.
+  // Run them in parallel and wait for all.
   let v2BridgeResult = null;
   if (!isAbandon && phone) {
     const leadForContact = savedLead || { ...payload, name: fullName, phone, email };
@@ -486,12 +486,64 @@ exports.handler = async (event) => {
       stairs: stairs_elev,
       estimate,
     };
-    const [contactRes, v2Res] = await Promise.allSettled([
+
+    // Toro CRM (the new multi-tenant SaaS at toro-crm.netlify.app).
+    // Toro Movers is workspace #1 — we forward the lead to its public ingestion
+    // endpoint as a parallel write. Old Blobs/v2 stay live until cutover.
+    const TORO_CRM_URL = process.env.TORO_CRM_URL || 'https://toro-crm.netlify.app';
+    const utmSource = (utm_source || '').toLowerCase();
+    const detectedSource = utmSource.includes('meta') || utmSource.includes('facebook') || utmSource.includes('instagram')
+      ? 'meta'
+      : utmSource.includes('google')
+        ? 'google_ads'
+        : utmSource.includes('seo') || utmSource.includes('organic')
+          ? 'seo'
+          : null;
+    const notesBits = [
+      property_type ? `Property: ${property_type}` : null,
+      payload.floor ? `Floor: ${payload.floor}` : null,
+      stairs_elev ? `Access: ${stairs_elev}` : null,
+      furniture_size ? `Furniture: ${furniture_size}` : null,
+      boxes_count ? `Boxes: ${boxes_count}` : null,
+      tv_count ? `TVs: ${tv_count}` : null,
+      assembly === 'Yes' ? 'Disassembly needed' : null,
+      wrapping === 'Yes' ? 'Wrapping needed' : null,
+      estimate ? `Auto-quote: $${estimate.total} (${estimate.movers}m × ${estimate.hours}h @ $${estimate.rate}/hr)` : null,
+    ].filter(Boolean).join(' | ');
+    const toroCrmPayload = {
+      full_name: fullName,
+      phone: cleanPhone(phone) || phone,
+      email: email || null,
+      move_date: move_date || null,
+      from_zip: zip_from || null,
+      to_zip: zip_to || null,
+      notes: notesBits || null,
+      source_page: page || null,
+      utm_source: utm_source || null,
+      utm_medium: utm_medium || null,
+      utm_campaign: utm_campaign || null,
+      utm_content: utm_content || null,
+      utm_term: utm_term || null,
+      fbclid: fbclid || null,
+      lead_source: detectedSource,
+      estimated_hours: estimate ? estimate.hours : null,
+      movers_count: estimate ? estimate.movers : null,
+      quoted_amount: estimate ? estimate.total : null,
+    };
+    const toroCrmFetch = fetch(`${TORO_CRM_URL}/api/leads?workspace=toro-movers`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(toroCrmPayload),
+    }).then(r => r.json().catch(() => ({}))).then(j => ({ ok: !!j.id, id: j.id, error: j.error }));
+
+    const [contactRes, v2Res, toroRes] = await Promise.allSettled([
       upsertContactFromLead(leadForContact),
       upsertCrmLeadFromPublic(v2Payload),
+      toroCrmFetch,
     ]);
     console.log('[notify] quo contact:', JSON.stringify(contactRes.status === 'fulfilled' ? contactRes.value : { ok: false, error: String(contactRes.reason && contactRes.reason.message || contactRes.reason) }));
     console.log('[notify] crm v2 bridge:', JSON.stringify(v2Res.status === 'fulfilled' ? v2Res.value : { ok: false, error: String(v2Res.reason && v2Res.reason.message || v2Res.reason) }));
+    console.log('[notify] toro-crm forward:', JSON.stringify(toroRes.status === 'fulfilled' ? toroRes.value : { ok: false, error: String(toroRes.reason && toroRes.reason.message || toroRes.reason) }));
     if (v2Res.status === 'fulfilled' && v2Res.value && v2Res.value.ok) v2BridgeResult = v2Res.value;
   }
 
