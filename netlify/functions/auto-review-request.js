@@ -6,7 +6,9 @@
 // stamp `review_requested_at` on the lead so it never double-fires.
 //
 // Eligibility:
-//   - status in ['booked', 'done']  (catches both manual-Done and untouched bookings)
+//   - status === 'done'   (only fires for moves Diler has confirmed complete via
+//                          the Telegram Done tap — never auto-asks booked-but-
+//                          unverified leads who may have canceled or no-showed)
 //   - move_date present and >= 1 day ago in ET
 //   - lead.review_requested_at is empty
 //   - has an email OR a phone (at least one channel)
@@ -57,7 +59,7 @@ exports.handler = async () => {
   const s = leadStore();
 
   const eligible = index.filter(entry => {
-    if (!['booked', 'done'].includes(entry.status)) return false;
+    if (entry.status !== 'done') return false;
     if (!entry.move_date) return false;
     // move_date must be strictly before today (i.e. at least 1 day ago in ET)
     if (entry.move_date >= today) return false;
