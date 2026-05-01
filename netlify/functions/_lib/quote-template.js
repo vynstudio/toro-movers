@@ -41,7 +41,7 @@ const COPY = {
     fineprint: [
       'The price you book is the price you pay. No hidden fees, no fuel surcharges.',
       '2-hour minimum, then billed by the hour for actual time worked.',
-      'Valid for 30 days. Licensed and insured in Florida.',
+      'Valid for 30 days. Insured in Florida.',
     ],
     tagline: 'Moving People Forward',
     cta: 'To book: reply to this email or call (689) 600-2720.',
@@ -133,7 +133,7 @@ function renderQuotePdf({ lead, customer, quote }) {
   doc.fillColor('#FFFFFF').font('Helvetica-Bold').fontSize(11)
     .text('(689) 600-2720', 54, 30, { align: 'right', width: innerW });
   doc.font('Helvetica').fontSize(9).fillColor(RED_SOFT_HEADER_TINT)
-    .text('Licensed & insured · FL', 54, 46, { align: 'right', width: innerW })
+    .text('Insured · FL', 54, 46, { align: 'right', width: innerW })
     .text('toromovers.net', 54, 60, { align: 'right', width: innerW });
 
   // ===== Title =====

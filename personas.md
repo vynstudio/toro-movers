@@ -49,7 +49,7 @@ She types these into Google:
 
 ### Top 3 objections
 1. **"Will they actually show up on time?"** — same-week scheduling and on-time guarantee need to be visible
-2. **"Are they real movers or just guys with a truck?"** — insurance, FL license, review count are critical
+2. **"Are they real movers or just guys with a truck?"** — insurance, review count are critical (no operating license yet — never claim "licensed")
 3. **"What if they damage my stuff?"** — furniture wrapping included + insurance proof on request
 
 ### Best landing page
@@ -129,7 +129,7 @@ Visual: Crew loading furniture into the Toro Movers truck. Emphasize "We bring t
 - In-Town Move package featured (it's the "Most Popular" badge for a reason)
 - Calculator with truck add-on visible
 - Reviews highlighting "exactly what they quoted" testimonials
-- License + insured trust signals
+- Insured trust signal (no operating license yet)
 
 ---
 
@@ -161,7 +161,7 @@ Move the entire family with as little disruption as possible. Wife wants packing
 2. `full service movers winter park`
 3. `movers and packers orlando`
 4. `professional movers maitland fl`
-5. `licensed insured moving company orlando`
+5. `insured moving company orlando`
 6. `4 bedroom movers central florida`
 
 ### Channels
@@ -191,7 +191,7 @@ Visual: Family/team dock portrait (the current hero photo!) — emphasizes famil
 ### Content priorities
 - Big Move package + the new packing/long-distance/storage callout strip
 - Packing & unpacking FAQ entries (already there)
-- Trust signals stacked: licensed, insured, family-owned, 4.9★
+- Trust signals stacked: insured, family-owned, 4.9★
 - Real testimonials from 3-bedroom moves
 - Calculator showing 3+ movers + 4+ hours configurations
 
@@ -269,7 +269,7 @@ Visual: Crew carefully wrapping a piece of furniture in shrink wrap. Older custo
 ### Content priorities
 - The "We handle history with care" angle from `/winter-park-movers` is the gold standard
 - Downsizing FAQ (the one in `/the-villages-movers`)
-- Trust signals: family-owned, 4.9★ from 29 reviews, licensed, insured
+- Trust signals: family-owned, 4.9★ from 29 reviews, insured
 - Voice-of-customer testimonials from older customers specifically
 - Phone number large and prominent (she'll call before she'll fill out a form)
 

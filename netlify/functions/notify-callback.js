@@ -358,7 +358,7 @@ exports.handler = async (event) => {
 
           <hr style="margin:32px 0 20px;border:none;border-top:1px solid #e5e5e5">
           <div style="font-size:12px;color:#9ca3af;line-height:1.6">
-            <div style="margin-bottom:4px"><strong>Toro Movers</strong> · Orlando, FL · Licensed & insured</div>
+            <div style="margin-bottom:4px"><strong>Toro Movers</strong> · Orlando, FL · Insured</div>
             <div><a href="https://toromovers.net/" style="color:#9ca3af">toromovers.net</a> · <a href="mailto:${esc(fromEmail)}" style="color:#9ca3af">${esc(fromEmail)}</a></div>
           </div>
         </div>
@@ -713,7 +713,7 @@ function dripEmail(stage, fullName, estimate, bookNowUrl, fromEmail){
         </div>
         <hr style="margin:28px 0 18px;border:none;border-top:1px solid #e5e5e5">
         <div style="font-size:12px;color:#9ca3af;line-height:1.6">
-          <strong>Toro Movers</strong> · Orlando, FL · Licensed &amp; insured<br>
+          <strong>Toro Movers</strong> · Orlando, FL · Insured<br>
           <a href="https://toromovers.net/" style="color:#9ca3af">toromovers.net</a>
         </div>
       </div>

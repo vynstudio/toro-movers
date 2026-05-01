@@ -87,7 +87,7 @@ exports.handler = async (event) => {
         <ul style="color:#3a3a3a;font-size:15px;line-height:1.8;padding-left:20px">
           <li><strong>$75/mover/hour</strong> — flat rate, no surprises</li>
           <li><strong>Same-day availability</strong> for last-minute moves</li>
-          <li><strong>Licensed &amp; insured</strong> — your stuff is protected</li>
+          <li><strong>Insured</strong> — your stuff is protected</li>
           <li><strong>Family-owned</strong> — we treat your home like ours</li>
         </ul>
         ${bookCta}
@@ -153,7 +153,7 @@ exports.handler = async (event) => {
         ${tpl.body}
         <hr style="margin:28px 0 18px;border:none;border-top:1px solid #e5e5e5">
         <div style="font-size:12px;color:#9ca3af;line-height:1.6">
-          <strong>Toro Movers</strong> · Orlando, FL · Licensed &amp; insured<br>
+          <strong>Toro Movers</strong> · Orlando, FL · Insured<br>
           <a href="tel:+16896002720" style="color:#9ca3af">(689) 600-2720</a> ·
           <a href="mailto:hello@toromovers.net" style="color:#9ca3af">hello@toromovers.net</a> ·
           <a href="https://toromovers.net/" style="color:#9ca3af">toromovers.net</a>

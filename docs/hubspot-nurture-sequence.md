@@ -44,7 +44,7 @@ at the rate we quoted — no surprise fees, no fuel surcharges, no stairs charge
 
 <p><strong>Why customers choose us:</strong></p>
 <ul>
-  <li>Licensed and insured in Florida</li>
+  <li>Insured in Florida</li>
   <li>$75 per mover per hour — the number you see is the number you pay</li>
   <li>Family-owned, same crew every time (no call centers, no day labor)</li>
   <li>Top-rated on Google</li>

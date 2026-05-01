@@ -36,6 +36,13 @@
 [functions."lp-health-monitor"]
   schedule = "0 */4 * * *"
 
+# Auto review request — fires the morning after a move (10am ET).
+# Walks the lead index for booked/done leads with move_date >= 1 day ago in ET
+# and no review_requested_at yet, then sends email + SMS via Resend / Quo.
+# Idempotent on lead.review_requested_at, so safe to retry.
+[functions."auto-review-request"]
+  schedule = "0 14 * * *"
+
 # Escalating move-day reminders — every 15 min
 # T-3h first, then every 30m to T-1h, then every 15m in the final hour.
 # Idempotent via lead.reminders_sent[]. Fires only for booked leads with

@@ -12,7 +12,7 @@
 | **Website** | toromovers.net |
 | **Phone** | (689) 600-2720 |
 | **Founded** | Family-owned, Orlando-based |
-| **License** | Licensed & insured in Florida |
+| **License** | Insured in Florida (no operating license yet — never claim "licensed") |
 
 ---
 
@@ -84,7 +84,7 @@
 | **Honest** | Say what you mean, no marketing fluff | "The price you book is the price you pay." |
 | **Direct** | Lead with the answer, not the setup | "$75 per mover, per hour. 2-hour minimum." |
 | **Warm** | Family-business feel, not corporate | "Same crew that quotes your move shows up to do it." |
-| **Confident** | Know your worth, no apologies | "Licensed, insured, and we've never scratched a piano." |
+| **Confident** | Know your worth, no apologies | "Insured, careful, and we've never scratched a piano." |
 | **Bilingual** | Weave in Spanish naturally | "Mudanzas honestas. Manos fuertes." |
 
 ### Voice do's
@@ -113,7 +113,7 @@
 3. **"No hidden fees. No surprises."** — the anti-scam promise
 
 ### Secondary messages (rotate across ads)
-4. **"Licensed and insured in Florida"** — credential
+4. **"Insured in Florida"** — credential (do NOT claim "licensed" until operating license is in hand)
 5. **"4.9★ from 29 Google reviews"** — social proof
 6. **"Same-week scheduling"** — speed/availability
 7. **"Loading, packing, long-distance, storage"** — full service range
@@ -233,7 +233,7 @@
 - "Family-owned movers who actually pack your kitchen."
 
 ### Trust / Brand
-- "Family-owned. Licensed. 4.9★. Honest pricing."
+- "Family-owned. Insured. 4.9★. Honest pricing."
 - "The price you book is the price you pay."
 - "No hidden fees. No fuel surcharges. No surprises — ever."
 - "Same crew that quotes your move shows up to do it."
@@ -269,7 +269,7 @@
 | Competitor Type | Their Angle | Our Counter |
 |---|---|---|
 | **National chains** (Two Men, PODS) | "Professional, big brand" | "Family-owned, same crew every time, no corporate runaround" |
-| **TaskRabbit / Craigslist labor** | "Cheap, same-day" | "Licensed, insured, furniture wrapping included, $75/hr isn't much more and the quality gap is massive" |
+| **TaskRabbit / Craigslist labor** | "Cheap, same-day" | "Insured, furniture wrapping included, $75/hr isn't much more and the quality gap is massive" |
 | **Other local movers** | "Best movers in Orlando" | "Transparent pricing on the website (most competitors hide it), 4.9★ reviews, bilingual crew" |
 
 ---

@@ -11,9 +11,20 @@ const { getStore } = require('@netlify/blobs'); // surface for scanner
 const { Resend } = require('resend');
 const { setStatus, getLead, listLeads, addNote, createLead, updateLead } = require('./_lib/leads');
 const { sendBookingConfirmation } = require('./_lib/emails');
+const { sendSms } = require('./_lib/sms');
 
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const ALLOWED_CHAT = process.env.TELEGRAM_CHAT_ID; // allowlist: only this chat can command
+
+// Direct Blobs handle for stamping `review_requested_at` after a Done tap.
+// updateLead's ALLOWED list doesn't include this field on purpose (it's
+// a side-effect flag, not customer-editable), so we write it directly.
+function leadStoreForReview(){
+  const siteID = process.env.NETLIFY_SITE_ID || '5d1b562a-d00c-4a66-8dd3-5b083eb11ce9';
+  const tokenV = process.env.NETLIFY_BLOBS_TOKEN;
+  if (tokenV) return getStore({ name: 'leads', siteID, token: tokenV, consistency: 'strong' });
+  return getStore({ name: 'leads', consistency: 'strong' });
+}
 
 async function tg(method, body){
   try {
@@ -103,23 +114,63 @@ exports.handler = async (event) => {
 
   // ===== DONE → REVIEW REQUEST FLOW =====
   // Fires when a move is marked complete. Sends immediate review email +
-  // schedules a +3 day follow-up (Resend handles the queue).
-  if (newStatus === 'done' && lead.email && process.env.RESEND_API_KEY) {
-    try {
-      const result = await sendReviewRequest(lead);
+  // schedules a +3 day follow-up (Resend handles the queue), and fires an
+  // immediate SMS to the lead's phone if we have one (Quo / OpenPhone).
+  //
+  // Skips if `review_requested_at` is already set — the auto-review-request
+  // cron may have already fired the morning after the move.
+  if (newStatus === 'done' && lead.review_requested_at) {
+    await tg('sendMessage', {
+      chat_id: cb.message.chat.id,
+      text: `ℹ️ Review already requested ${new Date(lead.review_requested_at).toLocaleDateString('en-US', { timeZone: 'America/New_York' })} — not re-sending.`,
+      reply_to_message_id: cb.message.message_id,
+    });
+    return { statusCode: 200, body: 'ok' };
+  }
+  if (newStatus === 'done') {
+    const lines = [];
+    if (lead.email && process.env.RESEND_API_KEY) {
+      try {
+        const result = await sendReviewRequest(lead);
+        lines.push(`⭐ Review email → ${lead.email} (+3d follow-up scheduled)`);
+        console.log('[telegram-callback] review-request email sent:', result);
+      } catch(e) {
+        console.error('review-request email failed:', e);
+        lines.push(`⚠️ Email failed (${lead.email}): ${e.message}`);
+      }
+    }
+    if (lead.phone) {
+      try {
+        const smsResult = await sendReviewSMS(lead);
+        if (smsResult.ok) lines.push(`📱 Review SMS → ${lead.phone}`);
+        else if (smsResult.skipped) lines.push(`📱 SMS skipped: ${smsResult.reason}`);
+        else lines.push(`⚠️ SMS failed: ${smsResult.error || smsResult.status || 'unknown'}`);
+        console.log('[telegram-callback] review-request SMS:', smsResult);
+      } catch(e) {
+        console.error('review-request SMS failed:', e);
+        lines.push(`⚠️ SMS failed: ${e.message}`);
+      }
+    }
+    if (lines.length) {
       await tg('sendMessage', {
         chat_id: cb.message.chat.id,
-        text: `⭐ Review request sent to ${lead.email}\n+3 day follow-up scheduled.`,
+        text: lines.join('\n'),
         reply_to_message_id: cb.message.message_id,
       });
-      console.log('[telegram-callback] review-request sent:', result);
-    } catch(e) {
-      console.error('review-request send failed:', e);
-      await tg('sendMessage', {
-        chat_id: cb.message.chat.id,
-        text: `⚠️ Couldn't send review email to ${lead.email}: ${e.message}`,
-        reply_to_message_id: cb.message.message_id,
-      });
+    }
+    // Stamp review_requested_at so the morning cron + future Done taps both no-op.
+    if (lines.some(l => l.startsWith('⭐') || l.startsWith('📱'))) {
+      try {
+        const raw = await leadStoreForReview().get(leadId);
+        if (raw) {
+          const fresh = JSON.parse(raw);
+          fresh.review_requested_at = new Date().toISOString();
+          fresh.updatedAt = fresh.review_requested_at;
+          await leadStoreForReview().set(leadId, JSON.stringify(fresh));
+        }
+      } catch (e) {
+        console.error('failed to stamp review_requested_at:', e.message);
+      }
     }
   }
 
@@ -165,7 +216,7 @@ async function sendReviewRequest(lead, opts = {}){
           <a href="${reviewUrl}" style="display:inline-block;background:#16a34a;color:#fff;padding:16px 36px;border-radius:999px;text-decoration:none;font-weight:800;font-size:15px;box-shadow:0 8px 20px rgba(22,163,74,.35)">⭐ Leave a Google review</a>
         </div>
         <hr style="margin:28px 0 18px;border:none;border-top:1px solid #e5e5e5">
-        <div style="font-size:12px;color:#9ca3af;line-height:1.6"><strong>Toro Movers</strong> · Orlando, FL · Licensed &amp; insured<br><a href="https://toromovers.net/" style="color:#9ca3af">toromovers.net</a></div>
+        <div style="font-size:12px;color:#9ca3af;line-height:1.6"><strong>Toro Movers</strong> · Orlando, FL · Insured<br><a href="https://toromovers.net/" style="color:#9ca3af">toromovers.net</a></div>
       </div>
     </div>`;
 
@@ -247,6 +298,22 @@ async function sendReviewRequest(lead, opts = {}){
 }
 
 module.exports.sendReviewRequest = sendReviewRequest;
+
+// ===== REVIEW REQUEST SMS =====
+// Single short message via Quo/OpenPhone. No-ops if SMS isn't configured
+// or the lead has no phone. Keep under ~320 chars to stay in 2 segments.
+async function sendReviewSMS(lead){
+  const firstName = (lead?.name || '').split(' ')[0] || 'there';
+  const reviewUrl = process.env.GOOGLE_REVIEW_URL
+    || 'https://g.page/r/CYAKurQHh5TvEAI/review';
+  const lang = (lead?.lang === 'es' || /^es/i.test(lead?.language || '')) ? 'es' : 'en';
+  const body = lang === 'es'
+    ? `Hola ${firstName}, soy Diler de Toro Movers. Esperamos que la mudanza haya salido bien. Si la merecimos, una rapida resena en Google nos ayuda muchisimo: ${reviewUrl}`
+    : `Hi ${firstName}, it's Diler with Toro Movers. Hope the move went smooth! If we earned it, a quick Google review means a lot to our family crew: ${reviewUrl}`;
+  return await sendSms(lead.phone, body);
+}
+
+module.exports.sendReviewSMS = sendReviewSMS;
 
 // ===== TEXT COMMAND HANDLER =====
 // Handles /today, /week, /tomorrow, /lead, /show, /status, /note, /help
