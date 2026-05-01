@@ -93,7 +93,7 @@ async function sendBookingConfirmation(lead, depositAmount){
 
           <hr style="margin:28px 0 18px;border:none;border-top:1px solid #e5e5e5">
           <div style="font-size:12px;color:#9ca3af;line-height:1.6">
-            <strong>Toro Movers</strong> · Orlando, FL · Licensed &amp; insured<br>
+            <strong>Toro Movers</strong> · Orlando, FL · Insured<br>
             <a href="tel:+16896002720" style="color:#9ca3af">(689) 600-2720</a> ·
             <a href="mailto:hello@toromovers.net" style="color:#9ca3af">hello@toromovers.net</a> ·
             <a href="https://toromovers.net/" style="color:#9ca3af">toromovers.net</a>

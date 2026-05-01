@@ -104,7 +104,7 @@ These will appear in Google Ads as observation/targeting audiences within ~24 ho
 5. Family-Owned Moving Help
 6. Same-Week Loading Help
 7. No Hidden Fees — Ever
-8. Licensed & Insured Florida
+8. Insured in Florida
 9. 4.9★ Google Reviews
 10. Free Quote in 60 Seconds
 11. Real Prices on the Page
@@ -114,7 +114,7 @@ These will appear in Google Ads as observation/targeting audiences within ~24 ho
 15. Reserve Your Move Today
 
 **Descriptions (4):**
-1. Family-owned, licensed, and insured. We load your rented truck — you drive. $75 per mover, per hour. 2-hour minimum. Same-week scheduling.
+1. Family-owned and insured. We load your rented truck — you drive. $75 per mover, per hour. 2-hour minimum. Same-week scheduling.
 2. Strong, insured movers in Orlando. No fuel fees, no stair fees, no surprises. The number you book is the number you pay.
 3. 4.9★ Google rating from 29 real Orlando customers. Free quote in 60 seconds. Call (689) 600-2720.
 4. We bring dollies, blankets, straps, and the muscle. You bring the truck. Same fair hourly rate every job.
@@ -131,7 +131,7 @@ These will appear in Google Ads as observation/targeting audiences within ~24 ho
 
 **Call Extensions:** `(689) 600-2720` — call-only on mobile
 **Location Extensions:** Linked via Google Business Profile
-**Callout Extensions:** "Licensed & Insured", "Family-Owned", "Same-Week Available", "No Hidden Fees", "Free Quotes"
+**Callout Extensions:** "Insured", "Family-Owned", "Same-Week Available", "No Hidden Fees", "Free Quotes"
 **Structured Snippets:** Service catalog: Loading, Unloading, Furniture Wrapping, Same-Week Service
 
 ---
@@ -168,7 +168,7 @@ These will appear in Google Ads as observation/targeting audiences within ~24 ho
 3. We Bring the Truck
 4. Family-Owned in [LOC]
 5. 1-2 BR Move Specialists
-6. Licensed & Insured FL
+6. Insured in Florida
 7. 4.9★ — 29 Reviews
 8. Same-Week Scheduling
 9. No Hidden Fees Ever
@@ -178,7 +178,7 @@ These will appear in Google Ads as observation/targeting audiences within ~24 ho
 
 **Descriptions:**
 1. Two movers, four hours, our truck — $875 flat. Loading, drive, unloading. No fuel fees, no surprises. Family-owned in Central Florida.
-2. The number you book is the number you pay. Licensed and insured. 4.9★ from real Lake Mary, Sanford, and Winter Park customers.
+2. The number you book is the number you pay. Insured in Florida. 4.9★ from real Lake Mary, Sanford, and Winter Park customers.
 
 **Landing pages (one per geo, dynamically swapped via Ad Customizers):**
 - `https://toromovers.net/lake-mary-movers`
@@ -207,7 +207,7 @@ These will appear in Google Ads as observation/targeting audiences within ~24 ho
 - `[family movers central florida]`
 - `[3 bedroom movers orlando]`
 - `"best movers winter park"`
-- `"licensed insured movers orlando"`
+- `"insured movers orlando"`
 - `"professional moving company maitland"`
 
 #### Ad Group 2: Packing Service Keywords
@@ -223,7 +223,7 @@ These will appear in Google Ads as observation/targeting audiences within ~24 ho
 2. Packing, Loading & Unloading
 3. Trusted by Orlando Families
 4. 4.9★ — 29 Real Reviews
-5. Licensed & Insured Florida
+5. Insured in Florida
 6. Same Crew, Honest Price
 7. Big Move? Same Hourly Rate
 8. We Handle Pianos & Antiques
@@ -234,7 +234,7 @@ These will appear in Google Ads as observation/targeting audiences within ~24 ho
 
 **Descriptions:**
 1. Family-owned movers handling family-sized moves. Packing, loading, driving, unloading — one fair hourly rate. No surprise fees on closing day.
-2. Same crew you book is the one who shows up. Licensed and insured in Florida. We treat your family's stuff like our own.
+2. Same crew you book is the one who shows up. Insured in Florida. We treat your family's stuff like our own.
 
 **Landing pages:** `/maitland-movers`, `/winter-park-movers`, `/lake-mary-movers`, `/windermere-movers`
 
@@ -283,14 +283,14 @@ These will appear in Google Ads as observation/targeting audiences within ~24 ho
 6. Same Crew, Same Rate, No Rush
 7. Long-Distance Senior Moves
 8. 4.9★ — Real Reviews
-9. Licensed & Insured Florida
+9. Insured in Florida
 10. Call (689) 600-2720
 11. Honest Pricing, No Surprises
 12. Family-Owned Since Day One
 
 **Descriptions:**
 1. We treat your home of 40 years with the respect it deserves. Patient crews. Honest prices. Same family on every move. Call us — we'll talk it through.
-2. Florida-licensed and fully insured. We've moved generations of family pieces without a scratch. No rush, no upsell, no surprises.
+2. Fully insured in Florida. We've moved generations of family pieces without a scratch. No rush, no upsell, no surprises.
 
 **Landing pages:** `/the-villages-movers`, `/winter-park-movers`, `/clermont-movers`, `/lake-mary-movers`, `/sanford-movers`
 
@@ -329,7 +329,7 @@ These will appear in Google Ads as observation/targeting audiences within ~24 ho
 7. Out-of-State Owner? We've Got It
 8. $75/Mover/Hour Honest Pricing
 9. Gate Access Handled
-10. Licensed & Insured Florida
+10. Insured in Florida
 11. Reunion Resort Specialists
 12. Get Custom Turnover Quote
 

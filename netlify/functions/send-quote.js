@@ -144,7 +144,7 @@ exports.handler = async (event) => {
         `Hi ${first} — Toro Movers here. Your quote:\n\n` +
         `$${total} (${movers} movers · ${hours}h${truckLine})\n\n` +
         `Tap to book and lock your date:\n${bookLink}\n\n` +
-        `Or call (689) 600-2720. Licensed & insured.\n\n` +
+        `Or call (689) 600-2720. Insured.\n\n` +
         `Reply STOP to opt out.`;
       const r = await sendSms(phone, customerSmsBody);
       console.log('[send-quote] customer sms result:', JSON.stringify(r));
@@ -232,7 +232,7 @@ exports.handler = async (event) => {
   <!-- Footer -->
   <tr><td style="background:#1C1C1E;padding:24px 32px;text-align:center">
     <p style="margin:0;color:rgba(255,255,255,0.7);font-size:12px;line-height:1.5">
-      Toro Movers · Licensed & Insured · Central Florida<br>
+      Toro Movers · Insured · Central Florida<br>
       A member of our team will call you soon for more details.
     </p>
   </td></tr>

@@ -83,7 +83,7 @@ Don't create lookalikes until you have at least 50 conversions, ideally 100+. Un
 
 **Ad Set 1 — Image: $300 hook**
 - Headline: **"$300. Two movers. Two hours. We do the heavy lifting."**
-- Primary text: *"You drive the U-Haul. We handle the couch, the boxes, and the hauling. $75 per mover, per hour. 2-hour minimum. Same-week scheduling in Orlando. Licensed and insured."*
+- Primary text: *"You drive the U-Haul. We handle the couch, the boxes, and the hauling. $75 per mover, per hour. 2-hour minimum. Same-week scheduling in Orlando. Insured."*
 - Description: "Get a free quote in 60 seconds."
 - CTA: **Get Quote**
 - Image: Crew loading boxes into a U-Haul, $300 price overlay
@@ -170,7 +170,7 @@ Don't create lookalikes until you have at least 50 conversions, ideally 100+. Un
 - Image: The team-family-portrait.jpg (the current hero photo)
 
 **Ad Set 2 — Image: trust signals**
-- Headline: **"Licensed. Insured. 4.9★. Family-owned in Central Florida."**
+- Headline: **"Insured. 4.9★. Family-owned in Central Florida."**
 - Primary text: *"You've heard the horror stories about national moving chains. We're not them. Family-owned in Orlando. Same crew you book is the one who shows up. $75 per mover, per hour. Get a free quote."*
 - CTA: **Get Quote**
 - Image: Trust badges + 4.9★ rating + family photo collage
