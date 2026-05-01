@@ -17,7 +17,7 @@ const { getAdminClient, verifyUserJWT } = require('./_lib/supabase-admin');
 
 const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'hello@toromovers.net';
 const REVIEW_URL = process.env.GOOGLE_REVIEW_URL
-  || 'https://www.google.com/search?q=toro+movers+orlando';
+  || 'https://g.page/r/CYAKurQHh5TvEAI/review';
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
